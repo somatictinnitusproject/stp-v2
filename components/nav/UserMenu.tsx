@@ -103,10 +103,10 @@ export default function UserMenu({ username }: { username: string }) {
       </div>
 
       {/* Mobile: username tap → bottom sheet */}
-      <div className="md:hidden">
+      <div className="md:hidden min-w-0 flex justify-end">
         <button
           onClick={openSheet}
-          className="text-[13px] font-medium text-text-body"
+          className="text-[13px] font-medium text-text-body truncate max-w-[140px] overflow-hidden whitespace-nowrap block"
         >
           @{username}
         </button>

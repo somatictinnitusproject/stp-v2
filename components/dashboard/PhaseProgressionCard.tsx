@@ -52,7 +52,7 @@ export default function PhaseProgressionCard({
     <div className="bg-surface border border-border rounded-xl p-4">
       <p className="text-[13px] font-semibold text-text-heading mb-3">Your programme</p>
       <div
-        className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden"
+        className="flex flex-nowrap gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden"
         style={{ scrollbarWidth: 'none' }}
       >
         {[1, 2, 3, 4, 5].map(phase => {
@@ -61,7 +61,7 @@ export default function PhaseProgressionCard({
 
           const content = (
             <div
-              className="min-w-[80px] h-[72px] rounded-[10px] p-[10px] flex flex-col justify-between flex-shrink-0 flex-1"
+              className="min-w-[80px] h-[72px] rounded-[10px] p-[10px] flex flex-col justify-between flex-shrink-0"
               style={{ background: s.bg, border: s.border }}
             >
               <div

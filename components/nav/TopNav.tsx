@@ -30,10 +30,12 @@ export default async function TopNav() {
         </div>
       </div>
 
-      {/* Mobile: Logo centred | Username right */}
-      <div className="flex md:hidden items-center justify-center h-full px-4 relative">
-        <Logo href="/dashboard" />
-        <div className="absolute right-4">
+      {/* Mobile: Logo left | Username right (truncates on long names) */}
+      <div className="flex md:hidden items-center justify-between h-full px-4">
+        <div className="flex-shrink-0">
+          <Logo href="/dashboard" />
+        </div>
+        <div className="min-w-0 flex-1 flex justify-end">
           <UserMenu username={username} />
         </div>
       </div>
