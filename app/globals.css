@@ -1,26 +1,94 @@
 @import "tailwindcss";
 
+/* Force light mode always */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Colours */
+  --color-background:       #F8F7F4;
+  --color-primary:          #4A9B8E;
+  --color-primary-hover:    #3D8578;
+  --color-primary-active:   #36776C;
+  --color-primary-disabled: #B0CEC9;
+  --color-surface:          #FFFFFF;
+  --color-surface-raised:   #F2F0EC;
+  --color-surface-overlay:  #FFFFFF;
+  --color-surface-dark:     #1C1C1C;
+  --color-text-heading:     #1A1A2E;
+  --color-text-body:        #2D2D2D;
+  --color-text-muted:       #6B7280;
+  --color-border:           #E5E3DF;
+  --color-error:            #C0392B;
+  --color-error-tint:       #FEF3F2;
+  --color-wins-bg:          #EEF7F5;
+  --color-wins-border:      #4A9B8E;
+  --color-founder-badge:    #1A1A2E;
+  --color-founder-tint:     #F0F7F6;
+  --color-phase-complete:   #4A9B8E;
+  --color-phase-active:     #1A1A2E;
+  --color-phase-locked:     #6B7280;
+  --color-phase-unlocked:   #5B8DB8;
+  --color-metric-jaw:       #E07B4F;
+  --color-metric-neck:      #7B6FAB;
+  --color-metric-stress:    #D4A843;
+  --color-metric-sleep:     #5B8DB8;
+  --color-avatar-1:         #4A9B8E;
+  --color-avatar-2:         #7B6FAB;
+  --color-avatar-3:         #E07B4F;
+  --color-avatar-4:         #5B8DB8;
+  --color-avatar-5:         #7A9E5F;
+  --color-avatar-6:         #C4788A;
+  --color-chart-earlier:    #B0CEC9;
+
+  /* Spacing */
+  --spacing-space-1:        8px;
+  --spacing-space-2:        16px;
+  --spacing-space-3:        24px;
+  --spacing-space-4:        32px;
+  --spacing-space-5:        40px;
+  --spacing-space-6:        64px;
+  --spacing-space-7:        96px;
+  --spacing-nav-top:        60px;
+  --spacing-nav-bottom:     64px;
+  --spacing-nav-clearance:  80px;
+
+  /* Max widths */
+  --width-content:          1120px;
+  --width-public:           760px;
+  --width-reading:          680px;
+  --width-onboarding:       560px;
+  --width-modal:            480px;
+
+  /* Shadows */
+  --shadow-card:            0 2px 8px rgba(0,0,0,0.06);
+  --shadow-dropdown:        0 4px 12px rgba(0,0,0,0.08);
+  --shadow-modal:           0 8px 32px rgba(0,0,0,0.12);
+  --shadow-input-focus:     0 0 0 3px rgba(74,155,142,0.15);
+  --shadow-input-error:     0 0 0 3px rgba(192,57,43,0.12);
+  --shadow-slider:          0 2px 6px rgba(0,0,0,0.12);
+
+  /* Z-index */
+  --z-index-base:           0;
+  --z-index-raised:         10;
+  --z-index-nav:            20;
+  --z-index-overlay:        30;
+  --z-index-modal:          40;
+  --z-index-toast:          50;
+
+  /* Font */
+  --font-sans: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* iOS zoom prevention — never override below 16px */
+input, textarea, select {
+  font-size: 16px;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #F8F7F4;
+  color: #2D2D2D;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }

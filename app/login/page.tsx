@@ -1,0 +1,123 @@
+'use client'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
+import PublicShell from '@/components/shells/PublicShell'
+
+const inputClass =
+  'w-full bg-surface border border-border rounded-lg px-4 py-3 text-text-body focus:outline-none focus:border-primary focus:shadow-input-focus'
+
+export default function LoginPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (searchParams.get('verified') === 'true') {
+      setNotice('Email verified — you can now log in.')
+    }
+  }, [searchParams])
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setError('')
+
+    setLoading(true)
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    })
+
+    const data = await res.json()
+    setLoading(false)
+
+    if (!res.ok) {
+      setError(data.error || 'Something went wrong. Please try again.')
+      return
+    }
+
+    router.push(data.redirectTo || '/dashboard')
+    router.refresh()
+  }
+
+  return (
+    <PublicShell>
+      <div className="max-w-[400px] mx-auto py-12">
+        <h1 className="text-[36px] font-bold text-text-heading leading-tight mb-2">
+          Log in
+        </h1>
+        <p className="text-[16px] text-text-muted mb-8">
+          Don&apos;t have an account?{' '}
+          <Link href="/signup" className="text-primary hover:text-primary-hover font-medium">
+            Create one
+          </Link>
+        </p>
+
+        {notice && (
+          <div className="bg-wins-bg border border-wins-border rounded-lg px-4 py-3 mb-6">
+            <p className="text-[14px] text-primary font-medium">{notice}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[13px] font-medium text-text-body" htmlFor="email">
+              Email address
+            </label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-[13px] font-medium text-text-body" htmlFor="password">
+                Password
+              </label>
+              <Link
+                href="/reset-password"
+                className="text-[13px] text-primary hover:text-primary-hover"
+              >
+                Forgot password?
+              </Link>
+            </div>
+            <input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+
+          {error && (
+            <p className="text-[14px] text-error bg-error-tint rounded-lg px-4 py-3">
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-primary text-white font-medium text-[15px] py-3 rounded-lg hover:bg-primary-hover active:bg-primary-active disabled:bg-primary-disabled disabled:cursor-not-allowed transition-colors duration-150 mt-2"
+          >
+            {loading ? 'Logging in...' : 'Log in'}
+          </button>
+        </form>
+      </div>
+    </PublicShell>
+  )
+}
