@@ -17,11 +17,16 @@ export default function ResetPasswordConfirmPage() {
   const [sessionReady, setSessionReady] = useState(false)
 
   useEffect(() => {
-    // Supabase puts the recovery token in the URL hash and exchanges it automatically
-    // Listen for the PASSWORD_RECOVERY event to confirm the session is established
     const supabase = createClient()
+
+    // PKCE flow: /auth/callback already exchanged the code — check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) setSessionReady(true)
+    })
+
+    // Fallback: implicit flow fires PASSWORD_RECOVERY event
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') {
+      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') {
         setSessionReady(true)
       }
     })

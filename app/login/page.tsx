@@ -70,17 +70,9 @@ function LoginForm() {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <div className="flex items-center justify-between">
-            <label className="text-[13px] font-medium text-text-body" htmlFor="password">
+          <label className="text-[13px] font-medium text-text-body" htmlFor="password">
               Password
             </label>
-            <Link
-              href="/reset-password"
-              className="text-[13px] text-primary hover:text-primary-hover"
-            >
-              Forgot password?
-            </Link>
-          </div>
           <input
             id="password"
             type="password"
@@ -103,8 +95,15 @@ function LoginForm() {
           disabled={loading}
           className="w-full bg-primary text-white font-medium text-[15px] py-3 rounded-lg hover:bg-primary-hover active:bg-primary-active disabled:bg-primary-disabled disabled:cursor-not-allowed transition-colors duration-150 mt-2"
         >
-          {loading ? 'Logging in...' : 'Log in'}
+          {loading ? 'Signing in...' : 'Sign in'}
         </button>
+
+        <Link
+          href="/reset-password"
+          className="text-[13px] text-primary hover:text-primary-hover text-center block"
+        >
+          Forgot password?
+        </Link>
       </form>
     </>
   )
@@ -115,7 +114,7 @@ export default function LoginPage() {
     <PublicShell>
       <div className="max-w-[400px] mx-auto py-12">
         <h1 className="text-[36px] font-bold text-text-heading leading-tight mb-2">
-          Log in
+          Sign in
         </h1>
         <p className="text-[16px] text-text-muted mb-8">
           Don&apos;t have an account?{' '}

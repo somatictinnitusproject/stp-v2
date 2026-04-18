@@ -69,7 +69,7 @@ export default function SignupPage() {
           <p className="text-[14px] text-text-muted">
             Click the link in the email to activate your account, then{' '}
             <Link href="/login" className="text-primary hover:text-primary-hover font-medium">
-              log in
+              sign in
             </Link>
             .
           </p>
@@ -87,7 +87,7 @@ export default function SignupPage() {
         <p className="text-[16px] text-text-muted mb-8">
           Already have an account?{' '}
           <Link href="/login" className="text-primary hover:text-primary-hover font-medium">
-            Log in
+            Sign in
           </Link>
         </p>
 
@@ -179,6 +179,10 @@ export default function SignupPage() {
           By creating an account you agree to our{' '}
           <Link href="/terms" className="text-primary hover:text-primary-hover">
             Terms of Service
+          </Link>{' '}
+          and{' '}
+          <Link href="/privacy" className="text-primary hover:text-primary-hover">
+            Privacy Policy
           </Link>
         </p>
       </div>
