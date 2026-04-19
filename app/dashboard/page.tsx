@@ -29,13 +29,13 @@ export default async function DashboardPage() {
       .maybeSingle(),
     supabase
       .from('progress_logs')
-      .select('loudness, jaw_tension, neck_tension, stress, sleep_quality')
+      .select('tinnitus_score, jaw_tension, neck_tension, stress_level, sleep_quality')
       .eq('user_id', user.id)
       .eq('log_date', today)
       .maybeSingle(),
     supabase
       .from('progress_logs')
-      .select('loudness, log_date')
+      .select('tinnitus_score, log_date')
       .eq('user_id', user.id)
       .order('log_date', { ascending: false })
       .limit(14),
@@ -92,9 +92,9 @@ export default async function DashboardPage() {
 
   // Reverse sparkline data so chart renders oldest to newest
   const chartLogs = [...(sparklineLogs ?? [])].reverse()
-  const sparklineLast = chartLogs.length > 0 ? chartLogs[chartLogs.length - 1].loudness : null
+  const sparklineLast = chartLogs.length > 0 ? chartLogs[chartLogs.length - 1].tinnitus_score : null
   const sparklineAvg = chartLogs.length > 0
-    ? (chartLogs.reduce((sum, l) => sum + l.loudness, 0) / chartLogs.length).toFixed(1)
+    ? (chartLogs.reduce((sum, l) => sum + l.tinnitus_score, 0) / chartLogs.length).toFixed(1)
     : null
 
   const maxSessions = getMaxSessionsForPhase(currentPhase)
@@ -125,10 +125,10 @@ export default async function DashboardPage() {
 
   const scores = todayLog
     ? [
-        { label: 'Loudness', value: todayLog.loudness },
+        { label: 'Loudness', value: todayLog.tinnitus_score },
         { label: 'Jaw', value: todayLog.jaw_tension },
         { label: 'Neck', value: todayLog.neck_tension },
-        { label: 'Stress', value: todayLog.stress },
+        { label: 'Stress', value: todayLog.stress_level },
         { label: 'Sleep', value: todayLog.sleep_quality },
       ]
     : []

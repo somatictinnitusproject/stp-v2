@@ -255,6 +255,16 @@ are Document 8 authoring labels only.
 
 ---
 
+## PHASE D — Progress Tracker
+
+### D1. progress_logs column names diverge from Doc 7
+The database has `tinnitus_score` (not `loudness`) and `stress_level` (not `stress`).
+All code uses the actual DB column names. Doc 7 spec for these two columns is deprecated.
+Display labels in the UI remain "Tinnitus loudness" and "Stress" — only internal
+identifiers and DB column names differ.
+
+---
+
 ## PHASE E — Framework Content System
 
 ### E1. SEVEN PROFILE TYPES, NOT FIVE

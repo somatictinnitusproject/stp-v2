@@ -1,7 +1,7 @@
 'use client'
 import { LineChart, Line, ResponsiveContainer } from 'recharts'
 
-type LogPoint = { loudness: number; log_date: string }
+type LogPoint = { tinnitus_score: number; log_date: string }
 
 export default function LoudnessSparkline({ logs }: { logs: LogPoint[] }) {
   return (
@@ -9,7 +9,7 @@ export default function LoudnessSparkline({ logs }: { logs: LogPoint[] }) {
       <LineChart data={logs} margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
         <Line
           type="monotone"
-          dataKey="loudness"
+          dataKey="tinnitus_score"
           stroke="#4A9B8E"
           strokeWidth={2}
           dot={false}
