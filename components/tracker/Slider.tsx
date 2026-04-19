@@ -42,6 +42,15 @@ export default function Slider({
         className={`slider-track-wrap relative${hasBeenMoved ? ' has-moved' : ''}`}
         style={{ '--fill-pct': `${fillPct}%` } as React.CSSProperties}
       >
+        {/* Bubble before input — lower DOM order means lower stacking, thumb paints above */}
+        <div
+          className="slider-bubble pointer-events-none absolute top-0"
+          style={{ left: bubbleLeft(value) }}
+          aria-hidden="true"
+        >
+          <span className="slider-bubble-inner">{value}</span>
+        </div>
+
         <input
           id={inputId}
           type="range"
@@ -54,14 +63,6 @@ export default function Slider({
           onChange={(e) => onChange(Number(e.target.value))}
           className="slider-input w-full"
         />
-
-        <div
-          className="slider-bubble pointer-events-none absolute -top-9"
-          style={{ left: bubbleLeft(value) }}
-          aria-hidden="true"
-        >
-          <span className="slider-bubble-inner">{value}</span>
-        </div>
       </div>
     </div>
   )
