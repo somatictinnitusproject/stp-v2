@@ -265,6 +265,21 @@ identifiers and DB column names differ.
 
 ---
 
+### D2. Retroactive logging extended to 7 days
+
+Doc 12 §4.4 specifies "one day back only" for retroactive logging. Doc 15 Phase D scope
+overrides this with 7-day retroactive window (`RETROACTIVE_LOG_DAYS = 7` in
+`scoring-thresholds.ts`). Implementation follows Doc 15 and exposes both paths:
+- Inline "Missed yesterday?" link (Doc 12 copy preserved)
+- "Log a missed day" link opens a 7-day picker modal
+
+Both route to the same `RetroactiveLogForm` which branches copy based on whether the
+selected date is yesterday or an earlier day:
+- If `logDate === yesterday`: heading "How were you yesterday?", submit "Log for yesterday"
+- Otherwise: heading "How were you on [formatted date]?", submit "Log for [formatted date]"
+
+---
+
 ## PHASE E — Framework Content System
 
 ### E1. SEVEN PROFILE TYPES, NOT FIVE

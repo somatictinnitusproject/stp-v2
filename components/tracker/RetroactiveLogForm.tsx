@@ -6,15 +6,22 @@ import Slider from '@/components/tracker/Slider'
 import OptionalSection from '@/components/tracker/OptionalSection'
 import { TRACKER_TRIGGERS } from '@/content/tracker-triggers'
 import type { TriggerName } from '@/content/tracker-triggers'
-import type { TodayLog } from '@/lib/tracker/queries'
 
 type SliderKey = 'tinnitus_score' | 'jaw_tension' | 'neck_tension' | 'stress_level' | 'sleep_quality'
 
 type Props = {
-  todayLog: NonNullable<TodayLog>
+  logDate: string      // YYYY-MM-DD — the past date being logged
+  today: string        // YYYY-MM-DD — needed to detect yesterday for copy branching
   onCancel: () => void
+  onSuccess: () => void
 }
 
+const SLIDER_DEFAULTS: Record<SliderKey, number> = {
+  tinnitus_score: 5, jaw_tension: 5, neck_tension: 5, stress_level: 5, sleep_quality: 5,
+}
+const MOVED_DEFAULTS: Record<SliderKey, boolean> = {
+  tinnitus_score: false, jaw_tension: false, neck_tension: false, stress_level: false, sleep_quality: false,
+}
 const SLIDER_CONFIG: { key: SliderKey; label: string; description: string }[] = [
   { key: 'tinnitus_score', label: 'Tinnitus loudness', description: 'How loud or intrusive is your tinnitus today?' },
   { key: 'jaw_tension',    label: 'Jaw tension',        description: 'How much tension or tightness in your jaw?' },
@@ -23,31 +30,30 @@ const SLIDER_CONFIG: { key: SliderKey; label: string; description: string }[] = 
   { key: 'sleep_quality',  label: 'Sleep quality',       description: 'How well did you sleep last night?' },
 ]
 
-// All sliders pre-filled with real logged values — always treated as moved
-const ALL_MOVED: Record<SliderKey, boolean> = {
-  tinnitus_score: true, jaw_tension: true, neck_tension: true, stress_level: true, sleep_quality: true,
-}
-
-export default function EditModeForm({ todayLog, onCancel }: Props) {
+export default function RetroactiveLogForm({ logDate, today, onCancel, onSuccess }: Props) {
   const router = useRouter()
 
-  const [sliderValues, setSliderValues] = useState<Record<SliderKey, number>>({
-    tinnitus_score: todayLog.tinnitus_score,
-    jaw_tension:    todayLog.jaw_tension,
-    neck_tension:   todayLog.neck_tension,
-    stress_level:   todayLog.stress_level,
-    sleep_quality:  todayLog.sleep_quality,
-  })
-  const hasBeenMoved = ALL_MOVED
-  const [selectedTriggerNames, setSelectedTriggerNames] = useState<Set<string>>(
-    new Set(todayLog.triggerNames)
-  )
-  const [notes, setNotes] = useState(todayLog.notes ?? '')
+  const yesterday = new Date(new Date(today + 'T00:00:00Z').getTime() - 86_400_000)
+    .toISOString().split('T')[0]
+  const isYesterday = logDate === yesterday
+
+  const formattedDate = new Intl.DateTimeFormat('en-GB', {
+    weekday: 'long', day: 'numeric', month: 'long',
+  }).format(new Date(logDate + 'T12:00:00'))
+
+  const heading  = isYesterday ? 'How were you yesterday?'   : `How were you on ${formattedDate}?`
+  const btnLabel = isYesterday ? 'Log for yesterday'          : `Log for ${formattedDate}`
+
+  const [sliderValues, setSliderValues] = useState<Record<SliderKey, number>>(SLIDER_DEFAULTS)
+  const [hasBeenMoved, setHasBeenMoved] = useState<Record<SliderKey, boolean>>(MOVED_DEFAULTS)
+  const [selectedTriggerNames, setSelectedTriggerNames] = useState<Set<string>>(new Set())
+  const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const handleSliderChange = useCallback((key: SliderKey, value: number) => {
     setSliderValues(prev => ({ ...prev, [key]: value }))
+    setHasBeenMoved(prev => ({ ...prev, [key]: true }))
   }, [])
 
   const sliderHandlers = useMemo<Record<SliderKey, (v: number) => void>>(() => ({
@@ -67,15 +73,15 @@ export default function EditModeForm({ todayLog, onCancel }: Props) {
     })
   }
 
-  async function submitEdit() {
-    setSubmitting(true)
+  async function handleSubmit() {
     setErrorMessage(null)
+    setSubmitting(true)
     try {
-      const res = await fetch('/api/tracker/edit', {
-        method: 'PATCH',
+      const res = await fetch('/api/tracker/retroactive', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          log_id:         todayLog.id,
+          log_date:       logDate,
           tinnitus_score: sliderValues.tinnitus_score,
           jaw_tension:    sliderValues.jaw_tension,
           neck_tension:   sliderValues.neck_tension,
@@ -90,20 +96,11 @@ export default function EditModeForm({ todayLog, onCancel }: Props) {
         return
       }
       if (res.status === 400) {
-        setErrorMessage("Your log couldn't be saved. Please check your entries and try again.")
+        setErrorMessage("This date can't be logged. It may be outside the 7-day window.")
         return
       }
-      if (res.status === 404) {
-        setErrorMessage('This log is no longer available.')
-        return
-      }
-      if (res.status === 403) {
-        const json = await res.json()
-        if (json.editWindowExpired) {
-          setErrorMessage('This log can no longer be edited. The edit window closes 24 hours after the original log.')
-        } else {
-          setErrorMessage("You don't have permission to edit this log.")
-        }
+      if (res.status === 409) {
+        setErrorMessage('A log already exists for this date.')
         return
       }
       if (res.ok) {
@@ -113,6 +110,7 @@ export default function EditModeForm({ todayLog, onCancel }: Props) {
             setErrorMessage("Log saved but triggers couldn't be recorded. Please edit your log to add them.")
           } else {
             router.refresh()
+            onSuccess()
           }
           return
         }
@@ -125,19 +123,13 @@ export default function EditModeForm({ todayLog, onCancel }: Props) {
     }
   }
 
-  async function handleSubmit() {
-    setErrorMessage(null)
-    await submitEdit()
-  }
-
   return (
     <div className="max-w-[680px] mx-auto pt-8 pb-16">
-      <h1 className="text-[28px] font-bold text-text-heading leading-tight mb-1">
-        Edit today's log
-      </h1>
+      <h1 className="text-[28px] font-bold text-text-heading leading-tight mb-1">{heading}</h1>
+      <p className="text-body-sm text-text-muted mb-6">{formattedDate}</p>
 
-      <p className="text-section-label uppercase tracking-[0.08em] text-text-muted mb-4 mt-6">
-        Today's check-in
+      <p className="text-section-label uppercase tracking-[0.08em] text-text-muted mb-4">
+        That day's check-in
       </p>
 
       <div className="flex flex-col gap-6">
@@ -172,7 +164,7 @@ export default function EditModeForm({ todayLog, onCancel }: Props) {
         disabled={submitting}
         className="w-full mt-4 h-12 px-6 bg-primary text-white text-btn-primary rounded-lg hover:bg-primary-hover active:bg-primary-active transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        {submitting ? 'Saving...' : 'Save changes'}
+        {submitting ? 'Saving...' : btnLabel}
       </button>
 
       <div className="mt-3 text-center">

@@ -26,6 +26,7 @@ export type TrackerQueryResult = {
   recentLogDates: string[]  // dates within 7-day retroactive window that have a log
   showWeeklyNudge: boolean
   daysSinceCreation: number
+  hasEligibleRetroactiveDays: boolean
 }
 
 export async function fetchTrackerData(
@@ -96,6 +97,12 @@ export async function fetchTrackerData(
   const priorLogCount  = priorCount ?? 0
   const recentLogDates = (recentRaw ?? []).map(r => r.log_date as string)
 
+  // True if any of the 6 past days is unlogged — gates retroactive picker entry points
+  const recentLoggedSet = new Set(recentLogDates)
+  const hasEligibleRetroactiveDays = Array.from({ length: 6 }, (_, i) =>
+    toUtcDateString(todayMs - (i + 1) * DAY_MS)
+  ).some(d => !recentLoggedSet.has(d))
+
   // Computed server-side to avoid client timezone drift (Doc 12 §4.4)
   const accountCreatedAt = userRow?.created_at ?? null
   const daysSinceCreation = accountCreatedAt
@@ -134,5 +141,6 @@ export async function fetchTrackerData(
     recentLogDates,
     showWeeklyNudge,
     daysSinceCreation,
+    hasEligibleRetroactiveDays,
   }
 }

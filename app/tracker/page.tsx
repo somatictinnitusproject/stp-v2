@@ -37,6 +37,7 @@ export default async function TrackerPage() {
     recentLogDates,
     showWeeklyNudge,
     daysSinceCreation,
+    hasEligibleRetroactiveDays,
   } = trackerData
 
   // State 1 = no log today. State 2 = logged today.
@@ -58,6 +59,7 @@ export default async function TrackerPage() {
         showYesterdayLink={showYesterdayLink}
         showWeeklyNudge={showWeeklyNudge}
         daysSinceCreation={daysSinceCreation}
+        hasEligibleRetroactiveDays={hasEligibleRetroactiveDays}
         streak={streak}
       />
     </AuthShell>

@@ -10,6 +10,8 @@ type Props = {
   isEditable: boolean
   today: string
   onEdit: () => void
+  onOpenDayPicker?: () => void
+  priorLogCount: number
 }
 
 const SCORE_CARDS = [
@@ -20,7 +22,7 @@ const SCORE_CARDS = [
   { label: 'Sleep',    key: 'sleep_quality' },
 ] as const
 
-export default function LoggedTodayView({ todayLog, isEditable, today, onEdit }: Props) {
+export default function LoggedTodayView({ todayLog, isEditable, today, onEdit, onOpenDayPicker, priorLogCount }: Props) {
   // Noon UTC avoids timezone-off-by-one when formatting the display date
   const formattedDate = new Intl.DateTimeFormat('en-GB', {
     weekday: 'long', day: 'numeric', month: 'long',
@@ -98,6 +100,18 @@ export default function LoggedTodayView({ todayLog, isEditable, today, onEdit }:
           View your progress analytics →
         </Link>
       </div>
+
+      {priorLogCount > 0 && onOpenDayPicker && (
+        <div className="mt-3 text-center">
+          <button
+            type="button"
+            onClick={onOpenDayPicker}
+            className="text-body-sm text-primary underline-offset-2 hover:underline py-3"
+          >
+            Log a missed day
+          </button>
+        </div>
+      )}
 
       {/* TODO M11: weekly sparkline — requires 7-day tinnitus_score query, not yet fetched */}
     </div>

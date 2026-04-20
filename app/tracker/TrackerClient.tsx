@@ -6,6 +6,8 @@ import { BarChart2, X as CloseIcon } from 'lucide-react'
 import Slider from '@/components/tracker/Slider'
 import OptionalSection from '@/components/tracker/OptionalSection'
 import DefaultConfirmModal from '@/components/tracker/DefaultConfirmModal'
+import RetroactiveLogForm from '@/components/tracker/RetroactiveLogForm'
+import RetroactiveDayPicker from '@/components/tracker/RetroactiveDayPicker'
 import { TRACKER_TRIGGERS } from '@/content/tracker-triggers'
 import type { TriggerName } from '@/content/tracker-triggers'
 import type { TodayLog } from '@/lib/tracker/queries'
@@ -27,6 +29,7 @@ type TrackerClientProps = {
   showYesterdayLink: boolean
   showWeeklyNudge: boolean
   daysSinceCreation: number
+  hasEligibleRetroactiveDays: boolean
   streak: { current: number; longest: number }
 }
 
@@ -46,9 +49,12 @@ const SLIDER_CONFIG: { key: SliderKey; label: string; description: string }[] = 
 
 export default function TrackerClient({
   today, state, todayLog, isEditable, priorLogCount,
-  recentLogDates, showYesterdayLink, showWeeklyNudge, daysSinceCreation, streak,
+  recentLogDates, showYesterdayLink, showWeeklyNudge, daysSinceCreation, hasEligibleRetroactiveDays, streak,
 }: TrackerClientProps) {
   const router = useRouter()
+
+  const yesterday = new Date(new Date(today + 'T00:00:00Z').getTime() - 86_400_000)
+    .toISOString().split('T')[0]
 
   const [sliderValues, setSliderValues] = useState<Record<SliderKey, number>>(SLIDER_DEFAULTS)
   const [hasBeenMoved, setHasBeenMoved] = useState<Record<SliderKey, boolean>>(MOVED_DEFAULTS)
@@ -59,6 +65,8 @@ export default function TrackerClient({
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [pushDismissed, setPushDismissed] = useState(true)
   const [showEditMode, setShowEditMode] = useState(false)
+  const [retroactiveDate, setRetroactiveDate] = useState<string | null>(null)
+  const [showDayPicker, setShowDayPicker] = useState(false)
 
   // Read localStorage on mount — guarded for SSR
   useEffect(() => {
@@ -117,6 +125,14 @@ export default function TrackerClient({
           trigger_names: [...selectedTriggerNames],
         }),
       })
+      if (res.status === 401) {
+        setErrorMessage('Your session has expired. Please sign in again.')
+        return
+      }
+      if (res.status === 400) {
+        setErrorMessage("Your log couldn't be saved. Please check your entries and try again.")
+        return
+      }
       if (res.status === 409) {
         router.refresh()
         return
@@ -159,11 +175,50 @@ export default function TrackerClient({
     setShowConfirmModal(false)
   }
 
+  // Retroactive form pre-empts both State 1 and State 2
+  if (retroactiveDate) {
+    return (
+      <>
+        <RetroactiveLogForm
+          logDate={retroactiveDate}
+          today={today}
+          onCancel={() => setRetroactiveDate(null)}
+          onSuccess={() => setRetroactiveDate(null)}
+        />
+        <RetroactiveDayPicker
+          open={showDayPicker}
+          today={today}
+          recentLogDates={recentLogDates}
+          onPickDate={(dateStr) => { setShowDayPicker(false); setRetroactiveDate(dateStr) }}
+          onClose={() => setShowDayPicker(false)}
+        />
+      </>
+    )
+  }
+
   if (state === 2 && todayLog) {
     if (showEditMode) {
       return <EditModeForm todayLog={todayLog} onCancel={() => setShowEditMode(false)} />
     }
-    return <LoggedTodayView todayLog={todayLog} isEditable={isEditable} today={today} onEdit={() => setShowEditMode(true)} />
+    return (
+      <>
+        <LoggedTodayView
+          todayLog={todayLog}
+          isEditable={isEditable}
+          today={today}
+          onEdit={() => setShowEditMode(true)}
+          onOpenDayPicker={priorLogCount > 0 && hasEligibleRetroactiveDays ? () => setShowDayPicker(true) : undefined}
+          priorLogCount={priorLogCount}
+        />
+        <RetroactiveDayPicker
+          open={showDayPicker}
+          today={today}
+          recentLogDates={recentLogDates}
+          onPickDate={(dateStr) => { setShowDayPicker(false); setRetroactiveDate(dateStr) }}
+          onClose={() => setShowDayPicker(false)}
+        />
+      </>
+    )
   }
 
   return (
@@ -179,7 +234,7 @@ export default function TrackerClient({
           <BarChart2 size={48} className="text-text-muted mb-3" />
           <h2 className="text-heading-3 text-text-heading mb-2">Start your daily check-in</h2>
           <p className="text-body-sm text-text-muted">
-            Logging daily is the foundation of the programme. It takes under 60 seconds.
+            Logging daily is the foundation of the programme.
           </p>
         </div>
       )}
@@ -223,14 +278,26 @@ export default function TrackerClient({
         {submitting ? 'Saving...' : 'Log today'}
       </button>
 
-      {showYesterdayLink && (
+      {showYesterdayLink && priorLogCount > 0 && (
         <div className="mt-3 text-center">
           <button
             type="button"
-            onClick={() => console.log('TODO: yesterday switch in M10')}
-            className="text-body-sm text-primary underline-offset-2 hover:underline"
+            onClick={() => setRetroactiveDate(yesterday)}
+            className="text-body-sm text-primary underline-offset-2 hover:underline py-3"
           >
             Missed yesterday? Log for yesterday →
+          </button>
+        </div>
+      )}
+
+      {priorLogCount > 0 && hasEligibleRetroactiveDays && (
+        <div className="mt-2 text-center">
+          <button
+            type="button"
+            onClick={() => setShowDayPicker(true)}
+            className="text-body-sm text-primary underline-offset-2 hover:underline py-3"
+          >
+            Log a missed day
           </button>
         </div>
       )}
@@ -270,6 +337,14 @@ export default function TrackerClient({
           </button>
         </div>
       )}
+
+      <RetroactiveDayPicker
+        open={showDayPicker}
+        today={today}
+        recentLogDates={recentLogDates}
+        onPickDate={(dateStr) => { setShowDayPicker(false); setRetroactiveDate(dateStr) }}
+        onClose={() => setShowDayPicker(false)}
+      />
 
       <DefaultConfirmModal
         open={showConfirmModal}
