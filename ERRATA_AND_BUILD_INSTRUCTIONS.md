@@ -354,6 +354,82 @@ will produce context drift and incomplete logic. Split it as follows:
 
 ---
 
+### E3. PHASE2_LAST_SESSION = 6, NOT 8 — AND THE GENERAL SESSION-COUNTER RULE
+
+**Document 13 §9.3 specifies:** `PHASE2_LAST_SESSION: 8` (C.8 is the content section
+label for the Phase 2 maintaining-factor checklist)
+
+**Correct value:** `PHASE2_LAST_SESSION: 6`
+
+**Reason:** `current_session` is a sequential integer counter (1 through N), not a
+content section label. Phase 2 has 6 sessions: C.1, C.2, C.3, C.4, C.5, C.8 → session
+numbers 1, 2, 3, 4, 5, 6 per `content/framework-manifest.ts`. Setting `PHASE2_LAST_SESSION`
+to 8 would make any check of the form `current_session >= PHASE2_LAST_SESSION` permanently
+unreachable during Phase 2, silently preventing Nudge 3 (Phase 4 breath work) from ever
+firing.
+
+The value is fixed at 6 in `content/scoring-thresholds.ts` with an explanatory comment.
+Do not change it to 8 when building Phase E2.
+
+**General rule — applies throughout Phase E2 and beyond:**
+
+Document 8 uses section label codes (B.1, C.3, D.7, etc.) as authoring identifiers.
+These labels are **not** session numbers. The URL and database use `session-[N]` / `current_session`
+where N is the **ordinal position** of the session within its phase (1-indexed), not the
+Document 8 label number. This mapping is defined in `content/framework-manifest.ts`.
+
+When any constant, condition, or check references a session position within a phase:
+- Use the ordinal session number (the counter), not the Document 8 label
+- Cross-check against `PHASE_SESSION_COUNTS` in `framework-manifest.ts`
+- If a Doc 13 value looks like a section label (e.g. 8 for C.8, 12 for F.12) rather than
+  an ordinal, verify it against the actual session count before writing it to code
+
+The only place Document 8 section labels appear in the codebase is as the `id` field on
+`SessionItem` objects in session-list content files (e.g. `id: 'B7'`). Everywhere else —
+URL segments, database columns, constants — use ordinal integers.
+
+---
+
+### E4. m4_asymmetric MISSING FROM UserIntakeRow
+
+**Source:** Discovered during M5a pre-work review (2026-04-21).
+**Doc 13 references:** §1.7 ("m4_asymmetric is a separate flag recorded for profile output;
+it does not add additional points to the raw score") and §4.3 pseudocode
+(`user.m4_asymmetric = TRUE` branch in cervical findings block).
+**Doc 7 reference:** §2.1 users table — `m4_asymmetric BOOLEAN NULLABLE` defined in the
+original schema (not an A2 addition).
+
+**Problem:**
+`UserIntakeRow` was defined in M2 to include only columns read by raw score calculation.
+`m4_asymmetric` does not affect cervical raw score (Doc 13 §1.7 explicit) and was correctly
+omitted from scoring. But §4.3 profile paragraph generation reads `user.m4_asymmetric` to
+select the head rotation display string. The field was absent from `UserIntakeRow` when M5a
+was written.
+
+**Schema status:**
+`m4_asymmetric` is in Doc 7 §2.1 users table (`BOOLEAN NULLABLE`). If Phase A was built
+faithfully from Doc 7, the column already exists. If not, apply:
+
+```sql
+ALTER TABLE users ADD COLUMN IF NOT EXISTS m4_asymmetric BOOLEAN NULL;
+```
+
+ERRATA A2 does NOT need updating — this is an original Doc 7 column, not a discovered addition.
+
+**Fix applied in M5a:**
+Added to `UserIntakeRow` immediately after `m4_score` (`lib/scoring/types.ts`):
+
+```typescript
+m4_asymmetric: boolean | null   // §1.7: recorded for profile output; does not affect raw cervical score
+```
+
+**Impact:**
+- `lib/scoring/types.ts` — one line added
+- `lib/scoring/profile-paragraph/section2-findings.ts` — reads `user.m4_asymmetric` per §4.3
+- Raw scoring unchanged. Existing test files unchanged.
+
+---
+
 ## PHASE F — Exercise Library
 
 ### F1. EXERCISE LIBRARY CATEGORY SLUGS — DECISION
