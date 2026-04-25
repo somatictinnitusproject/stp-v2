@@ -72,3 +72,50 @@ export type B4Module3Postural = {
   outputTable: B4OutputRow[]
   submitLabel: string
 }
+
+// ── Module 4 (Nervous System) types ─────────────────────────────────────
+
+export type B5InputKind =
+  | 'yes_sometimes_no'  // ternary — yes / sometimes / no (Q1, Q2, Q4, Q6)
+  | 'sleep_triple'      // composite: three yes/sometimes/no sub-questions, flag fires on any yes (Q3)
+  | 'tension_triple'    // composite: two yes/sometimes/no + one yes/no, UI-only — does not persist (Q5)
+
+export type B5Input = {
+  id: string
+  label: string
+  inputKind: B5InputKind
+  dbField: string | null   // column name, or null for UI-only inputs
+}
+
+export type B5SubQuestion = {
+  id: string
+  label: string
+  answerType: 'yes_sometimes_no' | 'yes_no'  // Q5's third sub-question is yes/no only per Doc 8
+}
+
+export type B5Block = {
+  title: string
+  prose: string[]                  // intro prose for this question (verbatim Doc 8)
+  mechanism: string                // mechanism box
+  recordLabel: string              // "Record:" line
+  inputKind: B5InputKind
+  subQuestions?: B5SubQuestion[]   // present only for sleep_triple and tension_triple
+  dbField: string | null           // column or null for UI-only
+}
+
+export type B5OutputRow = {
+  flag: string         // flag name as shown in the output table
+  trigger: string      // trigger description from Doc 8 (verbatim)
+  phase4Implication: string  // member-facing text (verbatim)
+}
+
+export type B5Module4Ns = {
+  id: string
+  sessionNumber: number
+  sectionLabel: string
+  sectionTitle: string
+  framing: string[]
+  blocks: B5Block[]   // 6 blocks for Q1–Q6
+  outputTable: B5OutputRow[]
+  submitLabel: string
+}
