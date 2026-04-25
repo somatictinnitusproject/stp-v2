@@ -16,6 +16,8 @@ function blankAssessment(): Phase1AssessmentRow {
     user_id: 'test',
     created_at: '2026-01-01T00:00:00Z',
     completed_at: null,
+    tmj_m1_jaw_opening: null,
+    tmj_m2_jaw_protrusion: null,
     tmj_jaw_drift: null,
     tmj_jaw_drift_direction: null,
     tmj_masseter_asymmetry: null,
@@ -34,6 +36,10 @@ function blankAssessment(): Phase1AssessmentRow {
     ctx_jaw_injury: null,
     tmj_raw_score: null,
     tmj_normalised_score: null,
+    cerv_m3_neck_curl: null,
+    cerv_m4_head_rotation: null,
+    cerv_m4_asymmetric_side: null,
+    cerv_m5_chin_tuck: null,
     cerv_suboccipital_tenderness: null,
     cerv_suboccipital_asymmetric: null,
     cerv_suboccipital_tender_side: null,
@@ -44,7 +50,6 @@ function blankAssessment(): Phase1AssessmentRow {
     cerv_rotation_restriction: null,
     cerv_restricted_side: null,
     cerv_forward_head_posture: null,
-    cerv_floor_relief_test: null,
     cerv_neck_pain: null,
     cerv_cervicogenic_headaches: null,
     cerv_worse_desk_work: null,
@@ -81,6 +86,7 @@ function blankUser(): UserIntakeRow {
     m2_score: null,
     m3_score: null,
     m4_score: null,
+    m4_asymmetric: null,
     m5_score: null,
     s1_score: null,
     s2_score: null,
@@ -147,9 +153,9 @@ describe('checkSingleStrongMovement', () => {
     expect(r.tmj).toHaveLength(0)
   })
 
-  it('m1_score=1, tmjNorm=40 → result.tmj contains "M1"', () => {
-    const u = blankUser(); u.m1_score = 1
-    const r = checkSingleStrongMovement(blankAssessment(), u, 40, 50)
+  it('tmj_m1_jaw_opening=true, tmjNorm=40 → result.tmj contains "M1"', () => {
+    const a = blankAssessment(); a.tmj_m1_jaw_opening = true
+    const r = checkSingleStrongMovement(a, blankUser(), 40, 50)
     expect(r.tmj).toContain('M1')
   })
 
@@ -162,16 +168,17 @@ describe('checkSingleStrongMovement', () => {
   it('all four TMJ indicators firing, tmjNorm=50 → result.tmj length = 4', () => {
     const a = blankAssessment()
     a.tmj_jaw_drift = true
+    a.tmj_m1_jaw_opening = true
+    a.tmj_m2_jaw_protrusion = true
     a.tmj_pterygoid_tenderness = true
-    const u = blankUser(); u.m1_score = 1; u.m2_score = 1
-    const r = checkSingleStrongMovement(a, u, 50, 50)
+    const r = checkSingleStrongMovement(a, blankUser(), 50, 50)
     expect(r.tmj).toHaveLength(4)
     expect(r.tmj).toEqual(['jaw_drift', 'M1', 'M2', 'pterygoid_tenderness'])
   })
 
-  it('m3_score=1, cervNorm=50 → result.cerv contains "M3"', () => {
-    const u = blankUser(); u.m3_score = 1
-    const r = checkSingleStrongMovement(blankAssessment(), u, 50, 50)
+  it('cerv_m3_neck_curl=true, cervNorm=50 → result.cerv contains "M3"', () => {
+    const a = blankAssessment(); a.cerv_m3_neck_curl = true
+    const r = checkSingleStrongMovement(a, blankUser(), 50, 50)
     expect(r.cerv).toContain('M3')
   })
 

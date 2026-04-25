@@ -426,7 +426,88 @@ m4_asymmetric: boolean | null   // §1.7: recorded for profile output; does not 
 **Impact:**
 - `lib/scoring/types.ts` — one line added
 - `lib/scoring/profile-paragraph/section2-findings.ts` — reads `user.m4_asymmetric` per §4.3
-- Raw scoring unchanged. Existing test files unchanged.
+- Raw scoring unchanged.
+- `lib/scoring/__tests__/edge-cases.test.ts` and `lib/scoring/__tests__/scoring.test.ts` fixtures updated during M6 to include `m4_asymmetric: null` — the M5a fix initially missed these files because vitest does not fail on type errors, only `tsc --noEmit` surfaces them. M5b profile-paragraph.test.ts was written after the type was updated and already correctly includes the field.
+
+---
+
+### E5. POST-LAUNCH CONTENT GAPS
+
+**Source:** Discovered during M5b review (2026-04-21 through 2026-04-22) of profile paragraph generation (Doc 13 §4.4 + §4.5, implemented in `lib/scoring/profile-paragraph/`).
+
+Doc 8 B.7 Section 3 defines base templates and modifier text for the most common contextual flags, but does not provide explicit member-facing text for every combination Doc 13 logic requires. The following seven content gaps were resolved during M5b and documented here for post-launch content review, scientific audit, and future V3 planning. The text currently shipped in the codebase is recorded alongside its source.
+
+**Gap 1 — dentalExtractions modifier (§3 step 3)**
+
+Doc 8 B.7 Section 3 does not provide modifier text for `ctx_dental_extractions = TRUE`. Doc 8 B.2 Module 1 progressive text discusses the mechanical significance of posterior dental extractions. The B.2 text was adapted to the B.7 modifier voice. Shipped text:
+
+"Your history of posterior dental extractions is relevant context — loss of posterior teeth, particularly wisdom teeth, can alter jaw mechanics and loading patterns over time, and is worth noting as part of your profile."
+
+Code location: `lib/scoring/profile-paragraph/section3-paragraphs.ts` → `dentalExtractionsModifier()`.
+
+**Gap 2 — jawSurgery modifier (§3 step 3)**
+
+Doc 8 B.7 Section 3 does not provide modifier text for `ctx_jaw_surgery = TRUE`. Doc 8 B.2 Module 1 text was used verbatim (tone matches B.7 without adaptation). Shipped text:
+
+"Your history of jaw surgery is relevant context — post-surgical changes to joint mechanics can produce lasting alterations in how the jaw loads and moves."
+
+Code location: `lib/scoring/profile-paragraph/section3-paragraphs.ts` → `jawSurgeryModifier()`.
+
+**Gap 3 — sedentaryOccupation modifier (§3 step 4)**
+
+Doc 8 B.7 Section 3 does not provide modifier text for `ctx_sedentary_occupation = TRUE`. Doc 8 B.3 Module 2 text was used verbatim (tone matches B.7 without adaptation). Shipped text:
+
+"Your occupation involves sustained postures that place continuous load on the cervical spine. Addressing this daily load through workstation changes and movement habits — covered in Phases 2 and 4 — is an important part of making the protocol work durable rather than temporary."
+
+Code location: `lib/scoring/profile-paragraph/section3-paragraphs.ts` → `sedentaryOccupationModifier()`.
+
+**Gap 4 — oneSidedSport modifier (§3 step 4)**
+
+Doc 8 B.7 Section 3 does not provide modifier text for `ctx_one_sided_sport = TRUE`. Doc 8 B.3 Module 2 text was adapted to the B.7 modifier voice (reviewer-approved rewrite during M5b pre-work). Shipped text:
+
+"Your history of one-sided sport or asymmetric activity is worth factoring in — repetitive single-side loading can reinforce cervical tension on the dominant side. This is addressed alongside your protocol work in Phase 4's postural correction section."
+
+Code location: `lib/scoring/profile-paragraph/section3-paragraphs.ts` → `oneSidedSportModifier()`.
+
+**Gap 5 — mildNervousSystemModifier (§3 step 5)**
+
+Doc 8 B.7 Section 4 provides explicit text for members with three or more nervous system flags (the high-NS branch). It does not provide text for members with one or two NS flags (the mild branch). Doc 13 §4.4 step 5 branches `IF nsFlags >= HIGH_NS_FLAG_THRESHOLD / ELSE IF nsFlags >= 1` — the ELSE IF branch needs text that Doc 8 does not supply. Reviewer-authored during M5b pre-work. Shipped text:
+
+"Your assessment identified some nervous system involvement — not enough to indicate the full Phase 4 breath work as an immediate priority, but worth keeping in mind as you progress. The Phase 4 breath work is accessible from the start if you find stress or anxiety is amplifying your tinnitus during Phase 3."
+
+Code location: `lib/scoring/profile-paragraph/section3-paragraphs.ts` → `mildNervousSystemModifier()`.
+
+**Gap 6 — STRUCTURAL_ASYMMETRY output text (§4 — Doc 13 §3.4)**
+
+Doc 13 §3.4 defines 5 asymmetry pattern values. Doc 8 Module 5 provides explicit output text for 4 of them (Output 1 Consistent Ipsilateral → UNILATERAL_COHERENT; Output 2 Contralateral → handled separately as an additive pattern flag; Output 3 Mixed → MIXED_ASYMMETRY; Output 4 No Significant Asymmetry → NO_ASYMMETRY). STRUCTURAL_ASYMMETRY (all findings same side, tinnitus not clearly lateralised) has no explicit Doc 8 output. Reviewer-authored during M5b pre-work. Shipped text:
+
+"Your assessment shows a consistent structural pattern on your [dominant side] side — [findings on that side]. Your tinnitus presentation does not clearly lateralise to match this pattern, which limits the confidence of the lateralisation — but the structural findings are real and your protocol will apply side-specific emphasis where relevant throughout Phase 3."
+
+Code location: `lib/scoring/profile-paragraph/section4-asymmetry.ts` → STRUCTURAL_ASYMMETRY case in `asymmetryTextByPattern()`.
+
+**Gap 7 — SINGLE_FINDING output text (§4 — Doc 13 §3.4)**
+
+SINGLE_FINDING (only one asymmetric finding) has no explicit Doc 8 output. Reviewer-authored during M5b pre-work. Shipped text:
+
+"Your assessment identified one asymmetric finding — [finding with side]. A single finding is noted and will influence your protocol where relevant, but does not establish a strong lateralised pattern overall."
+
+Code location: `lib/scoring/profile-paragraph/section4-asymmetry.ts` → SINGLE_FINDING case in `asymmetryTextByPattern()`.
+
+**Discard behaviour — NS modifier and low-confidence wrapper interaction (§3 steps 5 and 6)**
+
+Doc 13 §4.4 pseudocode step 6 reads `paragraph = lowConfidenceWrapper(edgeCaseFlags.lowConfidence, paragraph)` — an assignment, not concatenation. The wrapper text REPLACES the entire base paragraph plus all contextual modifiers accumulated in steps 1–5. This means that when a low-confidence edge case fires AND nervous system modifier text was added in step 5 (because `nsFlags >= 1`), the NS modifier text is discarded. The wrapper text does not reference nervous system involvement because the low-confidence wrapper is self-contained.
+
+This is the literal pseudocode behaviour and is shipped as-is. The reviewer judgement is that a low-confidence member seeing a mild-NS sentence immediately followed by "your assessment did not produce strong findings" would be incongruous — the replace-rather-than-append behaviour is correct for the member experience, not a bug.
+
+Strong-single-finding note (step 7) appends AFTER the wrapper by design — that finding is a separate signal worth surfacing even in low-confidence cases.
+
+Code location: `lib/scoring/profile-paragraph/section3-paragraphs.ts` → comment above `lowConfidenceWrapper()` call in `generateSection3_PersonalisedParagraph()`.
+
+**Post-launch review actions**
+
+- After 100+ profile paragraph generations, sample member feedback specifically on the 7 gap-sourced/authored texts to check for clarity and tone consistency with the Doc 8 B.7 verbatim templates.
+- If tone drift is reported, revise in place — these texts are not locked in the same way as verbatim Doc 8 content and can be updated without a scientific review.
+- If new evidence emerges about posterior dental extractions, one-sided sport, or mild nervous system involvement mechanisms, update the corresponding modifier text and reflect here.
 
 ---
 
@@ -581,6 +662,199 @@ add it to that file first.
 Never in client components. Never prefixed with NEXT_PUBLIC_. Never returned from an API route.
 Used only in: webhook handlers, server components doing elevated operations, API routes
 that need to bypass RLS (founding member check, membership creation, EmailOctopus adds).
+
+---
+
+## PHASE E — Framework Content
+
+### E6. PHASE 1 MODULE SUBMISSION API ROUTES
+
+Document 14 §4.10 lists `/api/framework/advance-session` and `/api/framework/advance-phase`
+but no Phase 1 module submission routes. E1b introduces one route per module under the
+pattern `/api/framework/phase-1/module-N` and `/api/framework/phase-1/asymmetry`. Each
+route writes module-specific columns to phase1_assessment, recomputes tmj_raw_score and
+cerv_raw_score per Document 13 §1.10, then calls incrementCurrentSession inline per
+Document 13 §7.8.
+
+### E7. THREE-STATE AND FOUR-STATE INPUT COLLAPSE TO SCHEMA
+
+Phase 1 form inputs collapse to schema column types server-side at route submission. Rules:
+- Yes/Sometimes/No (history questions): `Yes` + `Sometimes` → TRUE, `No` → FALSE.
+  Matches Doc 13 §1.2 intake scoring semantics.
+- Yes/No/Unsure (jaw drift only): `Yes` → TRUE, `No` → FALSE, `Unsure` → NULL.
+  Direction column NULL unless primary is `Yes`.
+- Yes/No (all others): `Yes` → TRUE, `No` → FALSE.
+  Side/direction column NULL unless primary is `Yes`.
+
+### E8. PHASE1_ASSESSMENT ROW CREATION ON B.1 ACKNOWLEDGE
+
+Document 13 §1.10 progressive save pattern is pure UPDATE and assumes the row exists.
+Row creation happens in the B.1 acknowledge handler which inserts an empty
+phase1_assessment row (user_id only) before calling incrementCurrentSession. Subsequent
+module submissions are pure UPDATEs. Insert is idempotent via ON CONFLICT DO NOTHING —
+requires UNIQUE constraint on phase1_assessment.user_id (migration
+`20260423000000_phase1_assessment_user_unique.sql` applied).
+
+### E9. M1/M2 MOVED FROM INTAKE IMPORT TO LIVE PHASE 1 QUESTIONS
+
+**Decision D1/D2 (M7 sub-step 2.5):** M1 (jaw opening) and M2 (jaw protrusion) are now
+performed live in-platform during Phase 1, not imported from the intake test.
+
+**Schema change:** Two new BOOLEAN columns added to phase1_assessment:
+- `tmj_m1_jaw_opening BOOLEAN NULL`
+- `tmj_m2_jaw_protrusion BOOLEAN NULL`
+
+Migration: `supabase/migrations/20260423010000_phase1_tmj_m1_m2.sql`
+Apply in Supabase SQL editor before testing Module 1.
+
+**Scoring change (Doc 13 §1.3/§1.4):** `calculateTmjRawScore` reads
+`assessment.tmj_m1_jaw_opening === true` and `assessment.tmj_m2_jaw_protrusion === true`
+directly. The user intake fallback (`user.m1_score > 0`, `user.m2_score > 0`) is removed
+for these two fields only. The overlapping indicator rule (§1.2) still applies to
+S1/S6/S7/S8 — those fallbacks are unchanged.
+
+**Content change:** Questions 1 and 2 in Module 1 are the movement tests. Sub-heading
+"Movement Tests" appears above Q1–Q2. "Physical Assessment" sub-heading above Q3–Q7.
+
+### E10. MODULE 1 MECHANISM PARAGRAPH REORDER
+
+**Original Doc 8 §B.2 order:** P1 anatomy, P2 trigeminal pathway, P3 real-time tinnitus
+change, P4 muscles, P5 most people don't have jaw pain.
+
+**V2 platform order:** P1 anatomy, P2 trigeminal pathway, P3 most people don't have jaw
+pain (MOVED FROM P5), P4 real-time tinnitus change (was P3), P5 muscles (was P4).
+
+**Rationale:** Normalisation paragraph ("most people don't experience significant jaw pain")
+now appears before the diagnostic indicators to reduce pre-assessment anxiety.
+All paragraph text is verbatim from Doc 8. Order only.
+
+### E11. VIDEO SLOT AND SCROLL PROGRESS BAR COMPONENTS INTRODUCED
+
+**VideoSlot** (`components/ui/VideoSlot.tsx`): placeholder component for all 7 physical
+assessment questions in Module 1. Accepts `videoId?: string | null`. When null (always for
+now): renders surface-raised placeholder with play icon and "Video coming soon" label per
+Doc 11 §F14. Cloudflare Stream embed (Doc 14) plugs in without refactor when IDs are ready.
+
+**ScrollProgressBar** (`components/ui/ScrollProgressBar.tsx`): fixed 2px bar at viewport
+top, fills primary colour as member scrolls. Reusable. Mounted in Session1OpeningClient
+(label "Module 1 — Section 1 of 7") and Session2ModuleOneClient (label "Module 1 — Section
+2 of 7"). Mount in each subsequent module session client as it is built.
+
+### E12. TMJ INTAKE-ONLY INDICATORS S2 AND S5 NOW SOURCED FROM PHASE 1 ASSESSMENT
+
+Document 13 §1.3 TMJ scoring reference originally sourced S2 (morning soreness, 2 pts) and
+S5 (joint sounds, 4 pts) from `user.s2_score` and `user.s5_score` respectively. The V1
+intake test does not persist individual M/S scores — only A/B/C classification is carried
+forward — so these columns are always NULL for V2 members. Indicators silently scored 0
+despite correct Phase 1 answers.
+
+Fix (consistent with E9 M1/M2 fix): `calculateTmjRawScore` now reads
+`assessment.tmj_joint_sounds === true` (+4 pts) and
+`assessment.tmj_morning_soreness === true` (+2 pts) directly. Intake fallback removed for
+these two indicators.
+
+Point values, tiers, module maximum (30) unchanged. Strictly a data source correction.
+
+The overlapping indicator rule in §1.2 (S1/S6/S7/S8) remains as-is — those four work
+correctly via `user.s1_score`, `user.s6_score`, `user.s7_score`, `user.s8_score` fallbacks.
+Only intake-source indicators without an existing overlapping rule entry needed this fix.
+
+### E13. CERVICAL M3/M4/M5 DATA SOURCE FIX — FULL SCOPE
+
+V1 intake never persisted individual M/S scores. `user.m3_score`, `user.m4_score`,
+`user.m4_asymmetric`, `user.m5_score` are always NULL for V2 members. Four new
+BOOLEAN columns added to phase1_assessment via M8 migration:
+
+- cerv_m3_neck_curl
+- cerv_m4_head_rotation
+- cerv_m4_asymmetric_side
+- cerv_m5_chin_tuck
+
+All three files that read these intake columns updated to read Phase 1 assessment
+columns instead:
+
+- lib/scoring/cerv-score.ts — scoring (M3 +4, M4 +4, M5 +2; asymmetric is edge-case
+  flag not a scoring input)
+- lib/scoring/edge-cases.ts — checkSingleStrongMovement cervical block (M3, M4)
+- lib/scoring/profile-paragraph/section2-findings.ts — cervical findings block
+  (M3 narrative, M4 narrative with asymmetric qualifier)
+
+Point values, tiers, module maximum (28) unchanged. Strictly a data source
+correction. Overlapping indicator rule §1.2 (S7/S8) unchanged — already sourced
+correctly from Phase 1 columns with intake fallback.
+
+### E14. EXTENSION OF E9 — M1/M2 STALE READS IN EDGE CASES AND PROFILE PARAGRAPH
+
+E9's scope was limited to calculateTmjRawScore in tmj-score.ts. Two further files
+read user.m1_score / user.m2_score for V2 members where those values are always
+NULL:
+
+- lib/scoring/edge-cases.ts — checkSingleStrongMovement TMJ block
+- lib/scoring/profile-paragraph/section2-findings.ts — jaw findings block
+
+Both updated to read assessment.tmj_m1_jaw_opening and assessment.tmj_m2_jaw_protrusion
+respectively. Behaviour unchanged for members who answered the Phase 1 questions;
+fix restores correct behaviour for all V2 members (previously these indicators
+never fired).
+
+### E15. EXTENSION OF E12 — S2/S5 STALE READS IN PROFILE PARAGRAPH
+
+E12's scope was limited to calculateTmjRawScore in tmj-score.ts. The profile
+paragraph jaw findings block in lib/scoring/profile-paragraph/section2-findings.ts
+also read user.s2_score and user.s5_score:
+
+- Morning soreness sentence: was `tmj_morning_soreness = TRUE OR s2_score > 0`,
+  now `tmj_morning_soreness = TRUE` only. s2_score branch removed — intake path
+  no longer exists anywhere in the pipeline.
+- Joint sounds sentence: was `s5_score > 0`, now `tmj_joint_sounds = TRUE`.
+
+Both target columns already exist on phase1_assessment and are written by M7
+Module 1 submission route.
+
+### E16. FLOOR LYING RELIEF TEST REMOVED FROM PHASE 1 MODULE 2
+
+Doc 8 B.3 originally included the floor lying relief test as the final cervical
+indicator (graduated 'clear' / 'slight' / 'none' scoring, max 3 pts). The test
+requires lying supine for at least 5 minutes in a quiet environment — a real
+friction for members assessing during a work break, on a commute, or in a
+chaotic household. Adding "unable to perform" semantics introduced score
+amplification through dynamic-max recalculation; treating absence as 0 pts
+silently down-scored members near profile-type boundaries.
+
+The mechanism the floor relief test demonstrates — passive postural unloading
+producing tinnitus reduction — is structurally a Phase 4 maintaining-factors
+intervention, not a Phase 1 diagnostic. Phase 4 is the appropriate home: a
+daily-decompression / passive-postural-relief technique introduced alongside
+the active workstation, postural, and breath-work content.
+
+Changes:
+- Removed cerv_floor_relief_test from Module 2 content file (8 questions
+  remain: M3, M4, M5, suboccipital, SCM, upper trap, rotation range, forward
+  head posture).
+- Removed cerv_floor_relief_test column from phase1_assessment via M8
+  migration drop statement (no V2 member data exists in this column —
+  pre-launch).
+- Removed cerv_floor_relief_test from Phase1AssessmentRow type and all
+  blankAssessment test helpers.
+- Removed the scoring branch from calculateCervRawScore in cerv-score.ts.
+- Removed the narrative branches from section2-findings.ts and section3
+  paragraph generation.
+- Removed graduated scoring entirely from the cervical module — every
+  remaining cervical indicator is binary. Doc 13 §1.6 is no longer applicable.
+- CERVICAL_MODULE_MAXIMUM in scoring-thresholds.ts changed from 28 to 25.
+- Tier thresholds (PROTOCOL_ASSIGNMENT_MINIMUM 20%, SINGLE_DRIVER_HIGH_THRESHOLD
+  60%, etc.) unchanged — percentage thresholds are scale-invariant. Raw-score
+  point counts producing each percentage shift proportionally.
+- P3 of B.3 mechanism prose: "in the intake test" → "in the movement tests in
+  this module" (already applied in 8.3 file write).
+
+Doc 13 §1.5–1.7 should be read with this removal in mind. §1.6 (graduated
+scoring example using floor relief) no longer applies.
+
+Phase 4 content addition queued for E3 build: "Daily Decompression — Floor
+Lying" or equivalent subsection in Phase 4 content, sourced from Doc 8 B.3
+floor relief instructions (lines 443–455). Frame as a relief technique, not
+a diagnostic test.
 
 ---
 

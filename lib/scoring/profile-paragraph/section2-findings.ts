@@ -1,17 +1,17 @@
 import type { ParagraphContext } from './types'
 
-// Doc 13 §4.3 pseudocode (exact):
-//   FUNCTION generateSection2_FindingsSummary(assessment, user):
+// Doc 13 §4.3 pseudocode (updated per ERRATA E13/E14/E15 — all intake reads removed):
+//   FUNCTION generateSection2_FindingsSummary(assessment):
 //     blocks = []
 //     // ── Jaw findings ──────────────────────────────────────────────────
 //     jawFindings = []
 //     IF assessment.tmj_jaw_drift = TRUE
 //       jawFindings.push('Jaw drift on opening — ' + assessment.tmj_jaw_drift_direction + ' deviation confirmed')
-//     IF user.m1_score > 0
+//     IF assessment.tmj_m1_jaw_opening = TRUE              // E14: live Phase 1 test
 //       jawFindings.push('Jaw opening response positive on movement test')
-//     IF user.m2_score > 0
+//     IF assessment.tmj_m2_jaw_protrusion = TRUE           // E14: live Phase 1 test
 //       jawFindings.push('Jaw protrusion response positive on movement test')
-//     IF user.s5_score > 0
+//     IF assessment.tmj_joint_sounds = TRUE                // E15: live Phase 1 test
 //       jawFindings.push('Joint sounds confirmed')
 //     IF assessment.tmj_pterygoid_tenderness = TRUE
 //       jawFindings.push('Lateral pterygoid tenderness reproduced — ' + assessment.tmj_pterygoid_tender_side)
@@ -19,7 +19,7 @@ import type { ParagraphContext } from './types'
 //       jawFindings.push('Masseter asymmetry — dominant side: ' + assessment.tmj_masseter_dominant_side)
 //     IF assessment.tmj_opening_restriction = TRUE
 //       jawFindings.push('Maximum opening restriction noted')
-//     IF assessment.tmj_morning_soreness = TRUE OR user.s2_score > 0
+//     IF assessment.tmj_morning_soreness = TRUE            // E15: s2_score fallback removed
 //       jawFindings.push('Morning jaw soreness or facial tension on waking')
 //     IF assessment.tmj_worse_after_chewing = TRUE
 //       jawFindings.push('Tinnitus noticeably worse after prolonged chewing')
@@ -27,20 +27,16 @@ import type { ParagraphContext } from './types'
 //       blocks.push('Jaw findings confirmed:\n' + jawFindings.map(f => '• ' + f).join('\n'))
 //     // ── Cervical findings ────────────────────────────────────────────
 //     cervFindings = []
-//     IF user.m3_score > 0
+//     IF assessment.cerv_m3_neck_curl = TRUE               // E13: live Phase 1 test
 //       cervFindings.push('Neck curl on floor response positive on movement test')
-//     IF user.m4_score > 0
-//       IF user.m4_asymmetric = TRUE
+//     IF assessment.cerv_m4_head_rotation = TRUE           // E13: live Phase 1 test
+//       IF assessment.cerv_m4_asymmetric_side = TRUE
 //         cervFindings.push('Head rotation response positive — asymmetric between sides')
 //       ELSE
 //         cervFindings.push('Head rotation response positive')
 //     IF assessment.cerv_suboccipital_tenderness = TRUE
 //       cervFindings.push('Suboccipital tenderness reproduced'
 //         + (assessment.cerv_suboccipital_asymmetric ? ' — asymmetric, dominant side: ' + assessment.cerv_suboccipital_tender_side : ''))
-//     IF assessment.cerv_floor_relief_test = 'clear'
-//       cervFindings.push('Floor lying relief test — clear tinnitus reduction')
-//     ELSE IF assessment.cerv_floor_relief_test = 'slight'
-//       cervFindings.push('Floor lying relief test — slight tinnitus reduction')
 //     IF assessment.cerv_worse_desk_work = TRUE
 //       cervFindings.push('Tinnitus noticeably worse after desk work or driving')
 //     IF assessment.cerv_rotation_restriction = TRUE
@@ -81,18 +77,18 @@ import type { ParagraphContext } from './types'
 //   END FUNCTION
 
 export function generateSection2_FindingsSummary(ctx: ParagraphContext): string | null {
-  const { assessment, user } = ctx
+  const { assessment } = ctx
   const blocks: string[] = []
 
   // ── Jaw findings ────────────────────────────────────────────────────
   const jawFindings: string[] = []
   if (assessment.tmj_jaw_drift === true)
     jawFindings.push('Jaw drift on opening — ' + assessment.tmj_jaw_drift_direction + ' deviation confirmed')
-  if ((user.m1_score ?? 0) > 0)
+  if (assessment.tmj_m1_jaw_opening === true)
     jawFindings.push('Jaw opening response positive on movement test')
-  if ((user.m2_score ?? 0) > 0)
+  if (assessment.tmj_m2_jaw_protrusion === true)
     jawFindings.push('Jaw protrusion response positive on movement test')
-  if ((user.s5_score ?? 0) > 0)
+  if (assessment.tmj_joint_sounds === true)
     jawFindings.push('Joint sounds confirmed')
   if (assessment.tmj_pterygoid_tenderness === true)
     jawFindings.push('Lateral pterygoid tenderness reproduced — ' + assessment.tmj_pterygoid_tender_side)
@@ -100,7 +96,7 @@ export function generateSection2_FindingsSummary(ctx: ParagraphContext): string 
     jawFindings.push('Masseter asymmetry — dominant side: ' + assessment.tmj_masseter_dominant_side)
   if (assessment.tmj_opening_restriction === true)
     jawFindings.push('Maximum opening restriction noted')
-  if (assessment.tmj_morning_soreness === true || (user.s2_score ?? 0) > 0)
+  if (assessment.tmj_morning_soreness === true)
     jawFindings.push('Morning jaw soreness or facial tension on waking')
   if (assessment.tmj_worse_after_chewing === true)
     jawFindings.push('Tinnitus noticeably worse after prolonged chewing')
@@ -109,10 +105,10 @@ export function generateSection2_FindingsSummary(ctx: ParagraphContext): string 
 
   // ── Cervical findings ────────────────────────────────────────────────
   const cervFindings: string[] = []
-  if ((user.m3_score ?? 0) > 0)
+  if (assessment.cerv_m3_neck_curl === true)
     cervFindings.push('Neck curl on floor response positive on movement test')
-  if ((user.m4_score ?? 0) > 0) {
-    if (user.m4_asymmetric === true)
+  if (assessment.cerv_m4_head_rotation === true) {
+    if (assessment.cerv_m4_asymmetric_side === true)
       cervFindings.push('Head rotation response positive — asymmetric between sides')
     else
       cervFindings.push('Head rotation response positive')
@@ -124,10 +120,6 @@ export function generateSection2_FindingsSummary(ctx: ParagraphContext): string 
         ? ' — asymmetric, dominant side: ' + assessment.cerv_suboccipital_tender_side
         : '')
     )
-  if (assessment.cerv_floor_relief_test === 'clear')
-    cervFindings.push('Floor lying relief test — clear tinnitus reduction')
-  else if (assessment.cerv_floor_relief_test === 'slight')
-    cervFindings.push('Floor lying relief test — slight tinnitus reduction')
   if (assessment.cerv_worse_desk_work === true)
     cervFindings.push('Tinnitus noticeably worse after desk work or driving')
   if (assessment.cerv_rotation_restriction === true)

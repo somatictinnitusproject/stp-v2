@@ -18,7 +18,7 @@ export const SCORING_THRESHOLDS = {
   // Total possible raw score for each module. Used as normalisation denominator.
   // Change only if indicators are added to or removed from a module.
   TMJ_MODULE_MAXIMUM: 30,
-  CERVICAL_MODULE_MAXIMUM: 28,
+  CERVICAL_MODULE_MAXIMUM: 25,  // E16: reduced from 28 — floor lying relief test removed from Module 2
 
   // ── Profile Type Classification ───────────────────────────────────────────
   // All values are normalised percentages (0–100).

@@ -9,6 +9,8 @@ export interface Phase1AssessmentRow {
   completed_at: string | null
 
   // TMJ module
+  tmj_m1_jaw_opening: boolean | null     // D1: live movement test, replaces intake fallback
+  tmj_m2_jaw_protrusion: boolean | null  // D1: live movement test, replaces intake fallback
   tmj_jaw_drift: boolean | null
   tmj_jaw_drift_direction: string | null
   tmj_masseter_asymmetry: boolean | null
@@ -29,6 +31,10 @@ export interface Phase1AssessmentRow {
   tmj_normalised_score: number | null
 
   // Cervical module
+  cerv_m3_neck_curl: boolean | null           // E13: live movement test, replaces intake fallback
+  cerv_m4_head_rotation: boolean | null       // E13: live movement test, replaces intake fallback
+  cerv_m4_asymmetric_side: boolean | null     // E13: asymmetry flag for profile output (no pts)
+  cerv_m5_chin_tuck: boolean | null           // E13: live movement test, replaces intake fallback
   cerv_suboccipital_tenderness: boolean | null
   cerv_suboccipital_asymmetric: boolean | null
   cerv_suboccipital_tender_side: string | null
@@ -39,8 +45,6 @@ export interface Phase1AssessmentRow {
   cerv_rotation_restriction: boolean | null
   cerv_restricted_side: string | null
   cerv_forward_head_posture: boolean | null
-  // VARCHAR(10) per ERRATA A1 — 'clear' | 'slight' | 'none' | NULL
-  cerv_floor_relief_test: 'clear' | 'slight' | 'none' | null
   cerv_neck_pain: boolean | null              // overlapping indicator — see §1.2
   cerv_cervicogenic_headaches: boolean | null // overlapping indicator — see §1.2
   cerv_worse_desk_work: boolean | null

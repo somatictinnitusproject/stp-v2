@@ -10,6 +10,8 @@ function blankAssessment(): Phase1AssessmentRow {
     user_id: 'test',
     created_at: '2026-01-01T00:00:00Z',
     completed_at: null,
+    tmj_m1_jaw_opening: null,
+    tmj_m2_jaw_protrusion: null,
     tmj_jaw_drift: null,
     tmj_jaw_drift_direction: null,
     tmj_masseter_asymmetry: null,
@@ -28,6 +30,10 @@ function blankAssessment(): Phase1AssessmentRow {
     ctx_jaw_injury: null,
     tmj_raw_score: null,
     tmj_normalised_score: null,
+    cerv_m3_neck_curl: null,
+    cerv_m4_head_rotation: null,
+    cerv_m4_asymmetric_side: null,
+    cerv_m5_chin_tuck: null,
     cerv_suboccipital_tenderness: null,
     cerv_suboccipital_asymmetric: null,
     cerv_suboccipital_tender_side: null,
@@ -38,7 +44,6 @@ function blankAssessment(): Phase1AssessmentRow {
     cerv_rotation_restriction: null,
     cerv_restricted_side: null,
     cerv_forward_head_posture: null,
-    cerv_floor_relief_test: null,
     cerv_neck_pain: null,
     cerv_cervicogenic_headaches: null,
     cerv_worse_desk_work: null,
@@ -75,6 +80,7 @@ function blankUser(): UserIntakeRow {
     m2_score: null,
     m3_score: null,
     m4_score: null,
+    m4_asymmetric: null,
     m5_score: null,
     s1_score: null,
     s2_score: null,
@@ -96,6 +102,8 @@ describe('calculateTmjRawScore', () => {
   it('returns 30 (maximum) when all indicators are positive', () => {
     const a = blankAssessment()
     a.tmj_jaw_drift = true
+    a.tmj_m1_jaw_opening = true
+    a.tmj_m2_jaw_protrusion = true
     a.tmj_pterygoid_tenderness = true
     a.tmj_masseter_asymmetry = true
     a.tmj_opening_restriction = true
@@ -103,11 +111,10 @@ describe('calculateTmjRawScore', () => {
     a.tmj_daytime_clenching = true
     a.tmj_pain_eating = true
 
+    a.tmj_joint_sounds = true
+    a.tmj_morning_soreness = true
+
     const u = blankUser()
-    u.m1_score = 1
-    u.m2_score = 1
-    u.s5_score = 1
-    u.s2_score = 1
 
     expect(calculateTmjRawScore(a, u)).toBe(30)
   })
@@ -115,14 +122,12 @@ describe('calculateTmjRawScore', () => {
   it('scores only high-specificity indicators: 4+4+4+4+4 = 20', () => {
     const a = blankAssessment()
     a.tmj_jaw_drift = true
+    a.tmj_m1_jaw_opening = true
+    a.tmj_m2_jaw_protrusion = true
     a.tmj_pterygoid_tenderness = true
+    a.tmj_joint_sounds = true
 
-    const u = blankUser()
-    u.m1_score = 1
-    u.m2_score = 1
-    u.s5_score = 1
-
-    expect(calculateTmjRawScore(a, u)).toBe(20)
+    expect(calculateTmjRawScore(a, blankUser())).toBe(20)
   })
 
   // Overlapping indicator rule: Phase 1 FALSE overrides positive S1
@@ -176,11 +181,11 @@ describe('calculateTmjRawScore', () => {
     expect(calculateTmjRawScore(a, blankUser())).toBe(0)
   })
 
-  // tmj_joint_sounds is NOT read by scoring (it is a contextual flag only)
-  it('tmj_joint_sounds = true does not contribute to score', () => {
+  // tmj_joint_sounds = true scores 4 pts (E12: source switched from intake user.s5_score)
+  it('tmj_joint_sounds = true scores 4 pts (ERRATA E12)', () => {
     const a = blankAssessment()
     a.tmj_joint_sounds = true
-    expect(calculateTmjRawScore(a, blankUser())).toBe(0)
+    expect(calculateTmjRawScore(a, blankUser())).toBe(4)
   })
 })
 
@@ -191,10 +196,12 @@ describe('calculateCervRawScore', () => {
     expect(calculateCervRawScore(blankAssessment(), blankUser())).toBe(0)
   })
 
-  it('returns 28 (maximum) when all indicators are positive', () => {
+  it('returns 25 (maximum) when all indicators are positive', () => {
     const a = blankAssessment()
+    a.cerv_m3_neck_curl = true
+    a.cerv_m4_head_rotation = true
+    a.cerv_m5_chin_tuck = true
     a.cerv_suboccipital_tenderness = true
-    a.cerv_floor_relief_test = 'clear'
     a.cerv_worse_desk_work = true
     a.cerv_rotation_restriction = true
     a.cerv_scm_asymmetry = true
@@ -203,37 +210,7 @@ describe('calculateCervRawScore', () => {
     a.cerv_neck_pain = true
     a.cerv_cervicogenic_headaches = true
 
-    const u = blankUser()
-    u.m3_score = 1
-    u.m4_score = 1
-    u.m5_score = 1
-
-    expect(calculateCervRawScore(a, u)).toBe(28)
-  })
-
-  // Floor relief test graduated scoring
-  it('floor relief: clear = 3 pts', () => {
-    const a = blankAssessment()
-    a.cerv_floor_relief_test = 'clear'
-    expect(calculateCervRawScore(a, blankUser())).toBe(3)
-  })
-
-  it('floor relief: slight = 1 pt', () => {
-    const a = blankAssessment()
-    a.cerv_floor_relief_test = 'slight'
-    expect(calculateCervRawScore(a, blankUser())).toBe(1)
-  })
-
-  it('floor relief: none = 0 pts', () => {
-    const a = blankAssessment()
-    a.cerv_floor_relief_test = 'none'
-    expect(calculateCervRawScore(a, blankUser())).toBe(0)
-  })
-
-  it('floor relief: null = 0 pts', () => {
-    const a = blankAssessment()
-    a.cerv_floor_relief_test = null
-    expect(calculateCervRawScore(a, blankUser())).toBe(0)
+    expect(calculateCervRawScore(a, blankUser())).toBe(25)
   })
 
   // SCM/trap OR logic — both true = 2 pts, not 4
@@ -287,17 +264,14 @@ describe('calculateCervRawScore', () => {
     expect(calculateCervRawScore(a, u)).toBe(1)
   })
 
-  // Combinatorial mid-range: m3(4) + suboccipital(4) + floor_clear(3) + m5(2) = 13/28
-  it('Cerv combinatorial mid-range: 13/28', () => {
+  // Combinatorial mid-range: cerv_m3(4) + suboccipital(4) + cerv_m5(2) = 10/25
+  it('Cerv combinatorial mid-range: 10/25', () => {
     const a = blankAssessment()
+    a.cerv_m3_neck_curl = true              // 4
     a.cerv_suboccipital_tenderness = true   // 4
-    a.cerv_floor_relief_test = 'clear'      // 3
+    a.cerv_m5_chin_tuck = true             // 2
 
-    const u = blankUser()
-    u.m3_score = 1                          // 4
-    u.m5_score = 1                          // 2
-
-    expect(calculateCervRawScore(a, u)).toBe(13)
+    expect(calculateCervRawScore(a, blankUser())).toBe(10)
   })
 })
 
@@ -335,20 +309,20 @@ describe('normaliseCerv', () => {
     expect(normaliseCerv(0)).toBe(0)
   })
 
-  it('28 raw (max) → 100 normalised', () => {
-    expect(normaliseCerv(28)).toBe(100)
+  it('25 raw (max) → 100 normalised', () => {
+    expect(normaliseCerv(25)).toBe(100)
   })
 
-  it('14 raw → 50 normalised', () => {
-    expect(normaliseCerv(14)).toBe(50)
+  it('10 raw → 40 normalised', () => {
+    expect(normaliseCerv(10)).toBe(40)
   })
 
-  // 1/28 = 3.571... → rounds to 3.57 (2 dp per §1.8)
-  it('1 raw → 3.57', () => {
-    expect(normaliseCerv(1)).toBe(3.57)
+  // 1/25 = 4.0 (2 dp per §1.8)
+  it('1 raw → 4', () => {
+    expect(normaliseCerv(1)).toBe(4)
   })
 
-  it('13 raw → 46.43', () => {
-    expect(normaliseCerv(13)).toBe(46.43)
+  it('13 raw → 52', () => {
+    expect(normaliseCerv(13)).toBe(52)
   })
 })

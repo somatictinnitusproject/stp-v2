@@ -62,20 +62,20 @@ export function checkLowConfidenceEdgeCase(
 
 // ── §3.2 — checkSingleStrongMovement ─────────────────────────────────────────
 //
-// Doc 13 §3.2 pseudocode (exact):
+// Doc 13 §3.2 pseudocode (updated per ERRATA E13/E14):
 //   FUNCTION checkSingleStrongMovement(assessment, user, tmjNorm, cervNorm):
 //     result = { tmj: [], cerv: [] }
 //     // Check for strong TMJ indicators within a lower overall score
 //     IF tmjNorm < SINGLE_DRIVER_HIGH_THRESHOLD // < 60
-//       IF assessment.tmj_jaw_drift = TRUE        result.tmj.push("jaw_drift")
-//       IF user.m1_score > 0                      result.tmj.push("M1")
-//       IF user.m2_score > 0                      result.tmj.push("M2")
-//       IF assessment.tmj_pterygoid_tenderness = TRUE  result.tmj.push("pterygoid_tenderness")
+//       IF assessment.tmj_jaw_drift = TRUE            result.tmj.push("jaw_drift")
+//       IF assessment.tmj_m1_jaw_opening = TRUE       result.tmj.push("M1")      // E14
+//       IF assessment.tmj_m2_jaw_protrusion = TRUE    result.tmj.push("M2")      // E14
+//       IF assessment.tmj_pterygoid_tenderness = TRUE result.tmj.push("pterygoid_tenderness")
 //     // Check for strong cervical indicators within a lower overall score
 //     IF cervNorm < SINGLE_DRIVER_HIGH_THRESHOLD // < 60
-//       IF user.m3_score > 0                      result.cerv.push("M3")
-//       IF user.m4_score > 0                      result.cerv.push("M4")
-//       IF assessment.cerv_suboccipital_tenderness = TRUE  result.cerv.push("suboccipital_tenderness")
+//       IF assessment.cerv_m3_neck_curl = TRUE            result.cerv.push("M3") // E13
+//       IF assessment.cerv_m4_head_rotation = TRUE        result.cerv.push("M4") // E13
+//       IF assessment.cerv_suboccipital_tenderness = TRUE result.cerv.push("suboccipital_tenderness")
 //     RETURN result // Empty arrays = flag does not fire
 //   END FUNCTION
 export function checkSingleStrongMovement(
@@ -84,19 +84,20 @@ export function checkSingleStrongMovement(
   tmjNorm: number,
   cervNorm: number,
 ): SingleStrongMovement {
+  void user // user retained in signature; no intake reads remain (E13/E14)
   const { SINGLE_DRIVER_HIGH_THRESHOLD } = SCORING_THRESHOLDS
   const result: SingleStrongMovement = { tmj: [], cerv: [] }
 
   if (tmjNorm < SINGLE_DRIVER_HIGH_THRESHOLD) {
-    if (assessment.tmj_jaw_drift === true)          result.tmj.push('jaw_drift')
-    if ((user.m1_score ?? 0) > 0)                  result.tmj.push('M1')
-    if ((user.m2_score ?? 0) > 0)                  result.tmj.push('M2')
+    if (assessment.tmj_jaw_drift === true)            result.tmj.push('jaw_drift')
+    if (assessment.tmj_m1_jaw_opening === true)       result.tmj.push('M1')  // E14: live Phase 1 test
+    if (assessment.tmj_m2_jaw_protrusion === true)    result.tmj.push('M2')  // E14: live Phase 1 test
     if (assessment.tmj_pterygoid_tenderness === true) result.tmj.push('pterygoid_tenderness')
   }
 
   if (cervNorm < SINGLE_DRIVER_HIGH_THRESHOLD) {
-    if ((user.m3_score ?? 0) > 0)                        result.cerv.push('M3')
-    if ((user.m4_score ?? 0) > 0)                        result.cerv.push('M4')
+    if (assessment.cerv_m3_neck_curl === true)            result.cerv.push('M3')  // E13: live Phase 1 test
+    if (assessment.cerv_m4_head_rotation === true)        result.cerv.push('M4')  // E13: live Phase 1 test
     if (assessment.cerv_suboccipital_tenderness === true) result.cerv.push('suboccipital_tenderness')
   }
 

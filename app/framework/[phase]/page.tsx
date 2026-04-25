@@ -12,7 +12,7 @@ function formatDate(date: Date): string {
 
 export default async function PhaseOverviewPage({ params }: Props) {
   const { phase: phaseParam } = await params
-  const phase = parseInt(phaseParam, 10)
+  const phase = parseInt(phaseParam.replace('phase-', ''), 10)
   if (isNaN(phase) || phase < 1 || phase > 5) notFound()
 
   const supabase = await createClient()
