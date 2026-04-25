@@ -249,7 +249,7 @@ export const B4_MODULE_3_POSTURAL: B4Module3Postural = {
 // post_elevated_side        — uiState.post_elevated_side; forced null when shoulder_asymmetry is
 //                             false or null (cascade, same pattern as Module 2 side fields)
 // post_dominant_chewing_side — uiState.post_dominant_chewing_side; stored values:
-//                              'left' | 'right' | 'no_preference'
+//                              'left' | 'right' | null  (null when member selects "No clear preference")
 // post_sustained_desk_load  — TRUE if ui_sustained_sitting is '4\u20136 hours' OR
 //                             'More than 6 hours'; FALSE for 'Less than 2' or '2\u20134 hours'.
 //                             Four-band option strings (en-dash for ranges):
@@ -282,7 +282,10 @@ export function derivePosturalSubmitPayload(uiState: PosturalUiState): PosturalS
       uiState.post_shoulder_asymmetry === true
         ? (uiState.post_elevated_side ?? null)
         : null,
-    post_dominant_chewing_side: uiState.post_dominant_chewing_side,
+    post_dominant_chewing_side:
+      uiState.post_dominant_chewing_side === 'no_preference'
+        ? null
+        : uiState.post_dominant_chewing_side,
     post_sustained_desk_load:
       uiState.ui_sustained_sitting === '4\u20136 hours' ||
       uiState.ui_sustained_sitting === 'More than 6 hours',
