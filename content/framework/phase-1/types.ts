@@ -30,3 +30,45 @@ export type ContextQuestion = {
   text: string
   dbField: string
 }
+
+// ── Module 3 (Postural) types ─────────────────────────────────────────────────
+
+export type B4InputType =
+  | 'boolean'            // yes/no → boolean
+  | 'side_select'        // left/right — conditional on parent boolean being true
+  | 'left_right_neither' // left/right/no_preference (dominant chewing side)
+  | 'four_band_hours'    // 'Less than 2' | '2\u20134 hours' | '4\u20136 hours' | 'More than 6 hours'
+  | 'yes_no_sometimes'   // yes/no/sometimes (one-sided work pattern)
+
+export type B4Input = {
+  id: string
+  label: string
+  inputKind: B4InputType
+  dbField: string | null   // column name, or null for UI-only inputs
+  hint?: string            // inline descriptive note from Doc 8 (block 3 inputs only)
+  subheading?: string      // sub-group label within block 3
+}
+
+export type B4Block = {
+  title: string
+  prose: string[]
+  mechanism: string | null   // null for block 4 (no mechanism box in Doc 8 B.4)
+  recordLabel: string
+  inputs: B4Input[]
+}
+
+export type B4OutputRow = {
+  flag: string
+  memberText: string
+}
+
+export type B4Module3Postural = {
+  id: string
+  sessionNumber: number
+  sectionLabel: string
+  sectionTitle: string
+  framing: string[]
+  blocks: B4Block[]
+  outputTable: B4OutputRow[]
+  submitLabel: string
+}
