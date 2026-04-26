@@ -161,3 +161,55 @@ export type B6Module5Asymmetry = {
   recordLabel: string
   submitLabel: string
 }
+
+// ── B.7 (Profile Output) types ────────────────────────────────────────────────
+
+export type B7ProtocolOptionValue = 1 | 2 | 3
+
+export type B7ProtocolOption = {
+  value: B7ProtocolOptionValue       // 1 = Sequential, 2 = Parallel, 3 = Prioritised Parallel
+  name: string                       // e.g. "Sequential" / "Parallel" / "Prioritised Parallel"
+  description: string                // verbatim Doc 8 §B.7 Section 6 description
+  recommendedFor: string             // verbatim Doc 8 §B.7 Section 6 "Recommended for" italic text
+}
+
+// Recommendation rationale text shown above the option cards.
+// Doc 8 §B.7 Section 6 lists three rationale variants:
+//   - Dual driver
+//   - Primary with strong secondary
+//   - Primary with secondary
+// Single driver and low-confidence members do not see the option selector.
+export type B7RecommendationRationale = {
+  profileTypePattern: 'dual' | 'primary_strong_secondary' | 'primary_with_secondary'
+  text: string  // verbatim Doc 8 prose
+}
+
+export type B7ProfileOutput = {
+  id: string
+  sessionNumber: number
+  sectionLabel: string
+  sectionTitle: string
+
+  // Heading shown above the rendered profile_paragraph
+  paragraphHeading: string  // e.g. "Your Profile"
+
+  // Section header above the option cards
+  optionsHeading: string
+  optionsIntro: string  // "Most members are assigned both protocols..." Doc 8 §B.7 Section 6 first line
+
+  options: B7ProtocolOption[]  // exactly 3 — 1, 2, 3 in order
+  recommendations: B7RecommendationRationale[]  // exactly 3 — dual / strong_secondary / with_secondary
+
+  // Doc 8 §B.7 Section 7 — the "What Comes Next" paragraph
+  whatComesNextHeading: string
+  whatComesNextProse: string[]
+
+  // Confirm button — for members with the option selector
+  confirmButtonLabel: string
+
+  // Acknowledge path — for low-confidence and pure single-driver members.
+  // The same B.7 content covers both flows; the variant is determined by
+  // the page wrapper based on protocol assignment booleans + low-confidence flag.
+  acknowledgeIntro: string  // short framing sentence (single-driver context)
+  acknowledgeButtonLabel: string
+}
