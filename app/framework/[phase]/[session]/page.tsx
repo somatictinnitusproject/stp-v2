@@ -12,6 +12,9 @@ import { B4_MODULE_3_POSTURAL } from '@/content/framework/phase-1/b4-module-3-po
 import Session4ModuleThreeClient from './Session4ModuleThreeClient'
 import { B5_MODULE_4_NS } from '@/content/framework/phase-1/b5-module-4-ns'
 import Session5ModuleFourClient from './Session5ModuleFourClient'
+import { B6_MODULE_5_ASYMMETRY } from '@/content/framework/phase-1/b6-module-5-asymmetry'
+import Session6ModuleFiveClient from './Session6ModuleFiveClient'
+import type { ConsolidatedFinding } from './Session6ModuleFiveClient'
 
 type Props = { params: Promise<{ phase: string; session: string }> }
 
@@ -106,9 +109,62 @@ export default async function SessionPage({ params }: Props) {
     )
   }
 
-  // Phase 1 sessions 4–7 — stub until sub-steps 4–7 are built
+  if (phase === 1 && session === 6) {
+    console.log('[session-page] rendering session-6 module-5')
 
-  // ── Default stub — all other phases and Phase 1 sessions 3–7 ────────────────
+    const { data: assessmentRow, error: m5FetchError } = await supabase
+      .from('phase1_assessment')
+      .select(`
+        tmj_jaw_drift, tmj_jaw_drift_direction,
+        tmj_masseter_asymmetry, tmj_masseter_dominant_side,
+        tmj_pterygoid_tenderness, tmj_pterygoid_tender_side,
+        cerv_suboccipital_asymmetric, cerv_suboccipital_tender_side,
+        cerv_scm_asymmetry, cerv_scm_dominant_side,
+        cerv_trap_asymmetry, cerv_trap_dominant_side,
+        cerv_rotation_restriction, cerv_restricted_side,
+        post_shoulder_asymmetry, post_elevated_side
+      `)
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    if (m5FetchError) {
+      console.error('[session-page] M5 assessment fetch failed', m5FetchError)
+      // Fall through to default stub on fetch failure rather than crash the page.
+      // The stub renders the phase/session header — member can navigate back.
+    }
+
+    // Build findings array — order MUST match B6_MODULE_5_ASYMMETRY.consolidatedFindings
+    // index for index, since the M10b client renders findings[i] alongside content.consolidatedFindings[i].
+    const a = assessmentRow ?? null
+    const findings: ConsolidatedFinding[] = [
+      { label: 'Jaw drift on opening',
+        side: (a?.tmj_jaw_drift === true && a.tmj_jaw_drift_direction) ? a.tmj_jaw_drift_direction : null },
+      { label: 'Masseter dominant side',
+        side: (a?.tmj_masseter_asymmetry === true && a.tmj_masseter_dominant_side) ? a.tmj_masseter_dominant_side : null },
+      { label: 'Pterygoid tenderness dominant side',
+        side: (a?.tmj_pterygoid_tenderness === true && a.tmj_pterygoid_tender_side) ? a.tmj_pterygoid_tender_side : null },
+      { label: 'Suboccipital tenderness dominant side',
+        side: (a?.cerv_suboccipital_asymmetric === true && a.cerv_suboccipital_tender_side) ? a.cerv_suboccipital_tender_side : null },
+      { label: 'SCM dominant side',
+        side: (a?.cerv_scm_asymmetry === true && a.cerv_scm_dominant_side) ? a.cerv_scm_dominant_side : null },
+      { label: 'Upper trapezius dominant side',
+        side: (a?.cerv_trap_asymmetry === true && a.cerv_trap_dominant_side) ? a.cerv_trap_dominant_side : null },
+      { label: 'Cervical rotation restricted side',
+        side: (a?.cerv_rotation_restriction === true && a.cerv_restricted_side) ? a.cerv_restricted_side : null },
+      { label: 'Elevated shoulder',
+        side: (a?.post_shoulder_asymmetry === true && a.post_elevated_side) ? a.post_elevated_side : null },
+    ]
+
+    return (
+      <AuthShell>
+        <Session6ModuleFiveClient content={B6_MODULE_5_ASYMMETRY} findings={findings} />
+      </AuthShell>
+    )
+  }
+
+  // Phase 1 session 7 — stub until M11 (profile output screen) is built
+
+  // ── Default stub — all other phases and Phase 1 session 7 ───────────────────
 
   console.log('[session-page] rendering default stub')
   return (
