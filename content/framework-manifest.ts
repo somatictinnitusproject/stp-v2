@@ -16,7 +16,9 @@ export const PHASE_NAMES: Record<number, string> = {
 
 export const PHASE_SESSION_COUNTS: Record<number, number> = {
   1: 7,  // B1–B7
-  2: 6,  // C.1, C.2, C.3, C.4, C.5, C.8 — 6 sections per Document 8 C.10
+  2: 8,  // C.1–C.8 per Doc 13 §5.3 example. Doc 8 C.10 lumps habits-audit
+         // sections under one focus line — that is a focus-line count, not a
+         // session count. Each C.x is an addressable member session.
   3: 5,  // TODO Phase E: replace with actual orientation section count from Document 8
   4: 12, // TODO Phase E: unverified — based on F1–F12 naming convention only. Confirm against Document 8 Phase 4.
   5: 9,  // TODO Phase E: unverified — based on G1–G9 naming convention only. Confirm against Document 8 Phase 5.

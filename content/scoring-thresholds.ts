@@ -90,13 +90,15 @@ export const SCORING_THRESHOLDS = {
 
   // current_session values at which specific Phase 2 nudges trigger.
   // Update these if Phase 2 session order changes.
-  PHASE2_HABITS_AUDIT_SESSION: 2,  // C.2 → session 2 — end of habits audit
-  PHASE2_SLEEP_SESSION: 5,         // C.5 → session 5 — sleep foundations
-  // Doc 13 §9.3 specifies 8 (C.8 section label) but Phase 2 has only 6
-  // sessions per framework-manifest.ts (C.1, C.2, C.3, C.4, C.5, C.8 → session
-  // numbers 1-6). current_session is a counter, not a label. 8 would make
-  // Phase 2 advancement's "on final session" check never fire. Overridden to 6.
-  PHASE2_LAST_SESSION: 6,
+  PHASE2_HABITS_AUDIT_SESSION: 2,  // C.2 → session 2 — end of habits audit (jaw-specific).
+                                   // Trigger point for Nudge 1 (Phase 4 workstation).
+  PHASE2_SLEEP_SESSION: 7,         // C.7 → session 7 — sleep foundations. Was 5 under the
+                                   // 6-session count; moved to 7 under the
+                                   // corrected 8-session count (M12a).
+                                   // Trigger point for Nudge 2 (Phase 4 sleep).
+  PHASE2_LAST_SESSION: 8,          // C.8 → maintaining factor checklist. Was 6
+                                   // under the 6-session count; corrected to 8
+                                   // under the 8-session count (M12a).
 
   // ── Tracker ───────────────────────────────────────────────────────────────
   // Retroactive logging window (ERRATA D2: 7 days, not 1)

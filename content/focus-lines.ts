@@ -15,14 +15,17 @@ export const DAILY_FOCUS_LINES = {
     7: 'Your profile shapes everything that follows',
   },
   2: {
-    // TODO Phase E: populate from Document 8 C.10 focus lines (C.1–C.8, 6 sections total).
-    // Lines exist in Doc 8 C.10 keyed by section type — map to session numbers in Phase E.
-    1: '',
-    2: '',
-    3: '',
-    4: '',
-    5: '',
-    6: '',
+    // Phase 2 — Lifestyle Foundations. Keys are session numbers 1–8 mapping to
+    // Doc 8 sections C.1–C.8. Focus lines verbatim from Doc 8 C.10. C.2/C.3/C.4
+    // share a focus line per Doc 8 — habits audit (all three categories).
+    1: 'Clear the path before the protocol begins',
+    2: 'Identify the daily patterns working against your progress',
+    3: 'Identify the daily patterns working against your progress',
+    4: 'Identify the daily patterns working against your progress',
+    5: 'Reduce the inflammatory load your protocol is working within',
+    6: 'Consider the supporting factors worth adding alongside the protocol',
+    7: 'Address the overnight patterns that rebuild what the protocol releases',
+    8: 'Confirm your foundations are genuine before the intervention begins',
   },
   3: {
     release: 'Release before you retrain',
