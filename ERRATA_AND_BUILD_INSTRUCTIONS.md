@@ -969,5 +969,54 @@ Build implication for Phase 2+: future phase advancement helpers (`advancePhase2
 
 ---
 
+### E23. PHASE 1 MAINTAINING FACTOR SCHEMA GAPS — DOC 8 LISTS 8 FLAGS, SCHEMA HAS 4
+
+Doc 8 Phase 1 Section 6 (maintaining factors output table) specifies eight
+member-facing maintaining factor flags. Only four have corresponding columns
+on `phase1_assessment` in the live schema:
+
+| Doc 8 flag | Live column | Status |
+|---|---|---|
+| Elevated [side] shoulder | `post_shoulder_asymmetry` + `post_elevated_side` | ✅ |
+| Dominant chewing — [side] | `post_dominant_chewing_side` | ✅ |
+| Sustained desk load | `post_sustained_desk_load` | ✅ |
+| Asymmetric exercise patterns | `post_asymmetric_exercise` | ✅ |
+| Low screen positioning | — | ❌ MISSING |
+| Stomach sleeping | — | ❌ MISSING (also tracked under E21 as `ctx_stomach_sleeping`) |
+| Consistent bag carrying | — | ❌ MISSING |
+| Jaw posture habits | — | ❌ MISSING |
+
+**Discovered during M12b** when wiring C.1 Opening Framing personalisation.
+C.1 surfaces a confirmed-flags list to members; the four missing flags cannot
+be surfaced because no column captures them.
+
+**Resolution path:** pre-launch review of Phase 1 module behaviour. Required
+changes:
+
+1. Add 4 new columns to `phase1_assessment`:
+   - `post_low_screen_positioning BOOLEAN`
+   - `ctx_stomach_sleeping BOOLEAN` (resolves E21 simultaneously)
+   - `post_bag_carrying BOOLEAN`
+   - `tmj_jaw_posture_habits BOOLEAN`
+2. Update Phase 1 Module 3 (Postural) to capture and write these values per
+   Doc 8 Phase 1 Section B.4.
+3. Extend `buildConfirmedFlagsList` in
+   `/content/framework/phase-2/c1-opening-framing.ts` to include the four new
+   flags with verbatim labels from Doc 8 Phase 1 Section 6 maintaining factors
+   output table.
+4. Backfill: existing members will have NULL for these columns until they
+   re-run Module 3 — leave NULL handling as "not confirmed."
+
+**Until resolved:** C.1 surfaces 8 of the canonical Doc 8 maintaining factors
+(4 postural + 4 nervous-system). The 4 missing flags are silently absent from
+the C.1 list. This is acceptable degradation — members do not see incorrect
+data, only incomplete data — but the C.2/C.3/C.4 habits audit content does
+reference these patterns by name (e.g. C.2 covers jaw posture habits as a
+habit; C.3 covers stomach sleeping). The "Flagged for your profile"
+per-habit labels in C.2/C.3/C.4 (M12c–M12d) will not be able to fire for
+these four flag types until E23 is resolved. Note this when writing M12c/M12d.
+
+---
+
 *Built to help people. Designed to last.*
 *SOMATIC TINNITUS PROJECT — V2 Errata & Build Instructions*

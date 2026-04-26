@@ -21,6 +21,13 @@ import type { ProfileOutputProps } from './Session7ProfileOutputClient'
 import { getRecommendedProtocolOption } from '@/lib/scoring'
 import { checkLowConfidenceEdgeCase } from '@/lib/scoring'
 import type { ProfileType } from '@/lib/scoring'
+import {
+  C1_OPENING_FRAMING,
+  mapProfileTypeToCallback,
+  buildConfirmedFlagsList,
+} from '@/content/framework/phase-2/c1-opening-framing'
+import type { C1AssessmentInput } from '@/content/framework/phase-2/c1-opening-framing'
+import Session1OpeningFramingClient from './Session1OpeningFramingClient'
 
 type Props = { params: Promise<{ phase: string; session: string }> }
 
@@ -265,6 +272,52 @@ export default async function SessionPage({ params }: Props) {
           profileTypePattern={profileTypePattern}
           showStomachSleepingNote={showStomachSleepingNote}
           showSustainedDeskLoadNote={showSustainedDeskLoadNote}
+        />
+      </AuthShell>
+    )
+  }
+
+  // ─── Phase 2 / Session 1 — C.1 Opening Framing ───────────────────────────
+  if (phase === 2 && session === 1) {
+    const { data: assessmentRaw } = await supabase
+      .from('phase1_assessment')
+      .select(`
+        profile_type,
+        post_shoulder_asymmetry, post_elevated_side,
+        post_sustained_desk_load, post_asymmetric_exercise,
+        post_dominant_chewing_side,
+        ns_stress_tinnitus_correlation, ns_hypervigilance,
+        ns_sleep_disruption, ns_anxiety_loop
+      `)
+      .eq('user_id', user.id)
+      .maybeSingle()
+    // Cast to local type — Supabase infers a wide row type; we only need C1's columns.
+    const assessment = assessmentRaw as (C1AssessmentInput & { profile_type: string | null }) | null
+
+    const profileCallback = mapProfileTypeToCallback(
+      assessment?.profile_type as ProfileType | null | undefined
+    )
+    const flagList = buildConfirmedFlagsList(assessment)
+
+    const paragraph1 = C1_OPENING_FRAMING.paragraph1Template.replace(
+      '{profileCallback}',
+      profileCallback
+    )
+    const paragraph3 =
+      flagList === null
+        ? C1_OPENING_FRAMING.paragraph3NoFlags
+        : C1_OPENING_FRAMING.paragraph3FlagsConfirmed.replace('{flagList}', flagList)
+
+    return (
+      <AuthShell>
+        <Session1OpeningFramingClient
+          sectionLabel={C1_OPENING_FRAMING.sectionLabel}
+          sectionTitle={C1_OPENING_FRAMING.sectionTitle}
+          continueLabel={C1_OPENING_FRAMING.continueLabel}
+          paragraph1={paragraph1}
+          paragraph2={C1_OPENING_FRAMING.paragraph2}
+          paragraph3={paragraph3}
+          paragraph4={C1_OPENING_FRAMING.paragraph4}
         />
       </AuthShell>
     )
