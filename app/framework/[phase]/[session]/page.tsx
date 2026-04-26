@@ -10,6 +10,8 @@ import { B3_MODULE_2_CERV } from '@/content/framework/phase-1/b3-module-2-cervic
 import Session3ModuleTwoClient from './Session3ModuleTwoClient'
 import { B4_MODULE_3_POSTURAL } from '@/content/framework/phase-1/b4-module-3-postural'
 import Session4ModuleThreeClient from './Session4ModuleThreeClient'
+import { B5_MODULE_4_NS } from '@/content/framework/phase-1/b5-module-4-ns'
+import Session5ModuleFourClient from './Session5ModuleFourClient'
 
 type Props = { params: Promise<{ phase: string; session: string }> }
 
@@ -91,6 +93,15 @@ export default async function SessionPage({ params }: Props) {
     return (
       <AuthShell>
         <Session4ModuleThreeClient content={B4_MODULE_3_POSTURAL} />
+      </AuthShell>
+    )
+  }
+
+  if (phase === 1 && session === 5) {
+    console.log('[session-page] rendering session-5 module-4')
+    return (
+      <AuthShell>
+        <Session5ModuleFourClient content={B5_MODULE_4_NS} />
       </AuthShell>
     )
   }
