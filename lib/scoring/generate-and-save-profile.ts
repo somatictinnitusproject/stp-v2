@@ -54,14 +54,19 @@ export async function generateAndSaveProfile(
 
   const { data: user, error: userError } = await supabase
     .from('users')
-    .select('s1_score, s6_score, s7_score, s8_score, symptom_score') // m1/m2/m3/m4/m4_asymmetric/m5/s2/s5 removed — always NULL for V2 members (E9/E12/E13/E14/E15)
+    .select('symptom_score') // E20: s1/s6/s7/s8 also never existed on users — V1 intake only persisted aggregates. Granular intake columns Doc 7 specified were never built. symptom_score exists and is read by checkLowConfidenceEdgeCase; everything else is dead.
     .eq('id', userId)
     .maybeSingle()
 
   if (userError) throw userError
   if (!user) throw new Error('User row not found')
 
-  // m1/m2/m3/m4/m4_asymmetric/m5/s2/s5 always NULL for V2 members (E9/E12/E13/E14/E15)
+  // E20: s1/s6/s7/s8 columns never existed on users — V1 intake only persisted
+  //   aggregate scores. The S-column intake fallbacks in tmj-score.ts and
+  //   cerv-score.ts are dead code post-erratum (Phase 1 routes validate the
+  //   overlapping-indicator questions, so the NULL-in-assessment fallback
+  //   path no longer fires in practice). Setting all S-columns to null below.
+  //   symptom_score is the only intake field still read (by checkLowConfidenceEdgeCase).
   const userIntake: UserIntakeRow = {
     m1_score:      null,
     m2_score:      null,
@@ -69,12 +74,12 @@ export async function generateAndSaveProfile(
     m4_score:      null,
     m4_asymmetric: null,
     m5_score:      null,
-    s1_score:      user.s1_score      ?? null,
+    s1_score:      null,
     s2_score:      null,
     s5_score:      null,
-    s6_score:      user.s6_score      ?? null,
-    s7_score:      user.s7_score      ?? null,
-    s8_score:      user.s8_score      ?? null,
+    s6_score:      null,
+    s7_score:      null,
+    s8_score:      null,
     symptom_score: user.symptom_score ?? null,
   }
 
