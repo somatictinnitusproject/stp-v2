@@ -119,3 +119,45 @@ export type B5Module4Ns = {
   outputTable: B5OutputRow[]
   submitLabel: string
 }
+
+// ── Module 5 (Asymmetry) types ────────────────────────────────────────────────
+
+export type B6LateralisationAnswer =
+  | 'left'      // "Yes — clearly worse in my left ear"
+  | 'right'     // "Yes — clearly worse in my right ear"
+  | 'bilateral' // "It's in both ears roughly equally"
+  | 'central'   // "It's more of a central or head sound without clear lateralisation"
+  | 'unsure'    // "I'm not sure"
+
+export type B6LateralisationOption = {
+  value: B6LateralisationAnswer
+  label: string  // verbatim Doc 8 option text
+}
+
+// The eight source columns the consolidated findings display reads from
+// existing assessment data. None of these are written by M5 — they are
+// pulled forward and shown read-only.
+export type B6FindingSource = {
+  label: string                // member-facing label e.g. "Jaw drift on opening"
+  sourceColumn: string         // the Phase1AssessmentRow column name (informational)
+  sideColumn: string           // the column holding the side string (left/right/bilateral)
+  presenceColumn?: string      // optional boolean column gating display (e.g. tmj_jaw_drift)
+                               // when omitted, presence is determined by sideColumn !== null
+}
+
+export type B6Module5Asymmetry = {
+  id: string
+  sessionNumber: number
+  sectionLabel: string
+  sectionTitle: string
+  framing: string[]
+  consolidatedHeading: string             // e.g. "Your asymmetric findings"
+  consolidatedIntro: string               // intro line above the findings list
+  consolidatedFindings: B6FindingSource[] // exactly 8 entries — see Doc 8 §B.6
+  emptyStateText: string                  // Doc 8 fallback when no findings — verbatim
+  questionHeading: string
+  questionPrompt: string                  // Doc 8: "Is your tinnitus worse in one ear..."
+  questionOptions: B6LateralisationOption[] // exactly 5 — verbatim Doc 8
+  recordLabel: string
+  submitLabel: string
+}
