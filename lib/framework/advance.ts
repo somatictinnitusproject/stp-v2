@@ -55,3 +55,41 @@ export async function incrementCurrentSession(
 
   return { nextSession }
 }
+
+/**
+ * Advance member from Phase 1 to Phase 2. Doc 13 §7.2.
+ *
+ * Called by the M11c confirm-profile route after the member acknowledges
+ * their profile and (where applicable) selects a protocol option.
+ *
+ * Idempotency: writes phase1_completed_at unconditionally — if called twice,
+ * the second call overwrites the timestamp and protocol option. The route
+ * does not currently guard against re-submission, but no data is lost on
+ * retry. A future erratum may add an idempotency check.
+ *
+ * @param userId — auth user id
+ * @param protocolOption — 1 (Sequential), 2 (Parallel), 3 (Prioritised Parallel), or null (single-driver/low-confidence)
+ * @throws if framework_progress row not found or update fails
+ */
+export async function advancePhase1(
+  userId: string,
+  protocolOption: 1 | 2 | 3 | null,
+): Promise<void> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('framework_progress')
+    .update({
+      phase1_completed_at: new Date().toISOString(),
+      current_phase: 2,
+      current_session: 1,
+      protocol_option: protocolOption,
+    })
+    .eq('user_id', userId)
+    .select('user_id')
+
+  if (error) throw error
+  if (!data || data.length === 0) {
+    throw new Error('framework_progress row not found for user')
+  }
+}

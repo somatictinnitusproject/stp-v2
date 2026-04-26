@@ -15,6 +15,12 @@ import Session5ModuleFourClient from './Session5ModuleFourClient'
 import { B6_MODULE_5_ASYMMETRY } from '@/content/framework/phase-1/b6-module-5-asymmetry'
 import Session6ModuleFiveClient from './Session6ModuleFiveClient'
 import type { ConsolidatedFinding } from './Session6ModuleFiveClient'
+import { B7_PROFILE_OUTPUT } from '@/content/framework/phase-1/b7-profile-output'
+import Session7ProfileOutputClient from './Session7ProfileOutputClient'
+import type { ProfileOutputProps } from './Session7ProfileOutputClient'
+import { getRecommendedProtocolOption } from '@/lib/scoring'
+import { checkLowConfidenceEdgeCase } from '@/lib/scoring'
+import type { ProfileType } from '@/lib/scoring'
 
 type Props = { params: Promise<{ phase: string; session: string }> }
 
@@ -162,9 +168,109 @@ export default async function SessionPage({ params }: Props) {
     )
   }
 
-  // Phase 1 session 7 — stub until M11 (profile output screen) is built
+  if (phase === 1 && session === 7) {
+    console.log('[session-page] rendering session-7 profile-output')
 
-  // ── Default stub — all other phases and Phase 1 session 7 ───────────────────
+    // 1. Fetch assessment row — completed_at indicates profile is generated
+    const { data: assessment, error: m11FetchError } = await supabase
+      .from('phase1_assessment')
+      .select(`
+        profile_paragraph, profile_type, completed_at,
+        tmj_normalised_score, cerv_normalised_score,
+        tmj_protocol_assigned, cerv_protocol_assigned,
+        post_dominant_chewing_side, post_sustained_desk_load
+      `)
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    if (m11FetchError) {
+      console.error('[session-page] M11 assessment fetch failed', m11FetchError)
+      // Fall through to stub on fetch failure
+    }
+
+    // 2. Defensive — if no completed assessment, redirect to session 6 to complete M5
+    if (!assessment || assessment.completed_at === null) {
+      console.log('[session-page] M11 no completed assessment, redirecting to session-6')
+      redirect('/framework/phase-1/session-6')
+    }
+
+    // 3. Fetch user intake symptom_score for low-confidence recheck
+    const { data: userRow } = await supabase
+      .from('users')
+      .select('symptom_score')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    // 4. Recompute low-confidence flag from persisted norms
+    //    (same logic the orchestrator ran at profile generation; not persisted, recomputed here)
+    const tmjNorm = assessment.tmj_normalised_score ?? 0
+    const cervNorm = assessment.cerv_normalised_score ?? 0
+    const userIntake = {
+      m1_score: null, m2_score: null, m3_score: null,
+      m4_score: null, m4_asymmetric: null, m5_score: null,
+      s1_score: null, s2_score: null, s5_score: null,
+      s6_score: null, s7_score: null, s8_score: null,
+      symptom_score: userRow?.symptom_score ?? null,
+    }
+    const lowConfidence = checkLowConfidenceEdgeCase(tmjNorm, cervNorm, userIntake)
+
+    // 5. Determine variant
+    //    - 'acknowledge' if low-confidence OR single driver (one protocol false)
+    //    - 'options' otherwise (both protocols assigned AND not low-confidence)
+    const bothProtocols =
+      assessment.tmj_protocol_assigned === true &&
+      assessment.cerv_protocol_assigned === true
+    const variant: ProfileOutputProps['variant'] =
+      lowConfidence !== null || !bothProtocols ? 'acknowledge' : 'options'
+
+    // 6. Determine recommendedOption + profileTypePattern (only meaningful for 'options')
+    let recommendedOption: ProfileOutputProps['recommendedOption'] = null
+    let profileTypePattern: ProfileOutputProps['profileTypePattern'] = null
+    if (variant === 'options' && assessment.profile_type) {
+      recommendedOption = getRecommendedProtocolOption(assessment.profile_type as ProfileType)
+      // Map profile_type to recommendation rationale pattern
+      switch (assessment.profile_type) {
+        case 'DUAL_DRIVER':
+          profileTypePattern = 'dual'
+          break
+        case 'TMJ_PRIMARY_STRONG_SECONDARY':
+        case 'CERV_PRIMARY_STRONG_SECONDARY':
+          profileTypePattern = 'primary_strong_secondary'
+          break
+        case 'TMJ_PRIMARY_WITH_SECONDARY':
+        case 'CERV_PRIMARY_WITH_SECONDARY':
+          profileTypePattern = 'primary_with_secondary'
+          break
+        // TMJ_DOMINANT and CERV_DOMINANT shouldn't reach here — they go to 'acknowledge'
+        // since one of the protocol booleans is false. Defensive fallback:
+        default:
+          profileTypePattern = null
+      }
+    }
+
+    // 7. Build maintaining-factors flags for Section 7 conditional block
+    const showStomachSleepingNote = false // TODO: Doc 7 has no ctx_stomach_sleeping column
+                                          //   — Doc 8 §B.7 Section 7 references this flag but
+                                          //   no schema field exists. Always false until
+                                          //   schema decision made. Defer to E21.
+    const showSustainedDeskLoadNote = assessment.post_sustained_desk_load === true
+
+    return (
+      <AuthShell>
+        <Session7ProfileOutputClient
+          content={B7_PROFILE_OUTPUT}
+          profileParagraph={assessment.profile_paragraph ?? ''}
+          variant={variant}
+          recommendedOption={recommendedOption}
+          profileTypePattern={profileTypePattern}
+          showStomachSleepingNote={showStomachSleepingNote}
+          showSustainedDeskLoadNote={showSustainedDeskLoadNote}
+        />
+      </AuthShell>
+    )
+  }
+
+  // ── Default stub — non-Phase-1 phases (Phase 2 / 3 / 4 / 5 stubs until those phases are built) ──
 
   console.log('[session-page] rendering default stub')
   return (
