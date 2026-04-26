@@ -856,6 +856,117 @@ Lying" or equivalent subsection in Phase 4 content, sourced from Doc 8 B.3
 floor relief instructions (lines 443–455). Frame as a relief technique, not
 a diagnostic test.
 
+### E17. CERV_FLOOR_RELIEF_TEST COLUMN NOT DROPPED DESPITE E16
+
+**Status: open — cleanup before M11 (now M12).**
+
+E16 specified that the floor lying relief test was removed from Module 2 entirely, with `CERVICAL_MODULE_MAXIMUM` reduced from 28 to 25. The scoring code was updated and the M2 client component dropped the input. However, the `cerv_floor_relief_test` column was NOT dropped from the live `phase1_assessment` table.
+
+The `Phase1AssessmentRow` type in `lib/scoring/types.ts` does NOT list this column (correctly per E16). No code reads or writes it. It's dead schema.
+
+**Fix:**
+```sql
+ALTER TABLE phase1_assessment DROP COLUMN cerv_floor_relief_test;
+```
+
+Run a grep first to confirm no code references it:
+grep -rn "cerv_floor_relief_test" lib/ app/ content/
+Should return zero matches before dropping.
+
+---
+
+### E18. post_dominant_chewing_side VARCHAR(10) TIGHT AGAINST FUTURE VALUES
+
+**Status: open — cosmetic, deferred.**
+
+The `post_dominant_chewing_side` column on `phase1_assessment` is `VARCHAR(10)`. Doc 8 §B.4 specifies three valid values: `'left'` (4 chars), `'right'` (5 chars), `'no_preference'` (13 chars).
+
+During the M9a smoke test, submitting "No clear preference" caused Postgres error 22001 (string_data_right_truncation) because `'no_preference'` overflowed VARCHAR(10).
+
+**Fixed at runtime:** the M3 derive function (`derivePosturalSubmitPayload` in `content/framework/phase-1/b4-module-3-postural.ts`) translates `'no_preference'` → `null` before the route writes the column. NULL is the semantically correct sentinel because Doc 13 §4.3 reads `IF assessment.post_dominant_chewing_side IS NOT NULL` — NULL means "no asymmetric chewing pattern," which is exactly what "no clear preference" represents.
+
+The column is tight against any future values longer than 10 chars. Consider widening to VARCHAR(20) when convenient. Not blocking.
+
+---
+
+### E19. Q5 + Q6 IN MODULE 4 — DOC 8 / DOC 7 / DOC 13 DISAGREE ON PERSISTENCE
+
+**Status: open — content/scoring decision needed before launch.**
+
+Doc 8 §B.5 includes six self-assessment questions in the Nervous System module (M4). Q1–Q4 persist to corresponding `ns_*` columns. Q5 (unconscious tension patterns) and Q6 (relaxation variability) are presented as full-bodied questions with mechanism explainers and output table flags, but:
+
+- Doc 7 has no `ns_unconscious_tension` or `ns_relaxation_variability` columns
+- Doc 13 §4.4 step 5 (high-NS modifier) reads only the four primary NS columns (Q1, Q2, Q3, Q4) — Q5/Q6 have no consumer
+- Doc 8's output table for Q5 says it "flags Phase 3 resting jaw position retraining and adapted PMR"; for Q6 says it's a "positive prognostic" for the profile paragraph — but neither flag exists in the codebase
+
+Currently Q5 and Q6 are UI-only inputs in M4. Captured for member self-awareness during the assessment, not stored.
+
+**Decision needed:** add the two columns + update Doc 13 §4.4 (and possibly Phase 3/4 content selection logic) to consume them, OR simplify Doc 8 §B.5 to remove Q5/Q6's "flags" framing since nothing actually flags. Defer until post-launch when member feedback shows whether the Q5/Q6 mechanism explainers are valuable on their own.
+
+---
+
+### E20. S-COLUMN INTAKE READS REMOVED FROM generateAndSaveProfile
+
+**Status: fixed during M10c smoke test.**
+
+Same root pattern as E9/E12/E13/E14/E15 (M-column intake reads). V1 intake only persisted aggregate scores (`tmj_score`, `cerv_score`, `symptom_score`, `movement_score`, `total_score`, `classification`). The granular per-question intake columns Doc 7 specified — `s1_score`, `s2_score`, `s5_score`, `s6_score`, `s7_score`, `s8_score` — were never built on the live `users` table.
+
+The `generateAndSaveProfile` orchestrator (`lib/scoring/generate-and-save-profile.ts`) was reading these columns at runtime and threw `column "s1_score" does not exist` (Postgres 42703) during the first end-to-end M5 submit on production.
+
+**Fix:** changed the SELECT on `users` from `s1_score, s6_score, s7_score, s8_score, symptom_score` to just `symptom_score` (which exists and is read by `checkLowConfidenceEdgeCase`). Set all S-column fields in `userIntake` to null. The S-column fallback paths in `tmj-score.ts` and `cerv-score.ts` are now dead code post-erratum but preserved structurally — Phase 1 module routes validate the overlapping-indicator questions are answered directly, so the IS-NULL fallback path no longer fires in practice.
+
+Pattern matches E9/E12/E13/E14/E15. Now the S-columns too.
+
+---
+
+### E21. ctx_stomach_sleeping COLUMN MISSING — DOC 8 §B.7 SECTION 7 CONDITIONAL HARDCODED FALSE
+
+**Status: open — schema or content decision needed before launch.**
+
+Doc 8 §B.7 Section 7 contains a conditional paragraph for members with confirmed stomach sleeping (a maintaining factor):
+
+> Stomach sleeping confirmed: sleep position change tonight, not at the end of Phase 2
+
+This text is rendered by `Session7ProfileOutputClient.tsx` when `showStomachSleepingNote === true`. However, no `ctx_stomach_sleeping` column exists on `phase1_assessment` — the assessment never captures this flag.
+
+In `app/framework/[phase]/[session]/page.tsx` session-7 branch, `showStomachSleepingNote` is currently hardcoded to `false` with a TODO comment. The companion `showSustainedDeskLoadNote` reads from `post_sustained_desk_load` which exists.
+
+**Decision needed:**
+1. Add a `ctx_stomach_sleeping BOOLEAN NULLABLE` column to `phase1_assessment`, add the question to Module 3 or 4 (likely Module 3 sleep/posture group), update the M3 client and route to capture it, OR
+2. Remove the stomach sleeping conditional from Doc 8 §B.7 Section 7 entirely.
+
+Defer until post-launch member content review. Currently the conditional never fires.
+
+---
+
+### E22. framework_progress SCHEMA GAPS — phase1_completed_at AND protocol_option WERE MISSING
+
+**Status: fixed during M11 smoke test.**
+
+Doc 7 specified `framework_progress.phase1_completed_at` (TIMESTAMPTZ) and `framework_progress.protocol_option` (SMALLINT, 1/2/3/NULL). Three V2 pages already SELECTed `phase1_completed_at` (dashboard, programme-overview, framework phase index). Neither column existed on the live database.
+
+`advancePhase1` (added in M11c) failed at runtime with Postgres error PGRST204 (column not found in schema cache) when trying to UPDATE these columns.
+
+**Fix:** ran the migration during the M11 smoke test:
+```sql
+ALTER TABLE framework_progress
+  ADD COLUMN IF NOT EXISTS phase1_completed_at TIMESTAMPTZ NULL,
+  ADD COLUMN IF NOT EXISTS protocol_option SMALLINT NULL CHECK (protocol_option IN (1, 2, 3));
+```
+
+Plus a follow-on preventive migration for the four future-phase columns (Phase 2/3/4/5 will need these for their own advancement triggers per Doc 13 §7.3/§7.4/§7.5/§7.6):
+```sql
+ALTER TABLE framework_progress
+  ADD COLUMN IF NOT EXISTS phase2_completed_at TIMESTAMPTZ NULL,
+  ADD COLUMN IF NOT EXISTS phase3_completed_at TIMESTAMPTZ NULL,
+  ADD COLUMN IF NOT EXISTS phase4_completed_at TIMESTAMPTZ NULL,
+  ADD COLUMN IF NOT EXISTS phase5_completed_at TIMESTAMPTZ NULL;
+```
+
+All five `phaseN_completed_at` columns and `protocol_option` confirmed present on `framework_progress` after migration.
+
+Build implication for Phase 2+: future phase advancement helpers (`advancePhase2`, `advancePhase3`, `advancePhase4`, `advancePhase5`) can write to these columns directly without further migrations.
+
 ---
 
 *Built to help people. Designed to last.*
