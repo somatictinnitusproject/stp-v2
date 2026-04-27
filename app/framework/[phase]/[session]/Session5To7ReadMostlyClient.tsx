@@ -98,7 +98,7 @@ export default function Session5To7ReadMostlyClient(props: Session5To7ReadMostly
       {/* Daily Focus callout — italicised in muted box */}
       <div className="bg-surface border-l-[3px] border-primary rounded-r-[8px] px-5 py-4 mb-10">
         <p className="text-body-sm text-text-body italic">
-          <span className="font-semibold not-italic text-text-heading">Daily Focus \u2014 </span>
+          <span className="font-semibold not-italic text-text-heading">Daily Focus — </span>
           {props.focusLine}
         </p>
       </div>
