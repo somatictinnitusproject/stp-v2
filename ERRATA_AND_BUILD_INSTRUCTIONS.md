@@ -1002,6 +1002,10 @@ question specified anywhere in Doc 8:
   post_sustained_desk_load works)
 - `tinnitus_worse_driving` (Doc 8 P2 C.3 H6 system note references this
   flag from cervical module history questions, but no such column exists)
+- `high_intensity_exercise` (Doc 8 P2 C.4 H1 system note; OR fallback via
+  ns_flag_count >= 3 covers this)
+- `high_caffeine` (Doc 8 P2 C.4 H2 system note — same; ns fallback covers)
+- `alcohol_pattern` (Doc 8 P2 C.4 H2 system note — same; ns fallback covers)
 
 Type 3 — V1 intake S-columns (s1_score etc) referenced by Doc 8 fallback
 rules, never imported into V2:
@@ -1036,12 +1040,15 @@ Rationale:
 - C.3 per-habit labels (M12d): H1 fires (via post_sustained_desk_load), H4
   fires (via post_shoulder_asymmetry), H7 fires (via
   post_shoulder_asymmetry). H2, H3, H5, H6 are PERMANENTLY silent.
-- C.4 (M12d+): same approach — per-habit labels fire only where
-  Phase 1 capture supports them. Decisions documented per-habit when
-  those sub-steps land.
-- Flag-check helpers (`getC2HabitFlag` and equivalents in C.3/C.4)
+- C.4 per-habit labels (M12e): both H1 and H2 fire when ns_flag_count >= 3
+  (3 or more of the 4 ns_* boolean columns confirmed). The Doc 8
+  system note's alternate triggers (high_intensity_exercise,
+  high_caffeine, alcohol_pattern) are PERMANENTLY missing per E23; the
+  ns flag fallback covers both habits.
+- Flag-check helpers (`getC2HabitFlag`, `getC3HabitFlag`, `getC4HabitFlag`)
   annotate permanently-silent habits with `// PERMANENT — no Phase 1
-  capture per E23 design decision`.
+  capture per E23 design decision`. C.4 helpers additionally export
+  `countNsFlags` for ns flag counting, reusable by future Phase 4 nudges.
 
 **No further action required.** This is not a pre-launch fix item.
 

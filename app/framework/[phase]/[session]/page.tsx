@@ -40,6 +40,12 @@ import {
 } from '@/content/framework/phase-2/c3-habits-audit-cervical'
 import type { C3AssessmentInput } from '@/content/framework/phase-2/c3-habits-audit-cervical'
 import Session3HabitsCervicalClient from './Session3HabitsCervicalClient'
+import {
+  C4_HABITS_AUDIT_SYSTEMIC,
+  getC4HabitFlag,
+} from '@/content/framework/phase-2/c4-habits-audit-systemic'
+import type { C4AssessmentInput } from '@/content/framework/phase-2/c4-habits-audit-systemic'
+import Session4HabitsSystemicClient from './Session4HabitsSystemicClient'
 
 type Props = { params: Promise<{ phase: string; session: string }> }
 
@@ -422,6 +428,48 @@ export default async function SessionPage({ params }: Props) {
       <AuthShell>
         <Session3HabitsCervicalClient
           content={C3_HABITS_AUDIT_CERVICAL}
+          habitFlags={habitFlags}
+          initialHabitsAcknowledged={habitsAck}
+        />
+      </AuthShell>
+    )
+  }
+
+  // ─── Phase 2 / Session 4 — C.4 Habits Audit: Systemic ────────────────────
+  if (phase === 2 && session === 4) {
+    const { data: assessmentRaw } = await supabase
+      .from('phase1_assessment')
+      .select(`
+        ns_stress_tinnitus_correlation,
+        ns_hypervigilance,
+        ns_sleep_disruption,
+        ns_anxiety_loop
+      `)
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    const assessment = assessmentRaw as C4AssessmentInput | null
+
+    const { data: progressRow } = await supabase
+      .from('framework_progress')
+      .select('phase2_habits_acknowledged')
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    type C4AckShape = { C4?: { habits?: Record<string, string> } }
+    const habitsAck =
+      (progressRow?.phase2_habits_acknowledged as C4AckShape | null)?.C4
+        ?.habits ?? {}
+
+    const habitFlags: Record<string, boolean> = {}
+    for (const habit of C4_HABITS_AUDIT_SYSTEMIC.habits) {
+      habitFlags[habit.id] = getC4HabitFlag(habit.id, assessment)
+    }
+
+    return (
+      <AuthShell>
+        <Session4HabitsSystemicClient
+          content={C4_HABITS_AUDIT_SYSTEMIC}
           habitFlags={habitFlags}
           initialHabitsAcknowledged={habitsAck}
         />
