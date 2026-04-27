@@ -93,3 +93,58 @@ export async function advancePhase1(
     throw new Error('framework_progress row not found for user')
   }
 }
+
+/**
+ * Advance member from Phase 2 to Phase 3. Doc 13 §7.2 (parallel to advancePhase1).
+ *
+ * Called by the M12g confirm-phase-2 route after the member confirms their
+ * maintaining factors are genuinely in place.
+ *
+ * Idempotency: pre-reads current_phase; if already >= 3, returns without
+ * re-writing phase2_completed_at. This handles double-tap and redirect-back.
+ *
+ * @param userId — auth user id
+ * @throws if framework_progress row not found, update fails, or phase < 2
+ */
+export async function advancePhase2(
+  userId: string,
+): Promise<{ nextPhase: number; nextSession: number; alreadyAdvanced: boolean }> {
+  const supabase = await createClient()
+
+  const { data: progress, error: readError } = await supabase
+    .from('framework_progress')
+    .select('current_phase')
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  if (readError) throw readError
+  if (!progress) throw new Error('framework_progress row not found for user')
+
+  // Idempotent: already advanced to Phase 3 or beyond
+  if (progress.current_phase >= 3) {
+    return { nextPhase: progress.current_phase, nextSession: 1, alreadyAdvanced: true }
+  }
+
+  // Defensive: can't advance from before Phase 2
+  if (progress.current_phase < 2) {
+    throw new Error('cannot advance phase 2 from earlier phase')
+  }
+
+  // Advance: write phase2_completed_at + current_phase=3 + current_session=1
+  const { data, error: writeError } = await supabase
+    .from('framework_progress')
+    .update({
+      phase2_completed_at: new Date().toISOString(),
+      current_phase: 3,
+      current_session: 1,
+    })
+    .eq('user_id', userId)
+    .select('user_id')
+
+  if (writeError) throw writeError
+  if (!data || data.length === 0) {
+    throw new Error('framework_progress row not found for user')
+  }
+
+  return { nextPhase: 3, nextSession: 1, alreadyAdvanced: false }
+}

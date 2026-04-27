@@ -51,6 +51,8 @@ import { C6_SUPPLEMENTS } from '@/content/framework/phase-2/c6-supplements'
 import { C7_SLEEP_FOUNDATIONS } from '@/content/framework/phase-2/c7-sleep-foundations'
 import Session5To7ReadMostlyClient from './Session5To7ReadMostlyClient'
 import { DAILY_FOCUS_LINES } from '@/content/focus-lines'
+import { C8_CONFIRMATION_CHECKLIST } from '@/content/framework/phase-2/c8-confirmation-checklist'
+import Session8ConfirmationClient from './Session8ConfirmationClient'
 
 type Props = { params: Promise<{ phase: string; session: string }> }
 
@@ -519,6 +521,18 @@ export default async function SessionPage({ params }: Props) {
           focusLine={DAILY_FOCUS_LINES[2][7]}
           sectionId="C7"
           redirectTo="/framework/phase-2/session-8"
+        />
+      </AuthShell>
+    )
+  }
+
+  // ─── Phase 2 / Session 8 — C.8 Maintaining Factor Confirmation Checklist ──
+  if (phase === 2 && session === 8) {
+    return (
+      <AuthShell>
+        <Session8ConfirmationClient
+          content={C8_CONFIRMATION_CHECKLIST}
+          focusLine={DAILY_FOCUS_LINES[2][8]}
         />
       </AuthShell>
     )
