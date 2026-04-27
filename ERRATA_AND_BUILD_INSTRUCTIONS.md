@@ -969,52 +969,72 @@ Build implication for Phase 2+: future phase advancement helpers (`advancePhase2
 
 ---
 
-### E23. PHASE 1 MAINTAINING FACTOR SCHEMA GAPS — DOC 8 LISTS 8 FLAGS, SCHEMA HAS 4
+### E23. PHASE 1 MAINTAINING FACTOR / HABIT FLAG SCHEMA AND CAPTURE GAPS — RESOLVED BY DESIGN DECISION
 
-Doc 8 Phase 1 Section 6 (maintaining factors output table) specifies eight
-member-facing maintaining factor flags. Only four have corresponding columns
-on `phase1_assessment` in the live schema:
+**Status: RESOLVED (M12c-pre).** This entry remains in errata as a record
+of the design decision, not as a pending fix.
 
-| Doc 8 flag | Live column | Status |
-|---|---|---|
-| Elevated [side] shoulder | `post_shoulder_asymmetry` + `post_elevated_side` | ✅ |
-| Dominant chewing — [side] | `post_dominant_chewing_side` | ✅ |
-| Sustained desk load | `post_sustained_desk_load` | ✅ |
-| Asymmetric exercise patterns | `post_asymmetric_exercise` | ✅ |
-| Low screen positioning | — | ❌ MISSING |
-| Stomach sleeping | — | ❌ MISSING (also tracked under E21 as `ctx_stomach_sleeping`) |
-| Consistent bag carrying | — | ❌ MISSING |
-| Jaw posture habits | — | ❌ MISSING |
+**Original concern (logged M12b):** Doc 8 Phase 2 C.1 maintaining-factor
+list and Doc 8 Phase 2 C.2/C.3/C.4 "Flagged for your profile" per-habit
+labels reference flag columns that either don't exist on `phase1_assessment`
+or are not captured by current Phase 1 module behaviour.
 
-**Discovered during M12b** when wiring C.1 Opening Framing personalisation.
-C.1 surfaces a confirmed-flags list to members; the four missing flags cannot
-be surfaced because no column captures them.
+**Gap analysis (M12c-pre):**
 
-**Resolution path:** pre-launch review of Phase 1 module behaviour. Required
-changes:
+Type 1 — Question specified in Doc 8 Phase 1 Module 5 §3 "Daily Posture
+Patterns", capture never built in V2:
 
-1. Add 4 new columns to `phase1_assessment`:
-   - `post_low_screen_positioning BOOLEAN`
-   - `ctx_stomach_sleeping BOOLEAN` (resolves E21 simultaneously)
-   - `post_bag_carrying BOOLEAN`
-   - `tmj_jaw_posture_habits BOOLEAN`
-2. Update Phase 1 Module 3 (Postural) to capture and write these values per
-   Doc 8 Phase 1 Section B.4.
-3. Extend `buildConfirmedFlagsList` in
-   `/content/framework/phase-2/c1-opening-framing.ts` to include the four new
-   flags with verbatim labels from Doc 8 Phase 1 Section 6 maintaining factors
-   output table.
-4. Backfill: existing members will have NULL for these columns until they
-   re-run Module 3 — leave NULL handling as "not confirmed."
+- `post_low_screen_positioning`
+- `ctx_stomach_sleeping` (also tracked under E21)
+- `post_bag_carrying`
+- `tmj_jaw_posture_habits`
 
-**Until resolved:** C.1 surfaces 8 of the canonical Doc 8 maintaining factors
-(4 postural + 4 nervous-system). The 4 missing flags are silently absent from
-the C.1 list. This is acceptable degradation — members do not see incorrect
-data, only incomplete data — but the C.2/C.3/C.4 habits audit content does
-reference these patterns by name (e.g. C.2 covers jaw posture habits as a
-habit; C.3 covers stomach sleeping). The "Flagged for your profile"
-per-habit labels in C.2/C.3/C.4 (M12c–M12d) will not be able to fire for
-these four flag types until E23 is resolved. Note this when writing M12c/M12d.
+Type 2 — Habit referenced by Doc 8 Phase 2 system notes, no Phase 1
+question specified anywhere in Doc 8:
+
+- `gum_chewing` (Doc 8 P2 C.2 H3 system note assumes column; no Doc 8 P1
+  capture mechanism specified)
+- `object_chewing` (Doc 8 P2 C.2 H4 — same)
+- `phone_shoulder` (Doc 8 P2 C.2 H7 — same)
+
+Type 3 — V1 intake S-columns (s1_score etc) referenced by Doc 8 fallback
+rules, never imported into V2:
+
+- `users.s1_score` and related — fallback path in Doc 13 §1.2 is dead in
+  V2 (also tracked under E20)
+
+**Design decision: ACCEPT THE PARTIAL STATE.**
+
+Rationale:
+
+1. All habit content and mechanism notes render in full for every member
+   across C.1 through C.8.
+2. "Flagged for your profile" labels fire correctly for habits whose
+   underlying data is captured by current Phase 1 modules. Other habits
+   remain silent — members read the content and self-assess.
+3. Adding 7+ additional Phase 1 questions to support supplementary visual
+   labels would expand Phase 1 by ~15% for personalisation emphasis, not
+   core content. Phase 1 is already specified as the longest single phase
+   of the framework.
+4. Selective label firing preserves trust in the labels that do appear.
+   A label that always means something is more useful than a label that
+   sometimes means something.
+
+**Implementation:**
+
+- C.1 personalisation (M12b): 8 maintaining factors surface (4 postural +
+  4 nervous-system). The 4 Doc-8-listed-but-uncaptured factors remain
+  silent.
+- C.2 per-habit labels (M12c): H1, H2, H5 fire correctly when their
+  underlying conditions are met. H3, H4, H6, H7 are PERMANENTLY silent.
+- C.3, C.4 (M12d): same approach — per-habit labels fire only where
+  Phase 1 capture supports them. Decisions documented per-habit when
+  those sub-steps land.
+- Flag-check helpers (`getC2HabitFlag` and equivalents in C.3/C.4)
+  annotate permanently-silent habits with `// PERMANENT — no Phase 1
+  capture per E23 design decision`.
+
+**No further action required.** This is not a pre-launch fix item.
 
 ---
 

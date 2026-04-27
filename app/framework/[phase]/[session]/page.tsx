@@ -28,6 +28,12 @@ import {
 } from '@/content/framework/phase-2/c1-opening-framing'
 import type { C1AssessmentInput } from '@/content/framework/phase-2/c1-opening-framing'
 import Session1OpeningFramingClient from './Session1OpeningFramingClient'
+import {
+  C2_HABITS_AUDIT_JAW,
+  getC2HabitFlag,
+} from '@/content/framework/phase-2/c2-habits-audit-jaw'
+import type { C2AssessmentInput } from '@/content/framework/phase-2/c2-habits-audit-jaw'
+import Session2HabitsJawClient from './Session2HabitsJawClient'
 
 type Props = { params: Promise<{ phase: string; session: string }> }
 
@@ -318,6 +324,56 @@ export default async function SessionPage({ params }: Props) {
           paragraph2={C1_OPENING_FRAMING.paragraph2}
           paragraph3={paragraph3}
           paragraph4={C1_OPENING_FRAMING.paragraph4}
+        />
+      </AuthShell>
+    )
+  }
+
+  // ─── Phase 2 / Session 2 — C.2 Habits Audit: Jaw-Specific ────────────────
+  if (phase === 2 && session === 2) {
+    // Read C.2 personalisation columns from phase1_assessment
+    const { data: assessmentRaw } = await supabase
+      .from('phase1_assessment')
+      .select(`
+        tmj_normalised_score,
+        tmj_daytime_clenching,
+        tmj_masseter_asymmetry,
+        post_dominant_chewing_side
+      `)
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    const assessment = assessmentRaw as
+      | (C2AssessmentInput & { tmj_normalised_score: number | null })
+      | null
+
+    // Read existing acknowledgement state for client hydration
+    const { data: progressRow } = await supabase
+      .from('framework_progress')
+      .select('phase2_habits_acknowledged')
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    type C2AckShape = { C2?: { habits?: Record<string, string> } }
+    const habitsAck =
+      (progressRow?.phase2_habits_acknowledged as C2AckShape | null)?.C2
+        ?.habits ?? {}
+
+    // Compute per-habit flag values server-side
+    // tmj_normalised_score is in 0-100 percentage units, matching the unit
+    // of PROTOCOL_ASSIGNMENT_MINIMUM in scoring-thresholds.ts.
+    const tmjNormalisedScore = assessment?.tmj_normalised_score ?? null
+    const habitFlags: Record<string, boolean> = {}
+    for (const habit of C2_HABITS_AUDIT_JAW.habits) {
+      habitFlags[habit.id] = getC2HabitFlag(habit.id, assessment, tmjNormalisedScore)
+    }
+
+    return (
+      <AuthShell>
+        <Session2HabitsJawClient
+          content={C2_HABITS_AUDIT_JAW}
+          habitFlags={habitFlags}
+          initialHabitsAcknowledged={habitsAck}
         />
       </AuthShell>
     )
