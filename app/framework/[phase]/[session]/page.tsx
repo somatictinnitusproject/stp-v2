@@ -46,6 +46,11 @@ import {
 } from '@/content/framework/phase-2/c4-habits-audit-systemic'
 import type { C4AssessmentInput } from '@/content/framework/phase-2/c4-habits-audit-systemic'
 import Session4HabitsSystemicClient from './Session4HabitsSystemicClient'
+import { C5_DIET_FOUNDATIONS } from '@/content/framework/phase-2/c5-diet-foundations'
+import { C6_SUPPLEMENTS } from '@/content/framework/phase-2/c6-supplements'
+import { C7_SLEEP_FOUNDATIONS } from '@/content/framework/phase-2/c7-sleep-foundations'
+import Session5To7ReadMostlyClient from './Session5To7ReadMostlyClient'
+import { DAILY_FOCUS_LINES } from '@/content/focus-lines'
 
 type Props = { params: Promise<{ phase: string; session: string }> }
 
@@ -472,6 +477,48 @@ export default async function SessionPage({ params }: Props) {
           content={C4_HABITS_AUDIT_SYSTEMIC}
           habitFlags={habitFlags}
           initialHabitsAcknowledged={habitsAck}
+        />
+      </AuthShell>
+    )
+  }
+
+  // ─── Phase 2 / Session 5 — C.5 Diet Foundations ──────────────────────────
+  if (phase === 2 && session === 5) {
+    return (
+      <AuthShell>
+        <Session5To7ReadMostlyClient
+          content={C5_DIET_FOUNDATIONS}
+          focusLine={DAILY_FOCUS_LINES[2][5]}
+          sectionId="C5"
+          redirectTo="/framework/phase-2/session-6"
+        />
+      </AuthShell>
+    )
+  }
+
+  // ─── Phase 2 / Session 6 — C.6 Supplements ───────────────────────────────
+  if (phase === 2 && session === 6) {
+    return (
+      <AuthShell>
+        <Session5To7ReadMostlyClient
+          content={C6_SUPPLEMENTS}
+          focusLine={DAILY_FOCUS_LINES[2][6]}
+          sectionId="C6"
+          redirectTo="/framework/phase-2/session-7"
+        />
+      </AuthShell>
+    )
+  }
+
+  // ─── Phase 2 / Session 7 — C.7 Sleep Foundations ─────────────────────────
+  if (phase === 2 && session === 7) {
+    return (
+      <AuthShell>
+        <Session5To7ReadMostlyClient
+          content={C7_SLEEP_FOUNDATIONS}
+          focusLine={DAILY_FOCUS_LINES[2][7]}
+          sectionId="C7"
+          redirectTo="/framework/phase-2/session-8"
         />
       </AuthShell>
     )
