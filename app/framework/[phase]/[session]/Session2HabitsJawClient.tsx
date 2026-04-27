@@ -12,6 +12,9 @@
 // Per-habit acknowledge state is hydrated from initialHabitsAcknowledged
 // (sourced from phase2_habits_acknowledged.C2.habits in page.tsx) and
 // mutated locally as the member taps each Acknowledge button.
+//
+// Acknowledge writes go to the shared /api/framework/phase-2/section-acknowledge
+// route (M12d) with sectionId: 'C2' in the payload.
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -38,10 +41,10 @@ export default function Session2HabitsJawClient(props: Session2HabitsJawClientPr
     setHabitLoading(habitId)
     setHabitError((e) => ({ ...e, [habitId]: '' }))
     try {
-      const res = await fetch('/api/framework/phase-2/c2-acknowledge', {
+      const res = await fetch('/api/framework/phase-2/section-acknowledge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kind: 'habit', habitId }),
+        body: JSON.stringify({ sectionId: 'C2', kind: 'habit', habitId }),
       })
       if (res.status === 401) {
         router.push('/login')
@@ -75,10 +78,10 @@ export default function Session2HabitsJawClient(props: Session2HabitsJawClientPr
     setSectionLoading(true)
     setSectionError(null)
     try {
-      const res = await fetch('/api/framework/phase-2/c2-acknowledge', {
+      const res = await fetch('/api/framework/phase-2/section-acknowledge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kind: 'section' }),
+        body: JSON.stringify({ sectionId: 'C2', kind: 'section' }),
       })
       if (res.status === 401) {
         router.push('/login')
