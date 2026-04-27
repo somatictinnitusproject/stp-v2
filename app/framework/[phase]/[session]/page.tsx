@@ -34,6 +34,12 @@ import {
 } from '@/content/framework/phase-2/c2-habits-audit-jaw'
 import type { C2AssessmentInput } from '@/content/framework/phase-2/c2-habits-audit-jaw'
 import Session2HabitsJawClient from './Session2HabitsJawClient'
+import {
+  C3_HABITS_AUDIT_CERVICAL,
+  getC3HabitFlag,
+} from '@/content/framework/phase-2/c3-habits-audit-cervical'
+import type { C3AssessmentInput } from '@/content/framework/phase-2/c3-habits-audit-cervical'
+import Session3HabitsCervicalClient from './Session3HabitsCervicalClient'
 
 type Props = { params: Promise<{ phase: string; session: string }> }
 
@@ -372,6 +378,50 @@ export default async function SessionPage({ params }: Props) {
       <AuthShell>
         <Session2HabitsJawClient
           content={C2_HABITS_AUDIT_JAW}
+          habitFlags={habitFlags}
+          initialHabitsAcknowledged={habitsAck}
+        />
+      </AuthShell>
+    )
+  }
+
+  // ─── Phase 2 / Session 3 — C.3 Habits Audit: Cervical and Postural ───────
+  if (phase === 2 && session === 3) {
+    const { data: assessmentRaw } = await supabase
+      .from('phase1_assessment')
+      .select(`
+        cerv_normalised_score,
+        post_sustained_desk_load,
+        post_shoulder_asymmetry
+      `)
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    const assessment = assessmentRaw as
+      | (C3AssessmentInput & { cerv_normalised_score: number | null })
+      | null
+
+    const { data: progressRow } = await supabase
+      .from('framework_progress')
+      .select('phase2_habits_acknowledged')
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    type C3AckShape = { C3?: { habits?: Record<string, string> } }
+    const habitsAck =
+      (progressRow?.phase2_habits_acknowledged as C3AckShape | null)?.C3
+        ?.habits ?? {}
+
+    const cervNormalisedScore = assessment?.cerv_normalised_score ?? null
+    const habitFlags: Record<string, boolean> = {}
+    for (const habit of C3_HABITS_AUDIT_CERVICAL.habits) {
+      habitFlags[habit.id] = getC3HabitFlag(habit.id, assessment, cervNormalisedScore)
+    }
+
+    return (
+      <AuthShell>
+        <Session3HabitsCervicalClient
+          content={C3_HABITS_AUDIT_CERVICAL}
           habitFlags={habitFlags}
           initialHabitsAcknowledged={habitsAck}
         />

@@ -984,10 +984,12 @@ or are not captured by current Phase 1 module behaviour.
 Type 1 — Question specified in Doc 8 Phase 1 Module 5 §3 "Daily Posture
 Patterns", capture never built in V2:
 
-- `post_low_screen_positioning`
-- `ctx_stomach_sleeping` (also tracked under E21)
-- `post_bag_carrying`
-- `tmj_jaw_posture_habits`
+- `post_low_screen_positioning` (referenced by C.3 H2)
+- `ctx_stomach_sleeping` (also tracked under E21; referenced by C.3 H3)
+- `post_bag_carrying` (referenced by C.3 H4)
+- `tmj_jaw_posture_habits` (referenced by C.2 H6)
+- `post_high_sustained_sitting_load` (referenced by C.3 H5)
+- `post_asymmetric_sitting` (referenced by C.3 H7)
 
 Type 2 — Habit referenced by Doc 8 Phase 2 system notes, no Phase 1
 question specified anywhere in Doc 8:
@@ -996,6 +998,10 @@ question specified anywhere in Doc 8:
   capture mechanism specified)
 - `object_chewing` (Doc 8 P2 C.2 H4 — same)
 - `phone_shoulder` (Doc 8 P2 C.2 H7 — same)
+- `phone_posture` (Doc 8 P2 C.3 H1 — same; OR fallback via
+  post_sustained_desk_load works)
+- `tinnitus_worse_driving` (Doc 8 P2 C.3 H6 system note references this
+  flag from cervical module history questions, but no such column exists)
 
 Type 3 — V1 intake S-columns (s1_score etc) referenced by Doc 8 fallback
 rules, never imported into V2:
@@ -1027,7 +1033,10 @@ Rationale:
   silent.
 - C.2 per-habit labels (M12c): H1, H2, H5 fire correctly when their
   underlying conditions are met. H3, H4, H6, H7 are PERMANENTLY silent.
-- C.3, C.4 (M12d): same approach — per-habit labels fire only where
+- C.3 per-habit labels (M12d): H1 fires (via post_sustained_desk_load), H4
+  fires (via post_shoulder_asymmetry), H7 fires (via
+  post_shoulder_asymmetry). H2, H3, H5, H6 are PERMANENTLY silent.
+- C.4 (M12d+): same approach — per-habit labels fire only where
   Phase 1 capture supports them. Decisions documented per-habit when
   those sub-steps land.
 - Flag-check helpers (`getC2HabitFlag` and equivalents in C.3/C.4)
