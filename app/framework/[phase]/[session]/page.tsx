@@ -53,6 +53,11 @@ import Session5To7ReadMostlyClient from './Session5To7ReadMostlyClient'
 import { DAILY_FOCUS_LINES } from '@/content/focus-lines'
 import { C8_CONFIRMATION_CHECKLIST } from '@/content/framework/phase-2/c8-confirmation-checklist'
 import Session8ConfirmationClient from './Session8ConfirmationClient'
+import {
+  C9_TRANSITION,
+  mapProfileTypeToTransitionCallback,
+} from '@/content/framework/phase-2/c9-transition'
+import Session1Phase3TransitionClient from './Session1Phase3TransitionClient'
 
 type Props = { params: Promise<{ phase: string; session: string }> }
 
@@ -536,6 +541,50 @@ export default async function SessionPage({ params }: Props) {
         />
       </AuthShell>
     )
+  }
+
+  // ─── Phase 3 / Session 1 — C.9 Transition Screen (first-access only) ────────
+  if (phase === 3 && session === 1) {
+    // Re-read progress with phase3_first_accessed for branching decision.
+    const { data: phase3Progress } = await supabase
+      .from('framework_progress')
+      .select('phase3_first_accessed')
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    if (!phase3Progress?.phase3_first_accessed) {
+      // First entry — write timestamp and render transition screen
+      await supabase
+        .from('framework_progress')
+        .update({ phase3_first_accessed: new Date().toISOString() })
+        .eq('user_id', user.id)
+
+      // Fetch profile_type for templating
+      const { data: assessmentRow } = await supabase
+        .from('phase1_assessment')
+        .select('profile_type')
+        .eq('user_id', user.id)
+        .maybeSingle()
+
+      const profileCallback = mapProfileTypeToTransitionCallback(
+        assessmentRow?.profile_type as ProfileType | null | undefined,
+      )
+
+      const bodyParagraph2 = C9_TRANSITION.bodyParagraph2Template.replace(
+        '{profileCallback}',
+        profileCallback,
+      )
+
+      return (
+        <AuthShell>
+          <Session1Phase3TransitionClient
+            content={C9_TRANSITION}
+            bodyParagraph2={bodyParagraph2}
+          />
+        </AuthShell>
+      )
+    }
+    // phase3_first_accessed already set — fall through to default stub
   }
 
   // ── Default stub — non-Phase-1 phases (Phase 2 / 3 / 4 / 5 stubs until those phases are built) ──
