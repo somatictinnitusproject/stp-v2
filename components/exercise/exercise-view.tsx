@@ -5,7 +5,7 @@
 //
 // Implements the first-view-vs-condensed-view contract from Doc 12 §6.5.
 // Profile modifier silent-omission per errata P3-13 — strict equality filter.
-// Timer routing: exercise.timer !== null → TimerSlot stub; null → CompleteButton.
+// Timer deferred to post-launch per errata P3-17 — always renders CompleteButton.
 //
 // onComplete is a Server Action forwarded from the /session page (M13g).
 // No data fetching here — all data comes via props.
@@ -16,7 +16,6 @@ import type { Phase1AssessmentRow } from '@/lib/scoring/types'
 import { ContentBlock, ContentBlockList } from './content-block'
 import { ProfileModifierBlock } from './profile-modifier-block'
 import { ExpandToggle } from './expand-toggle'
-import { TimerSlot } from './timer-slot'
 import { CompleteButton } from './complete-button'
 
 interface ExerciseViewProps {
@@ -53,17 +52,8 @@ export default function ExerciseView({
 }: ExerciseViewProps) {
   const qualifyingModifiers = filterQualifyingModifiers(exercise.profileModifiers, phase1)
 
-  // Complete affordance — timer if configured, plain button otherwise
-  const completeAffordance =
-    exercise.timer !== null ? (
-      <TimerSlot
-        timer={exercise.timer}
-        exerciseId={exercise.id}
-        onComplete={onComplete}
-      />
-    ) : (
-      <CompleteButton onComplete={onComplete} />
-    )
+  // Complete affordance — sustained-pressure timer deferred per P3-17
+  const completeAffordance = <CompleteButton onComplete={onComplete} />
 
   // Video placeholder — shown when videoId is available
   const videoPlaceholder = exercise.videoId !== null && (
