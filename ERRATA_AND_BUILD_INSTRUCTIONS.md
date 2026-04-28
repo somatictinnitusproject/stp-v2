@@ -1560,6 +1560,151 @@ If Doc 13 §5.4 and this section conflict, this section wins.
 
 ---
 
+### P3-15. PHASE 4 EXERCISES — EXPLICIT OPT-IN, NOT AUTO-APPEND
+
+Document 13 §5.4 instructs the session construction algorithm to append
+Phase 4 exercises to the daily session list when:
+
+```
+IF currentPhase = 4 OR frameworkProgress.phase4_first_accessed IS NOT NULL
+  exercises.push(...getPhase4Exercises(phase1Assessment))
+```
+
+**This is wrong.** Auto-appending Phase 4 exercises to a member's
+daily session because they navigated to Phase 4 content even once
+makes the session length unpredictable, removes member agency, and
+mistakes engagement (reading the content) for intent (practising the
+exercise daily).
+
+**Decision: Phase 4 exercises are added to the daily session only when
+the member explicitly opts each one in.** The member reads Phase 4
+content as supplementary material. On any Phase 4 exercise section,
+an explicit "Add to my daily session" button appears. Tapping it
+adds that exercise ID to the member's `phase4_exercises_added` array.
+Tapping again ("Remove from daily session") removes it.
+
+**Schema change required (first task of M13d):**
+
+Add column to `framework_progress`:
+- `phase4_exercises_added` JSONB NOT NULL DEFAULT `'[]'::jsonb`
+
+The array stores Phase 4 exercise IDs the member has opted into
+(e.g. `["F5_breath_work", "F8_neutralisation"]`). Default is empty —
+no Phase 4 exercises appear in /session for any member by default,
+regardless of `phase4_first_accessed` state.
+
+**Correct read path for buildSessionExerciseList:**
+
+```typescript
+// At the end of buildSessionExerciseList, after release/resistance:
+
+const phase4Added = progress.phase4_exercises_added ?? []
+exercises.push(...phase4Added)
+
+// Phase 4 exercises always appear last in the session list, after
+// release and resistance work, in the order the member added them.
+```
+
+**What this means for the existing logic:**
+
+- `phase4_first_accessed` timestamp is still recorded on first
+  navigation per Doc 13 §7.5 — useful for analytics and contextual
+  nudges, but does NOT drive session list inclusion
+- `currentPhase = 4` does NOT auto-include Phase 4 exercises (Phase 4
+  has no advancement gate per Doc 13 §7.5; there is no "Phase 4 daily
+  session" concept distinct from Phase 3's session)
+- The `getPhase4Exercises(phase1Assessment)` function referenced in
+  Doc 13 §5.4 is NOT implemented. Phase 4 content render decisions
+  (which exercises to show a member based on their Phase 1 flags)
+  remain at the Phase 4 content layer, not the session-construction
+  layer
+
+**Implementation notes for Phase 4 build (later phase):**
+
+- Each Phase 4 exercise section page checks `phase4_exercises_added`
+  for its ID
+- If present: button reads "Remove from my daily session"; on tap,
+  remove ID from JSONB array
+- If absent: button reads "Add to my daily session"; on tap, append
+  ID to JSONB array
+- Optimistic UI pattern (per Phase 2 lesson): local state updates
+  immediately, POST fires in background, silent failure
+- The button is on Phase 4 content sections only — Phase 3 release
+  and resistance exercises are not opt-in, they are in `/session`
+  by default per protocol assignment
+
+**Rationale:** Phase 4 is supplementary, not mandatory. Some Phase 4
+content is exercises (breath work, neutralisation), some is habits
+(sleep position, workstation setup) that don't belong in `/session`
+at all. Member agency over what they practice daily is preserved by
+explicit opt-in. Default-empty preserves session length predictability
+across all members.
+
+If Doc 13 §5.4 and this section conflict, this section wins.
+
+---
+
+### P3-16. RESISTANCE PHASE — BOTH DRIVERS, REGARDLESS OF PROTOCOL OPTION
+
+Document 13 §5.4 and Document 8 imply that Sequential (Option 1)
+members in resistance phase see only their assigned driver's
+resistance work plus the OTHER driver's release work as a delayed
+add. This is wrong.
+
+**Decision: once `resistance_phase_start IS NOT NULL`, both resistance
+lists are appended to the daily session regardless of protocol_option
+or which driver is assigned.** Sequential members converge with
+Parallel and Prioritised Parallel members at the resistance phase
+boundary.
+
+**Logic in buildSessionExerciseList:**
+
+```typescript
+// Release-phase branching uses protocol_option (different per option)
+// Resistance-phase appending is uniform across all options:
+
+if (resistanceStart !== null) {
+  if (cervAssigned) {
+    exercises = [...exercises, ...buildCervRetainingList()]
+  }
+  if (tmjAssigned) {
+    exercises = [...exercises, ...buildTmjResistanceList()]
+  }
+}
+```
+
+The protocol_assigned booleans (read from phase1_assessment per P3-14)
+determine which resistance lists apply. For DUAL_DRIVER and
+TMJ_PRIMARY_* / CERV_PRIMARY_* members on Option 3, both booleans are
+true and both resistance lists append. For Option 1 single-driver
+members, only their assigned driver's resistance list appends — they
+do NOT pick up the other driver's release work as a delayed add.
+
+**What this means for Sequential members:**
+
+- TMJ_DOMINANT, Option 1, release phase: TMJ release only (7 IDs)
+- TMJ_DOMINANT, Option 1, resistance phase: TMJ release + TMJ
+  resistance (11 IDs)
+- CERV_DOMINANT, Option 1, release phase: cervical release only (6 IDs)
+- CERV_DOMINANT, Option 1, resistance phase: cervical release +
+  cervical retraining (9 IDs)
+
+The cervical/TMJ "other driver" never enters a Sequential member's
+session — that's the whole point of choosing Sequential.
+
+**What this means for Doc 8 D-series and E-series content:**
+
+D.13 and E.12 resistance phase introduction copy may reference "the
+other driver enters" or similar phrasing. This phrasing is wrong for
+Sequential members and should NOT be authored into D.13 / E.12 content
+in M13o / M13u. The acknowledge button on these sections triggers
+resistance for the assigned driver only.
+
+If Doc 13 §5.4 or Doc 8 D.13/E.12 conflict with this section, this
+section wins.
+
+---
+
 
 
 
