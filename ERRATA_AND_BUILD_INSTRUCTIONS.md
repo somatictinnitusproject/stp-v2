@@ -1361,6 +1361,56 @@ to be working so the Phase 4 build doesn't double-fire dismissed nudges.
 
 ---
 
+### P3-11. SCHEMA STATE AT M13a START
+
+Verified 2026-04-28 via PostgREST column-probe (service role key). SQL editor
+access not available — presence confirmed by SELECT, not by information_schema.
+
+**framework_progress — all 6 Task-1 columns confirmed present:**
+- `exercises_viewed` JSONB NOT NULL ✅
+- `session_in_progress` JSONB NULLABLE ✅
+- `nudges_dismissed` JSONB NOT NULL ✅
+- `resistance_phase_start` TIMESTAMPTZ NULLABLE ✅
+- `phase4_first_accessed` TIMESTAMPTZ NULLABLE ✅
+- `phase5_outcome_type` VARCHAR(30) NULLABLE ✅ (CHECK constraint not verifiable without SQL editor)
+
+Migration-added columns also confirmed: `phase2_habits_acknowledged` ✅,
+`phase3_first_accessed` ✅.
+
+**Known schema deviation — `framework_progress.tmj_protocol_assigned` and
+`cerv_protocol_assigned` are absent.** Both live on `phase1_assessment` instead.
+The app already reads from `phase1_assessment` for protocol assignment.
+Phase 3 session construction must do the same — read `tmj_protocol_assigned`
+and `cerv_protocol_assigned` from `phase1_assessment.user_id = user.id`, not
+from `framework_progress`. No remediation needed.
+
+**session_logs — table exists, all columns present.** RLS partial verification:
+- Unauthenticated SELECT: 0 rows (RLS active) ✅
+- Unauthenticated INSERT: rejected with policy violation ✅
+- Full two-account authenticated test (Task 4 Tests 1–6): NOT completed —
+  requires authenticated user JWTs. Manual verification in Supabase SQL editor
+  recommended before launch.
+
+**users — all three required columns confirmed:** `is_admin` ✅,
+`onboarding_completed` ✅, `onboarding_step` ✅.
+
+**phase1_assessment — all Phase 3-relevant columns present except:**
+- `low_confidence_flag`: MISSING — computed at runtime by
+  `checkLowConfidenceEdgeCase()`, never persisted. Phase 3 session construction
+  must recompute from normalised scores, not read a stored flag. Not a bug.
+- `cerv_floor_relief_test`: still present (E17 open — dead column, pending drop).
+
+**Scoring thresholds:** `PHASE3_MINIMUM_WEEKS: 4` was already present.
+`RESISTANCE_PHASE_MINIMUM_DAYS: 7` added by M13a.
+
+**CRITICAL — `STP_PreLaunch_Changes.md` MISSING:**
+File referenced in the M13 preamble does NOT exist at the project root.
+Phase 3 content sub-steps (M13m, M13s, M13n, M13t, M13v, M13x) that apply
+pre-launch overrides CANNOT proceed without it. Oliver must create this file
+before any Phase 3 content build begins.
+
+---
+
 
 
 

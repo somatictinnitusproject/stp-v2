@@ -83,6 +83,14 @@ export const SCORING_THRESHOLDS = {
   // button becomes active. Does not auto-advance — controls button state only.
   PHASE3_MINIMUM_WEEKS: 4,
 
+  // Minimum days from phase2_completed_at before the resistance-phase
+  // acknowledge button on D.13 (TMJ) and E.12 (Cervical) becomes active.
+  // Pre-launch §4.3 and errata P3-6. Runs alongside the self-report criteria
+  // from D.3 / E.4 — both must be satisfied. Floor, not a recommendation.
+  // Inactive copy: "Minimum one week of release work before resistance phase
+  // begins — you can advance from [date]"
+  RESISTANCE_PHASE_MINIMUM_DAYS: 7,
+
   // ── Contextual Nudges ─────────────────────────────────────────────────────
   // Days into Phase 3 (from phase2_completed_at) before nervous system
   // nudges 4 and 5 appear.
