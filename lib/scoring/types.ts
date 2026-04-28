@@ -82,6 +82,48 @@ export interface Phase1AssessmentRow {
   profile_paragraph: string | null
 }
 
+// Shape of the framework_progress table row. Read by session list builders
+// (M13d), /session page (M13g), and ExerciseView component (M13e).
+//
+// tmj_protocol_assigned and cerv_protocol_assigned live on phase1_assessment,
+// NOT here — per errata P3-14. Do not add them to this type.
+//
+// phase4_exercises_added is the Phase 4 explicit opt-in array per errata P3-15.
+// Added to the DB in M13d migration 20260428000000_add_phase4_exercises_added.sql.
+export interface FrameworkProgressRow {
+  user_id: string
+
+  // Phase advancement state
+  current_phase: number
+  current_session: number
+  protocol_option: 1 | 2 | 3 | null  // null for single-driver and low-confidence members
+  started_at: string | null           // TIMESTAMPTZ
+
+  // Phase completion timestamps (TIMESTAMPTZ)
+  phase1_completed_at: string | null
+  phase2_completed_at: string | null
+  phase3_completed_at: string | null
+  phase4_completed_at: string | null
+  phase5_completed_at: string | null
+
+  // Phase milestones
+  resistance_phase_start: string | null        // TIMESTAMPTZ — non-null once member enters resistance phase
+  phase2_habits_acknowledged: Record<string, unknown>  // JSONB NOT NULL default {} — engagement telemetry per M12a
+  phase3_first_accessed: string | null         // TIMESTAMPTZ — set on first /framework/phase-3 visit
+  phase4_first_accessed: string | null         // TIMESTAMPTZ — analytics only; does NOT drive session list (P3-15)
+  phase5_outcome_type: string | null           // VARCHAR(30)
+
+  // Session state (JSONB)
+  exercises_viewed: Record<string, boolean>            // JSONB NOT NULL — exercise ID → true on first view (P3-4)
+  session_in_progress: Record<string, unknown> | null  // JSONB NULLABLE — in-progress session timer state (P3-8)
+  nudges_dismissed: Record<string, boolean>            // JSONB NOT NULL — nudge ID → dismissed
+
+  // Phase 4 explicit opt-in per errata P3-15
+  // Array of Phase 4 exercise IDs the member has opted into for daily /session.
+  // Default [] — no Phase 4 exercises appear in /session unless explicitly added.
+  phase4_exercises_added: string[]
+}
+
 // Only the columns read by scoring logic — keeps server action queries minimal.
 export interface UserIntakeRow {
   m1_score: number | null
