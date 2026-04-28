@@ -1403,11 +1403,160 @@ from `framework_progress`. No remediation needed.
 **Scoring thresholds:** `PHASE3_MINIMUM_WEEKS: 4` was already present.
 `RESISTANCE_PHASE_MINIMUM_DAYS: 7` added by M13a.
 
-**CRITICAL — `STP_PreLaunch_Changes.md` MISSING:**
-File referenced in the M13 preamble does NOT exist at the project root.
-Phase 3 content sub-steps (M13m, M13s, M13n, M13t, M13v, M13x) that apply
-pre-launch overrides CANNOT proceed without it. Oliver must create this file
-before any Phase 3 content build begins.
+**`STP_PreLaunch_Changes.md` confirmed present** at project root. File was
+not found in the first M13a session due to a glob pattern mismatch (case
+sensitivity). File was read in full during M13a review. All preamble
+requirements satisfied.
+
+---
+
+### P3-12. LOW-CONFIDENCE DETECTION — RUNTIME COMPUTATION, NOT STORED FLAG
+
+Document 13 §5.4 instructs the session construction algorithm to read
+`phase1Assessment.low_confidence_flag IS NOT NULL`. **This is wrong.**
+The column does not exist on `phase1_assessment` and was never persisted.
+Verified during M13a Item 3 audit on 2026-04-28.
+
+Low-confidence is detected at runtime by reading `tmj_normalised_score`
+and `cerv_normalised_score` (both confirmed present, both never null
+after profile generation):
+
+```typescript
+const isLowConfidence =
+  (assessment.tmj_normalised_score ?? 0) < SCORING_THRESHOLDS.PROTOCOL_ASSIGNMENT_MINIMUM &&
+  (assessment.cerv_normalised_score ?? 0) < SCORING_THRESHOLDS.PROTOCOL_ASSIGNMENT_MINIMUM
+```
+
+`PROTOCOL_ASSIGNMENT_MINIMUM` is 20 (already in `SCORING_THRESHOLDS`).
+
+The two low-confidence subtypes Doc 13 §3.1 distinguishes
+(`LOW_CONFIDENCE_SYMPTOM_DOMINANT` vs `LOW_CONFIDENCE_LOW_ALL`) have
+identical session composition — both route to `buildLowConfidenceList`.
+The subtype distinction is irrelevant for session construction. Do NOT
+add a runtime check for symptom_score in M13d.
+
+When buildSessionExerciseList encounters a low-confidence member,
+the standard `protocol_option` branching is skipped entirely and
+`buildLowConfidenceList` is returned with resistance exercises appended
+if `resistance_phase_start IS NOT NULL` (rare for low-confidence members
+but logic must handle it).
+
+If Doc 13 §5.4 and this section conflict, this section wins.
+
+---
+
+### P3-13. PHASE 1 FLAG GAPS — SILENT-OMISSION POLICY
+
+Phase 3 content (Doc 8 Part D and Part E) references Phase 1 flag columns
+in profile modifier blocks that are not persisted to `phase1_assessment`.
+Verified during M13a Item 5 audit on 2026-04-28.
+
+**The five missing flags** with no proxy column on `phase1_assessment`:
+
+| Flag referenced in Doc 8 | Phase 3 content using it | DB status |
+|---|---|---|
+| `masseter_tenderness` | D.6 masseter profile modifier | Missing — `tmj_masseter_asymmetry` exists but captures palpation difference, not tenderness; not equivalent |
+| `temporalis_tenderness` | D.5 temporalis profile modifier | Missing — no proxy. No Phase 1 question on temporalis at all |
+| `intraoral_pterygoid_tenderness` | D.7 intraoral pterygoid profile modifier | Missing — no proxy. Module 1 Q5 captures external lateral pterygoid only |
+| `temporal_headache` | D.5 temporalis profile modifier | Missing — no proxy |
+| `ear_fullness` | D.5 / D.9 profile modifiers | Missing — no proxy |
+
+**The one proxy-acceptable flag:**
+
+| `nocturnal_clenching` | D.12 resting position profile modifier | Encoded as `tmj_morning_soreness` — sufficient proxy. Doc 8 D.12 modifier already references morning soreness as the surfacing symptom. |
+
+**Decision:** silent omission. No Phase 1 backfill, no schema additions.
+
+The five missing-flag profile modifier blocks DO NOT RENDER for any
+member. Exercise content still renders in full — only the personalisation
+block tied to the missing flag is omitted. Every member still gets the
+full exercise instructions, demonstration video, mechanism explanation,
+and complete button.
+
+`nocturnal_clenching` modifier on D.12 reads `tmj_morning_soreness` as
+its trigger. Doc 8 D.12 prose for this modifier already aligns with
+morning soreness phrasing.
+
+**Implementation requirement for M13m, M13n, M13s, M13t, M13v:**
+
+Profile modifier rendering must defensively handle missing flag columns.
+The pattern is optional chaining with fallback to "block omitted",
+not "throw on missing column read":
+
+```typescript
+// Pattern — modifier renders only if flag is true
+{phase1.tmj_masseter_tenderness === true && (
+  <ProfileModifier title="Masseter Tenderness Confirmed">
+    {/* modifier content */}
+  </ProfileModifier>
+)}
+
+// For the five missing flags, the column reference resolves to
+// `undefined`, the strict equality check fails, the modifier block
+// is silently omitted. No error, no warning, no UI artifact.
+```
+
+Do NOT use `phase1.tmj_masseter_tenderness === undefined` to render
+a placeholder. Do NOT log warnings. Do NOT surface the gap to the member.
+Silent omission means silent — the member experience is identical to
+that of a member who answered "no" on the question (had it been asked).
+
+If pre-launch §1.x or Doc 8 references one of the five missing flags
+in profile modifier copy that is otherwise required (e.g. a "this
+modifier always renders" block tied to a missing flag), flag the conflict
+and stop — do not invent a rendering rule. Escalate to Oliver.
+
+This policy is closed for Phase 3 launch. Re-evaluate post-launch
+once outcome data accumulates.
+
+---
+
+### P3-14. PROTOCOL ASSIGNMENT BOOLEANS — READ FROM phase1_assessment, NOT framework_progress
+
+Document 13 §5.4 instructs the session construction algorithm to read
+`tmj_protocol_assigned` and `cerv_protocol_assigned` from `framework_progress`.
+**This is wrong.** Both columns live on `phase1_assessment`, not on
+`framework_progress`. Verified during M13a Item 3 audit on 2026-04-28.
+
+The earlier app code already reads protocol assignment from
+`phase1_assessment` for existing functionality (Phase 1 → Phase 2
+transition, dashboard rendering). Phase 3 session construction must do
+the same.
+
+**Correct read path for buildSessionExerciseList:**
+
+```typescript
+// Fetch in parallel on /session page load
+const { data: phase1 } = await supabase
+  .from('phase1_assessment')
+  .select('profile_type, tmj_protocol_assigned, cerv_protocol_assigned, tmj_normalised_score, cerv_normalised_score, ...')
+  .eq('user_id', userId)
+  .single()
+
+const { data: progress } = await supabase
+  .from('framework_progress')
+  .select('current_phase, protocol_option, resistance_phase_start, exercises_viewed, session_in_progress, nudges_dismissed, phase4_first_accessed, ...')
+  .eq('user_id', userId)
+  .single()
+
+// In the algorithm:
+const tmjAssigned    = phase1.tmj_protocol_assigned          // NOT progress.tmj_protocol_assigned
+const cervAssigned   = phase1.cerv_protocol_assigned         // NOT progress.cerv_protocol_assigned
+const protocolOption = progress.protocol_option              // ✓ on framework_progress
+const resistanceStart= progress.resistance_phase_start       // ✓ on framework_progress
+const currentPhase   = progress.current_phase                // ✓ on framework_progress
+const profileType    = phase1.profile_type                   // ✓ on phase1_assessment
+```
+
+**Do NOT** add `tmj_protocol_assigned` or `cerv_protocol_assigned` columns
+to `framework_progress` to match Doc 13 §5.4. The existing read path
+from `phase1_assessment` is the canonical source. Adding duplicate columns
+introduces sync risk (the two could drift) and Doc 13 itself §2.3 says
+the booleans are written to `phase1_assessment` at profile generation
+and "copied to framework_progress on Phase 1 completion" — but that copy
+was never implemented and is not needed.
+
+If Doc 13 §5.4 and this section conflict, this section wins.
 
 ---
 

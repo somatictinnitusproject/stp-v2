@@ -44,3 +44,9 @@ next-env.d.ts
 .claude/
 
 .vercel
+
+# Stray Windows shortcuts
+*.lnk
+
+# Supabase CLI temp state
+supabase/.temp/
