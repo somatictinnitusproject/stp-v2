@@ -1,0 +1,104 @@
+// /content/exercises/_types.ts
+// ─────────────────────────────────────────────────────────────────────────────
+// SOMATIC TINNITUS PROJECT — V2 Exercise Content Type Contract
+//
+// Defines the Exercise interface that every Phase 3 exercise content file
+// must conform to. Read by M13d session list builders, M13e ExerciseView
+// component, M13f SustainedPressureTimer, and the Phase F exercise library.
+//
+// Authority: errata P3-2 (exercise IDs), P3-8 (timer), P3-13 (profile
+// modifiers), pre-launch §4.1 (timer), §4.2 (shorter session).
+// ─────────────────────────────────────────────────────────────────────────────
+
+import type { Phase1AssessmentRow } from '@/lib/scoring/types'
+
+// ── ContentBlock ──────────────────────────────────────────────────────────────
+// Discriminated union for all rendered content. Extends the Phase 2 paragraph
+// pattern with additional block types required for exercise content.
+
+export type ContentBlock =
+  | { type: 'p'; text: string }
+  | { type: 'subhead'; text: string }
+  | { type: 'list'; items: string[]; ordered?: boolean }
+  | { type: 'callout'; tone: 'info' | 'warning'; text: string }
+  | { type: 'emphasis'; text: string }
+
+// ── ProfileModifier ───────────────────────────────────────────────────────────
+// Data-driven personalisation block. Renders only when
+// phase1Assessment[triggerFlag] strictly equals triggerValue.
+//
+// Per errata P3-13: five Phase 1 flags referenced in Doc 8 are NOT persisted
+// to phase1_assessment (masseter_tenderness, temporalis_tenderness,
+// intraoral_pterygoid_tenderness, temporal_headache, ear_fullness). Their
+// column reference resolves to undefined, strict equality fails, and the
+// block is silently omitted — no error, no UI artifact.
+
+export interface ProfileModifier {
+  triggerFlag: keyof Phase1AssessmentRow
+  triggerValue: boolean | string  // true | 'left' | 'right' | etc.
+  title: string                   // e.g. 'Daytime Clenching Confirmed'
+  content: ContentBlock[]
+}
+
+// ── TimerConfig ───────────────────────────────────────────────────────────────
+// Per pre-launch §4.1 and errata P3-8.
+// Three exercises use <SustainedPressureTimer>: D5, D6, E5. All others: null.
+
+export interface TimerPosition {
+  label: string                // e.g. 'Position 1' | 'Single Hold'
+  durationSeconds: number      // 90 for D5/D6; 600 for E5
+  transitionToneAfter: boolean // true between D5/D6 positions; false on last
+}
+
+export interface TimerConfig {
+  positions: TimerPosition[]        // D5, D6: 3 positions; E5: 1 position
+  audioChannel: 'stereo' | 'right'  // 'right' for E5 (member supine); 'stereo' otherwise
+  warningSeconds: number | null     // E5: 30; D5/D6: null
+}
+
+// ── Exercise ──────────────────────────────────────────────────────────────────
+// One exercise in the daily session pool.
+//
+// Does NOT represent reading/orientation sections (D.1–D.3, D.12–D.13,
+// D.18–D.19, E.1–E.4, E.12, E.16) — those have a different content shape
+// and live in /content/framework/.
+//
+// File convention: one file per exercise, named {id}.ts, default export.
+// See /content/exercises/README.md for the full exercise list.
+
+export interface Exercise {
+  // ── Identity ────────────────────────────────────────────────────────────
+  id: string          // matches Doc 8 section letter per errata P3-2, e.g. 'D6_masseter_release'
+  sectionRef: string  // traceability reference, e.g. 'D.6'
+  name: string        // display name, e.g. 'Masseter Release'
+  category: 'jaw-release' | 'cervical-release' | 'resistance-training'
+
+  // ── Session metadata ─────────────────────────────────────────────────────
+  estimatedMinutes: number
+  focusLine: string   // daily focus line per Doc 8 D.20 / E.17
+
+  // ── Content ──────────────────────────────────────────────────────────────
+  fullContent: ContentBlock[]       // rendered on first view (exercises_viewed key absent)
+  condensedSummary: ContentBlock[]  // rendered on subsequent views
+
+  // ── Media ────────────────────────────────────────────────────────────────
+  videoId: string | null            // Cloudflare Stream video ID; null until uploaded
+
+  // ── Supporting content ───────────────────────────────────────────────────
+  commonMistakes: ContentBlock[] | null
+  contraindications: ContentBlock[] | null
+
+  // ── Personalisation ──────────────────────────────────────────────────────
+  // Silent-omission policy per errata P3-13. Array may be empty ([]).
+  profileModifiers: ProfileModifier[]
+
+  // ── Shorter session — per pre-launch §4.2 ───────────────────────────────
+  shorter_session_eligible: boolean
+  // Calendar day slot: 0 = Sun … 6 = Sat. null = appears every day in shorter sessions.
+  rotation_slot: number | null
+
+  // ── Timer — per pre-launch §4.1, errata P3-8 ────────────────────────────
+  // null for all exercises except D5_temporalis_release, D6_masseter_release,
+  // and E5_suboccipital_tennis_ball.
+  timer: TimerConfig | null
+}
