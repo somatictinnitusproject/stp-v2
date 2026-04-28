@@ -1705,6 +1705,72 @@ section wins.
 
 ---
 
+### P3-17. SUSTAINED-PRESSURE TIMER DEFERRED TO POST-LAUNCH
+
+Pre-launch §4.1 specifies a sustained-pressure timer for three exercises:
+D5 temporalis release, D6 masseter release, E5 suboccipital tennis ball
+release. The timer was intended to enforce 90-second holds (D5/D6) and
+the 10-minute hold (E5) because members tend to under-time these.
+
+**Decision: timer deferred to post-launch. Three exercises use the
+standard CompleteButton with explicit time guidance in their content.**
+
+**Rationale:**
+
+- Members are already using a stopwatch for other timed exercises
+  (E6/E7/E9 cervical stretches at 30s each, resistance phase holds).
+  Adding a built-in timer for only three of twenty exercises creates
+  inconsistency. Either every exercise has a guided timer or none do.
+  None is the simpler ship.
+- The timer is the most technically substantial component in M13
+  (audio handling, state persistence, iOS quirks, cross-day staleness,
+  mobile background-tab behaviour). Deferring removes that complexity
+  from launch QA surface.
+- Post-launch member data will reveal whether under-timing is actually
+  a problem. If session logs show D6 completing in <60 seconds on
+  average across members, the timer becomes evidence-driven; if not,
+  it stays as a non-priority.
+- The Exercise type's `timer: TimerConfig | null` field stays in place
+  so a future build can populate it without schema changes.
+
+**Build implications:**
+
+- Delete /components/exercise/timer-slot.tsx (was a stub for M13f)
+- Modify /components/exercise/exercise-view.tsx — remove the
+  `exercise.timer !== null` branch, always render `<CompleteButton>`
+- Exercise content for D5, D6, E5 (built in M13m and M13s) MUST include
+  explicit time guidance:
+  - D5: "Hold for 90 seconds at each position. Use your phone's
+    stopwatch or count steady seconds. Three positions: front,
+    middle, back of temporalis."
+  - D6: same 90-second framing.
+  - E5: "Lie on the ball for 10 minutes. Set a timer on your phone
+    so you don't have to track time."
+- The TimerConfig type in /content/exercises/_types.ts remains. All
+  exercise content files in M13m, M13n, M13s, M13t, M13v MUST set
+  `timer: null` for the present build.
+- Pre-launch §4.1 timer section is documented as a post-launch
+  enhancement, not part of the launch build.
+
+**Post-launch path (NOT in scope for current M13 build):**
+
+- Track per-exercise completion duration in session_logs
+- After 4-8 weeks of post-launch data, evaluate whether members are
+  under-timing D5/D6/E5
+- If yes: build a sustained-pressure timer feature (what was M13f)
+  and replace the CompleteButton with it for those three exercises
+- If no: the explicit time guidance in copy is sufficient
+
+**Sub-step plan change:**
+
+- M13f (sustained-pressure timer) is removed from the M13 plan
+- M13 total sub-steps: 24 (was 25)
+- Sub-steps continue at M13g (next sub-step)
+
+If pre-launch §4.1 and this section conflict, this section wins.
+
+---
+
 
 
 
