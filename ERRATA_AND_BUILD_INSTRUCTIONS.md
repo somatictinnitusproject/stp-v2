@@ -1074,5 +1074,295 @@ divergence.
 
 ---
 
+## PHASE 3 — PRIMARY DRIVER PROTOCOLS (M13)
+
+### P3-0. PRE-LAUNCH OVERRIDES DOCUMENT 8 — READ THIS FIRST
+
+`STP_PreLaunch_Changes.md` in the project root is the source of truth for
+all Phase 3 content and structural decisions. **Where pre-launch and Document 8
+conflict, pre-launch wins. Without exception.**
+
+Document 8 Part D (TMJ) and Part E (Cervical) were authored before the
+pre-launch evidence review. Several exercises in Doc 8 contain content
+that has been corrected, reframed, or removed by pre-launch. Do not
+write the Doc 8 version of any content listed in section P3-1 below.
+
+If Claude Code finds itself writing copy that matches Doc 8 phrasing
+on any of the items in P3-1, that is a bug. Stop and re-read pre-launch
+before continuing.
+
+---
+
+### P3-1. THE TWELVE IN-SCOPE PRE-LAUNCH ITEMS FOR PHASE 3
+
+These are the only pre-launch items implemented during the Phase 3 build.
+All other pre-launch items are out of scope here and handled in their
+respective phase builds.
+
+| Pre-launch ref | Doc 8 section affected | Override type | Sub-step |
+|---|---|---|---|
+| **1.1** Golgi tendon organ correction | D.6 masseter, E.5 suboccipital, any release content explaining autogenic inhibition | Content edit — replace "muscle spindle signalling" with "Golgi tendon organ feedback" | M13m, M13s |
+| **1.2** 90-second softening | D.5 temporalis, D.6 masseter, E.5 suboccipital, any release content using 90-second framing | Content edit — replace the 60-second binary framing with the softer phrasing in pre-launch §1.2 verbatim | M13m, M13s |
+| **1.5** Lateral pterygoid honest framing | D.8 lateral pterygoid release | Content addition — append the evidence note from pre-launch §1.5 verbatim after existing technique instructions | M13n |
+| **1.6** TMJ distraction clinician reframing | D.10 TMJ distraction | Content addition — prepend the clinician-vs-self paragraph from pre-launch §1.6 verbatim at exercise opening; keep rest of content intact | M13n |
+| **1.7** Hyoid removed from protocol | D.11 hyoid and suprahyoid release | Structural — REMOVE from `buildTmjReleaseList`. Do NOT author D.11 content during Phase 3. Library-bound only (Phase F). | M13d, M13n |
+| **1.8** SNAG → chin-tuck-rotation | E.11 upper cervical mobilisation | Structural — REPLACE exercise entirely. Discard the SNAG-style content from Doc 8. Build chin-tuck-rotation per pre-launch §1.8 verbatim. Likely rename ID to `E11_chin_tuck_rotation`. | M13t |
+| **1.9** DCF self-palpation fidelity check | E.13 deep cervical flexor training | Content addition — insert the self-palpation paragraph from pre-launch §1.9 verbatim BEFORE the existing "common mistake" warning | M13v |
+| **4.1** Sustained-pressure timer | D.5 temporalis, D.6 masseter, E.5 suboccipital | New feature — `<SustainedPressureTimer>` component replaces the static "Complete" button on these three exercises only | M13f, M13m, M13s |
+| **4.2** Shorter session option | /session, dashboard, Exercise interface | New feature — `shorter_session_eligible` + `rotation_slot` per exercise; rotation logic; secondary CTA on dashboard; three composition rules per pre-launch §4.2 | M13c, M13i, M13j |
+| **4.3** 7-day resistance gate | D.13 + E.12 acknowledge buttons | New gate — minimum 7 days from `phase2_completed_at` before resistance acknowledge button is active. Runs alongside (not instead of) self-report criteria. | M13b, M13o, M13u |
+| **4.5** Thoracic removed from protocol | E.10 thoracic mobility | Structural — REMOVE from `buildCervReleaseList`. Do NOT author E.10 content during Phase 3. Library-bound only (Phase F). | M13d, M13s |
+
+**Out of scope for Phase 3** (handled in other phase builds — do NOT bake
+into Phase 3 work): pre-launch §1.3 caffeine, §1.4 supplements, §1.10
+PMR cleanup, §1.11 F.8 high-NS routing, §1.12 bimodal stimulation, all
+§2.x scoring, all §3.x onboarding additions, §4.4 heat duration (no change
+required), §5.1 TFI infrastructure, §6.1 pricing tier.
+
+---
+
+### P3-2. EXERCISE ID NAMING — DOC 8 LETTERS WIN OVER DOC 13 §5.5
+
+Document 13 §5.5 names the protocol-specific exercise lists with IDs
+that are off-by-one (TMJ) and off-by-two (cervical) relative to Doc 8
+section letters. This is authoring drift in Doc 13.
+
+**Decision: code IDs match Doc 8 section letters exactly.**
+
+The corrected lists:
+
+```typescript
+// buildTmjReleaseList — post pre-launch
+[
+  'D4_heat_application',
+  'D5_temporalis_release',
+  'D6_masseter_release',
+  'D7_intraoral_pterygoid_release',
+  'D8_lateral_pterygoid_release',
+  'D9_auriculotemporal_nerve_mob',
+  'D10_tmj_distraction',
+  // D11 hyoid REMOVED per pre-launch §1.7
+  // D12 resting position is a daily habit, not a session exercise
+]
+
+// buildCervReleaseList — post pre-launch
+[
+  // E10 thoracic REMOVED per pre-launch §4.5
+  // No warm-up replacement — E5 suboccipital leads
+  'E5_suboccipital_tennis_ball',
+  'E6_scm_stretching',
+  'E7_levator_scapulae_stretching',
+  'E8_upper_trap_scalene_release',
+  'E9_suboccipital_specific_stretching',
+  'E11_chin_tuck_rotation',  // entirely new exercise per pre-launch §1.8
+]
+
+// buildReducedCervList — Option 3 secondary cervical for TMJ-primary profiles
+TMJ_PRIMARY_WITH_SECONDARY:    ['E5_suboccipital_tennis_ball']
+TMJ_PRIMARY_STRONG_SECONDARY:  [
+  'E5_suboccipital_tennis_ball',
+  'E6_scm_stretching',
+  'E9_suboccipital_specific_stretching',
+]
+
+// buildReducedTmjList — Option 3 secondary TMJ for cervical-primary profiles
+CERV_PRIMARY_WITH_SECONDARY:   ['D6_masseter_release']
+CERV_PRIMARY_STRONG_SECONDARY: ['D6_masseter_release', 'D7_intraoral_pterygoid_release']
+
+// buildLowConfidenceList
+['D6_masseter_release', 'E5_suboccipital_tennis_ball']
+
+// buildTmjResistanceList
+['D14_jaw_symmetry_retraining',
+ 'D15_progressive_resistance',
+ 'D16_eccentric_jaw_control',
+ 'D17_condylar_repositioning']
+// D18 functional integration and D19 timeline expectations are reading
+// sections in framework view, NOT daily session exercises.
+
+// buildCervRetainingList
+['E13_deep_cervical_flexor_training',
+ 'E14_cervical_rotation_holds',
+ 'E15_cervical_proprioception']
+// E16 timeline expectations is a reading section, NOT a daily session exercise.
+```
+
+If Doc 13 §5.5 and the table above conflict, the table above wins.
+
+---
+
+### P3-3. CERVICAL RELEASE OPENING — NO WARM-UP REPLACEMENT
+
+Pre-launch §4.5 removes E.10 thoracic mobility, which had been the
+warm-up opener for the cervical release sequence. **No replacement
+warm-up is added.** E.5 suboccipital tennis ball release leads directly.
+
+The 10-minute supine hold is itself gradual in onset and the member is
+lying down throughout — adding heat or a separate warm-up exercise is
+not required. Doc 12 §6.6 combined-session order ("Heat application
+(TMJ members)") remains TMJ-only — heat is not extended to cervical.
+
+---
+
+### P3-4. FIRST-VIEW TRACKING — EXERCISES ONLY, NOT ORIENTATION SECTIONS
+
+`exercises_viewed` JSONB tracks first-view state for **session exercises
+only**. Orientation and reading sections (D.1, D.2, D.3, D.12, D.18,
+D.19, E.1, E.2, E.3, E.4, E.16) always render full content on every visit.
+
+Member can revisit any orientation section from the Phase 3 session list
+(Doc 12 §3.11) and gets the full content every time. No condensed view
+exists for orientation sections.
+
+`exercises_viewed` keys are exercise IDs only:
+`D4_heat_application`, `D5_temporalis_release`, `D6_masseter_release`, etc.
+
+---
+
+### P3-5. TMJ RESISTANCE LIST — FOUR DAILY EXERCISES, NOT THREE
+
+Document 13 §5.5 lists `buildTmjResistanceList` with three IDs (D14,
+D15, D16-as-condylar). **This is wrong.** Doc 8 has four resistance
+exercises and one of them (D16 eccentric jaw control) is missing from
+Doc 13's list, and Doc 13 mislabels D17-condylar as D16.
+
+**Correct daily resistance list — four exercises:**
+- D14 jaw symmetry retraining
+- D15 progressive resistance
+- D16 eccentric jaw control
+- D17 condylar repositioning
+
+D18 functional integration and D19 timeline expectations are reading
+sections accessible via framework view — not daily session exercises.
+
+---
+
+### P3-6. RESISTANCE ACKNOWLEDGE — DUAL GATE
+
+The acknowledge button on D.13 and E.12 must satisfy both:
+1. Self-report (the readiness signals from D.3 / E.4 — implicit, member
+   judges based on content, no UI gate)
+2. **7-day minimum** from `phase2_completed_at` (pre-launch §4.3 —
+   `RESISTANCE_PHASE_MINIMUM_DAYS = 7` from `/content/scoring-thresholds.ts`)
+
+If `NOW() - phase2_completed_at < 7 days`, the button is inactive and
+displays:
+
+> Minimum one week of release work before resistance phase begins —
+> you can advance from [date].
+
+Where [date] is `phase2_completed_at + 7 days` formatted as a calendar date.
+
+The button activating does NOT mean the member should advance. The
+content above the button (D.13 / E.12 prose) carries the self-report
+criteria. The 7-day gate is a floor, not a recommendation.
+
+---
+
+### P3-7. SHORTER SESSION COMPOSITION — EXACT RULES
+
+Per pre-launch §4.2, the shorter session option (route: `/session?mode=short`)
+composes exercises by `tmj_protocol_assigned`, `cerv_protocol_assigned`,
+calendar day-of-week rotation, and resistance phase state.
+
+**No heat in shorter sessions** — heat is treated as preparation, not
+treatment. Skipping heat is the largest time saving and the most defensible.
+
+**Rotation rule:** calendar day-of-week (e.g. JavaScript `Date.getDay()`).
+Same supporting exercise on the same weekday for every member. Implementation
+is a pure function of `dayOfWeek`. No per-member counter or anchored-to-start
+date logic.
+
+Three compositions:
+
+**Single-driver TMJ** (~7–10 min):
+- D6 masseter (every day) + 1 supporting exercise rotating by calendar day-of-week
+- D5 temporalis: Mon, Thu
+- D7 intraoral pterygoid: Tue, Fri (included for ALL TMJ members — not gated on Phase 1 finding)
+- D8 lateral pterygoid: Wed, Sat
+- D9 auriculotemporal: Sun
+
+**Single-driver cervical** (~17–20 min):
+- E5 suboccipital (every day) + 2 cervical triumvirate rotating by day
+- E6 SCM: Mon, Thu
+- E8 upper trap: Tue, Fri
+- E7 levator: Wed, Sat
+- E9 suboccipital stretch: Sun
+- E13 DCF if in retraining phase
+
+**Dual-driver** (~25–30 min):
+- D6 masseter (every day)
+- E5 suboccipital (every day)
+- One cervical triumvirate exercise rotating by day
+- One TMJ supporting exercise rotating by day
+- One additional cervical supporting exercise rotating by day
+- E13 DCF if in retraining phase
+
+**Streak handling:** shorter sessions count toward the daily streak the
+same as full sessions.
+
+**Analytics:** track shorter-session frequency in `session_logs.exercises_completed`
+context, do NOT surface count to member.
+
+---
+
+### P3-8. SUSTAINED-PRESSURE TIMER — TECHNICAL CONSTRAINTS
+
+Per pre-launch §4.1, three exercises use `<SustainedPressureTimer>`:
+
+| Exercise | Configuration |
+|---|---|
+| D5 temporalis | 3 × 90s with 5s transition tone between positions, end-of-hold chime, end-of-sequence chime. Total: 4m 50s. |
+| D6 masseter | Same as D5: 3 × 90s with transitions and chimes |
+| E5 suboccipital | Single 10-minute hold. Optional 30s warning chime. Audio routed right channel only (member is supine). |
+
+**iOS Safari constraints:**
+- Audio context MUST be initialised on the user's tap of "Start guided session"
+- Pre-loaded audio file (single chime) for all events
+- Cannot autoplay sound
+
+**State persistence:**
+- Timer state (current position, elapsed seconds within position) saved
+  to localStorage on every interval tick
+- Stale-state rule: if the saved state's date is not today's calendar date,
+  discard and start fresh. Same rule as `session_in_progress` JSONB
+  per Doc 13 §5.9. Cross-midnight resumption is intentionally NOT supported.
+- App close / navigation away mid-session same calendar day → returning
+  to the exercise shows "Resume from position N at MM:SS" option
+- Component is reusable — same component, different position arrays
+  and durations.
+
+---
+
+### P3-9. SHELL ASSIGNMENT FOR /session
+
+The `/session` page uses `AuthShell` like every other authenticated
+member page. The page itself replaces the dashboard's "Start today's
+session" CTA — it is not a modal, not a separate shell. Header / nav /
+footer come from AuthShell. Page-internal layout (G2 sticky session
+header, G1 exercise cards, G3 completion screen) per Doc 11 §G.
+
+---
+
+### P3-10. PHASE 4 NUDGE LINKS — PHASE 4 OVERVIEW PLACEHOLDER
+
+The contextual nudges in M13x reference Phase 4 sections that do not
+exist yet. For Phase 3 build:
+
+- Nudges render correctly with their copy from Doc 12 §6.9
+- Deep-link target is `/framework/phase-4` (overview page)
+- Phase 4 build (later) will replace nudge targets with section-specific
+  deep links
+
+Do NOT skip nudge implementation in Phase 3 because the deep link is
+imperfect. The nudge dismissal state (`nudges_dismissed` JSONB) needs
+to be working so the Phase 4 build doesn't double-fire dismissed nudges.
+```
+
+---
+
+
+
+
 *Built to help people. Designed to last.*
 *SOMATIC TINNITUS PROJECT — V2 Errata & Build Instructions*
