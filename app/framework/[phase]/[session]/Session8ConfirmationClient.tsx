@@ -13,16 +13,40 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { C8ConfirmationChecklist } from '@/content/framework/phase-2/c8-confirmation-checklist'
+import NudgeCard from '@/components/NudgeCard'
+import type { NudgeData } from '@/content/framework/phase-2/nudges'
 
 type Session8ConfirmationClientProps = {
   content: C8ConfirmationChecklist
   focusLine: string
+  nudgeToShow?: NudgeData | null
 }
 
 export default function Session8ConfirmationClient(props: Session8ConfirmationClientProps) {
   const router = useRouter()
+  const [nudgeDismissed, setNudgeDismissed] = useState(false)
+  const [nudgeDismissPending, setNudgeDismissPending] = useState(false)
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [confirmError, setConfirmError] = useState<string | null>(null)
+
+  async function handleNudgeDismiss() {
+    if (!props.nudgeToShow || nudgeDismissPending) return
+    const nudgeId = props.nudgeToShow.id
+    setNudgeDismissed(true)  // optimistic
+    setNudgeDismissPending(true)
+    try {
+      await fetch('/api/framework/nudges/dismiss', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nudgeId }),
+      })
+      // Silent on failure — card stays hidden for this session; next load re-evaluates.
+    } catch {
+      // Silent
+    } finally {
+      setNudgeDismissPending(false)
+    }
+  }
 
   async function handleConfirm() {
     if (confirmLoading) return
@@ -108,6 +132,15 @@ export default function Session8ConfirmationClient(props: Session8ConfirmationCl
       <p className="text-body text-text-body italic mb-10">
         {props.content.warningParagraph}
       </p>
+
+      {/* Contextual nudge — before the confirmation border-t */}
+      {props.nudgeToShow && !nudgeDismissed && (
+        <NudgeCard
+          nudge={props.nudgeToShow}
+          onDismiss={handleNudgeDismiss}
+          dismissDisabled={nudgeDismissPending}
+        />
+      )}
 
       {/* Confirmation error */}
       {confirmError && (

@@ -58,6 +58,9 @@ import {
   mapProfileTypeToTransitionCallback,
 } from '@/content/framework/phase-2/c9-transition'
 import Session1Phase3TransitionClient from './Session1Phase3TransitionClient'
+import { getEligibleNudge } from '@/lib/framework/nudges'
+import type { NudgeAssessmentInput } from '@/lib/framework/nudges'
+import type { NudgeId } from '@/content/framework/phase-2/nudges'
 
 type Props = { params: Promise<{ phase: string; session: string }> }
 
@@ -362,19 +365,25 @@ export default async function SessionPage({ params }: Props) {
         tmj_normalised_score,
         tmj_daytime_clenching,
         tmj_masseter_asymmetry,
-        post_dominant_chewing_side
+        post_dominant_chewing_side,
+        post_sustained_desk_load,
+        cerv_forward_head_posture
       `)
       .eq('user_id', user.id)
       .maybeSingle()
 
     const assessment = assessmentRaw as
-      | (C2AssessmentInput & { tmj_normalised_score: number | null })
+      | (C2AssessmentInput & {
+          tmj_normalised_score: number | null
+          post_sustained_desk_load: boolean | null
+          cerv_forward_head_posture: boolean | null
+        })
       | null
 
     // Read existing acknowledgement state for client hydration
     const { data: progressRow } = await supabase
       .from('framework_progress')
-      .select('phase2_habits_acknowledged')
+      .select('phase2_habits_acknowledged, nudges_dismissed')
       .eq('user_id', user.id)
       .maybeSingle()
 
@@ -392,12 +401,25 @@ export default async function SessionPage({ params }: Props) {
       habitFlags[habit.id] = getC2HabitFlag(habit.id, assessment, tmjNormalisedScore)
     }
 
+    // Nudge eligibility — Nudge 1 (phase4_workstation)
+    const c2NudgeAssessment: NudgeAssessmentInput | null = assessment ? {
+      post_sustained_desk_load: assessment.post_sustained_desk_load,
+      cerv_forward_head_posture: assessment.cerv_forward_head_posture,
+      ns_sleep_disruption: null,
+      ns_stress_tinnitus_correlation: null,
+      ns_hypervigilance: null,
+      ns_anxiety_loop: null,
+    } : null
+    const c2Dismissed = ((progressRow?.nudges_dismissed ?? {}) as Partial<Record<NudgeId, boolean>>)
+    const c2NudgeToShow = getEligibleNudge('C2', c2NudgeAssessment, c2Dismissed)
+
     return (
       <AuthShell>
         <Session2HabitsJawClient
           content={C2_HABITS_AUDIT_JAW}
           habitFlags={habitFlags}
           initialHabitsAcknowledged={habitsAck}
+          nudgeToShow={c2NudgeToShow}
         />
       </AuthShell>
     )
@@ -519,6 +541,29 @@ export default async function SessionPage({ params }: Props) {
 
   // ─── Phase 2 / Session 7 — C.7 Sleep Foundations ─────────────────────────
   if (phase === 2 && session === 7) {
+    const { data: c7AssessmentRaw } = await supabase
+      .from('phase1_assessment')
+      .select('ns_sleep_disruption')
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    const { data: c7ProgressRow } = await supabase
+      .from('framework_progress')
+      .select('nudges_dismissed')
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    const c7NudgeAssessment: NudgeAssessmentInput | null = c7AssessmentRaw ? {
+      post_sustained_desk_load: null,
+      cerv_forward_head_posture: null,
+      ns_sleep_disruption: c7AssessmentRaw.ns_sleep_disruption ?? null,
+      ns_stress_tinnitus_correlation: null,
+      ns_hypervigilance: null,
+      ns_anxiety_loop: null,
+    } : null
+    const c7Dismissed = ((c7ProgressRow?.nudges_dismissed ?? {}) as Partial<Record<NudgeId, boolean>>)
+    const c7NudgeToShow = getEligibleNudge('C7', c7NudgeAssessment, c7Dismissed)
+
     return (
       <AuthShell>
         <Session5To7ReadMostlyClient
@@ -526,6 +571,7 @@ export default async function SessionPage({ params }: Props) {
           focusLine={DAILY_FOCUS_LINES[2][7]}
           sectionId="C7"
           redirectTo="/framework/phase-2/session-8"
+          nudgeToShow={c7NudgeToShow}
         />
       </AuthShell>
     )
@@ -533,11 +579,40 @@ export default async function SessionPage({ params }: Props) {
 
   // ─── Phase 2 / Session 8 — C.8 Maintaining Factor Confirmation Checklist ──
   if (phase === 2 && session === 8) {
+    const { data: c8AssessmentRaw } = await supabase
+      .from('phase1_assessment')
+      .select(`
+        ns_stress_tinnitus_correlation,
+        ns_hypervigilance,
+        ns_sleep_disruption,
+        ns_anxiety_loop
+      `)
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    const { data: c8ProgressRow } = await supabase
+      .from('framework_progress')
+      .select('nudges_dismissed')
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    const c8NudgeAssessment: NudgeAssessmentInput | null = c8AssessmentRaw ? {
+      post_sustained_desk_load: null,
+      cerv_forward_head_posture: null,
+      ns_sleep_disruption: c8AssessmentRaw.ns_sleep_disruption ?? null,
+      ns_stress_tinnitus_correlation: c8AssessmentRaw.ns_stress_tinnitus_correlation ?? null,
+      ns_hypervigilance: c8AssessmentRaw.ns_hypervigilance ?? null,
+      ns_anxiety_loop: c8AssessmentRaw.ns_anxiety_loop ?? null,
+    } : null
+    const c8Dismissed = ((c8ProgressRow?.nudges_dismissed ?? {}) as Partial<Record<NudgeId, boolean>>)
+    const c8NudgeToShow = getEligibleNudge('C8', c8NudgeAssessment, c8Dismissed)
+
     return (
       <AuthShell>
         <Session8ConfirmationClient
           content={C8_CONFIRMATION_CHECKLIST}
           focusLine={DAILY_FOCUS_LINES[2][8]}
+          nudgeToShow={c8NudgeToShow}
         />
       </AuthShell>
     )

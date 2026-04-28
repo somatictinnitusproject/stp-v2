@@ -18,6 +18,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import NudgeCard from '@/components/NudgeCard'
+import type { NudgeData } from '@/content/framework/phase-2/nudges'
 
 // Generic paragraph type — all three content files declare a structurally
 // identical 'p' | 'subhead' union. We accept the broader shape here since
@@ -41,12 +43,34 @@ type Session5To7ReadMostlyClientProps = {
   focusLine: string                  // Daily focus line for the section
   sectionId: 'C5' | 'C6' | 'C7'    // for the section-acknowledge route
   redirectTo: string                 // URL to push on successful acknowledge
+  nudgeToShow?: NudgeData | null     // C.7 only; omit for C.5 and C.6
 }
 
 export default function Session5To7ReadMostlyClient(props: Session5To7ReadMostlyClientProps) {
   const router = useRouter()
+  const [nudgeDismissed, setNudgeDismissed] = useState(false)
+  const [nudgeDismissPending, setNudgeDismissPending] = useState(false)
   const [sectionLoading, setSectionLoading] = useState(false)
   const [sectionError, setSectionError] = useState<string | null>(null)
+
+  async function handleNudgeDismiss() {
+    if (!props.nudgeToShow || nudgeDismissPending) return
+    const nudgeId = props.nudgeToShow.id
+    setNudgeDismissed(true)  // optimistic
+    setNudgeDismissPending(true)
+    try {
+      await fetch('/api/framework/nudges/dismiss', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nudgeId }),
+      })
+      // Silent on failure — card stays hidden for this session; next load re-evaluates.
+    } catch {
+      // Silent
+    } finally {
+      setNudgeDismissPending(false)
+    }
+  }
 
   async function handleSectionAcknowledge() {
     if (sectionLoading) return
@@ -145,6 +169,15 @@ export default function Session5To7ReadMostlyClient(props: Session5To7ReadMostly
           {props.content.mechanismNote}
         </p>
       </div>
+
+      {/* Contextual nudge — C.7 only; omitted for C.5 and C.6 via null prop */}
+      {props.nudgeToShow && !nudgeDismissed && (
+        <NudgeCard
+          nudge={props.nudgeToShow}
+          onDismiss={handleNudgeDismiss}
+          dismissDisabled={nudgeDismissPending}
+        />
+      )}
 
       {/* Section error */}
       {sectionError && (

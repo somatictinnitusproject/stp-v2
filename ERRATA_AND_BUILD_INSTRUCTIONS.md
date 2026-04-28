@@ -1054,5 +1054,25 @@ Rationale:
 
 ---
 
+---
+
+## M12i — NUDGE 2 SECTION TRIGGER
+
+Document 13 §9.2 says Nudge 2 (`phase4_sleep`) triggers at the
+Phase 2 sleep foundations section, identified as C.5. The build has
+Sleep Foundations at C.7. Diet Foundations is at C.5.
+
+**Decision: trigger Nudge 2 at C.7.** The trigger is content-section
+bound, not number-bound. C.7 is where Sleep Foundations content
+lives in this build, so the nudge fires there.
+
+Doc 13 §9.2 referenced section number is the errata. The section
+ID logic in `/lib/framework/nudges.ts` uses 'C7' for `phase4_sleep`.
+
+No code change to Doc 13 needed — this errata document captures the
+divergence.
+
+---
+
 *Built to help people. Designed to last.*
 *SOMATIC TINNITUS PROJECT — V2 Errata & Build Instructions*

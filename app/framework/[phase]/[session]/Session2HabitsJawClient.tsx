@@ -19,11 +19,14 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { C2HabitsAuditJaw, C2Habit } from '@/content/framework/phase-2/c2-habits-audit-jaw'
+import NudgeCard from '@/components/NudgeCard'
+import type { NudgeData } from '@/content/framework/phase-2/nudges'
 
 type Session2HabitsJawClientProps = {
   content: C2HabitsAuditJaw
   habitFlags: Record<string, boolean>              // habitId -> should the badge fire
   initialHabitsAcknowledged: Record<string, string>  // habitId -> ISO timestamp (already acknowledged)
+  nudgeToShow?: NudgeData | null
 }
 
 export default function Session2HabitsJawClient(props: Session2HabitsJawClientProps) {
@@ -33,8 +36,29 @@ export default function Session2HabitsJawClient(props: Session2HabitsJawClientPr
   )
   const [habitLoading, setHabitLoading] = useState<string | null>(null)  // habitId currently posting
   const [habitError, setHabitError] = useState<Record<string, string>>({}) // habitId -> error message
+  const [nudgeDismissed, setNudgeDismissed] = useState(false)
+  const [nudgeDismissPending, setNudgeDismissPending] = useState(false)
   const [sectionLoading, setSectionLoading] = useState(false)
   const [sectionError, setSectionError] = useState<string | null>(null)
+
+  async function handleNudgeDismiss() {
+    if (!props.nudgeToShow || nudgeDismissPending) return
+    const nudgeId = props.nudgeToShow.id
+    setNudgeDismissed(true)  // optimistic
+    setNudgeDismissPending(true)
+    try {
+      await fetch('/api/framework/nudges/dismiss', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nudgeId }),
+      })
+      // Silent on failure — card stays hidden for this session; next load re-evaluates.
+    } catch {
+      // Silent
+    } finally {
+      setNudgeDismissPending(false)
+    }
+  }
 
   async function handleHabitAcknowledge(habitId: string) {
     if (habitLoading || acknowledged[habitId]) return
@@ -193,6 +217,15 @@ export default function Session2HabitsJawClient(props: Session2HabitsJawClientPr
           )
         })}
       </div>
+
+      {/* Contextual nudge — bottom of section content, above acknowledge */}
+      {props.nudgeToShow && !nudgeDismissed && (
+        <NudgeCard
+          nudge={props.nudgeToShow}
+          onDismiss={handleNudgeDismiss}
+          dismissDisabled={nudgeDismissPending}
+        />
+      )}
 
       {/* Section-level error */}
       {sectionError && (
