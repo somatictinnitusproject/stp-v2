@@ -1771,6 +1771,20 @@ If pre-launch §4.1 and this section conflict, this section wins.
 
 ---
 
+### P3-18 — /session card interaction model: active card only
+
+**Doc 12 §6.6 says:** "Tapping a card expands it in place to show exercise content. All other cards remain visible. Expanded card shows content and Complete button."
+
+**Decision:** In the M13g /session implementation, ONLY the active card is interactive and expanded. Completed and upcoming cards are read-only — no onClick, no expand-on-tap behaviour.
+
+**Rationale:** Allowing arbitrary expand on upcoming cards adds state-management complexity (multi-card expansion, scroll position tracking, completion order ambiguity) without serving the daily-session use case. Members work through exercises in order — they don't skip ahead. Letting them peek at upcoming exercises mid-session creates more friction than value, and "tap to expand a completed card to review what was just done" is a niche use case better served by the exercise library.
+
+**Implementation:** Active card renders <ExerciseView>. Completed cards render checkmark + struck-through name. Upcoming cards render exercise name only. No click handlers on completed or upcoming cards.
+
+**Reversibility:** This decision can be reversed by adding click handlers and per-card expand state to SessionClient. The data flow already supports it (each card gets a unique ID, ExerciseView is stateless). If member feedback indicates expand-on-tap is wanted post-launch, ~20 lines of additional state in SessionClient covers it.
+
+---
+
 
 
 
