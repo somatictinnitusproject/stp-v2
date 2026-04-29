@@ -1785,6 +1785,93 @@ If pre-launch §4.1 and this section conflict, this section wins.
 
 ---
 
+### P3-19 — framework_progress schema drift from Doc 7
+
+Doc 7 §2.x (framework_progress table definition) does not match the live
+production schema. Where Doc 7 and the live database conflict, the live
+database is the authority.
+
+Specific drifts confirmed via information_schema query against
+stp-v2-eight (production):
+
+1. **`started_at` does not exist; `phase_started_at` exists in its place.**
+   Doc 7 says `started_at TIMESTAMPTZ NOT NULL DEFAULT now()`.
+   Live DB has `phase_started_at TIMESTAMPTZ NULL DEFAULT NULL`.
+   Both the column name AND the constraints differ.
+
+2. **`protocol VARCHAR NULL` exists in the live DB but not in Doc 7.**
+   No code reads or writes this column anywhere in the codebase. Probable
+   leftover from an early build iteration. Not removed in this errata
+   to avoid scope creep — flag for a future cleanup sub-step.
+
+3. **`phase2_habits_acknowledged JSONB NOT NULL DEFAULT '{}'`** exists
+   in the live DB. Added in migration 20260426000000. Not in Doc 7.
+   Used by Phase 2 advancement flow — keep.
+
+4. **`phase3_first_accessed TIMESTAMPTZ NULL`** exists in the live DB.
+   Added in migration 20260427000000. Not in Doc 7. Used for Phase 3
+   nudge logic. Keep.
+
+5. **`phase4_exercises_added JSONB NOT NULL DEFAULT '[]'`** exists in the
+   live DB. Added in migration 20260428000000 per errata P3-15. Not in
+   Doc 7 directly but documented in P3-15. Keep.
+
+**Decision:** Doc 7 is non-authoritative for framework_progress. The
+canonical schema is the live database state. When writing any code that
+reads framework_progress, run a Supabase information_schema query against
+`framework_progress` first or grep an existing code reference; do not
+trust Doc 7's column list.
+
+**Forward-looking remediation in M13i.A:**
+- Apply NOT NULL DEFAULT now() to phase_started_at (matching Doc 7's intent)
+- Backfill the 8 existing seeded rows with sensible phase_started_at values
+- Update the seed script to populate phase_started_at explicitly per user
+
+The `protocol` dead column is NOT addressed in M13i.A — flagged for
+post-launch cleanup.
+
+---
+
+### P3-20 — Dashboard silent-fail mode on schema-mismatched .select()
+
+**Symptom:** All seeded test users rendered the dashboard as Phase 1
+("Day 1 — Identification / P1 ACTIVE") regardless of their actual
+current_phase value.
+
+**Root cause:** /app/dashboard/page.tsx line 27 selected `started_at`
+from framework_progress. The column does not exist (per P3-19) — it is
+named `phase_started_at`. Postgres returned error 42703 ("column does
+not exist"). Supabase's JS client returned `data: null, error: <object>`.
+
+The dashboard read `progress?.current_phase ?? 1` and fell through to
+the default `1` without any error path. The phase status, dayLine,
+welcomeHeading, sessionHref, and PhaseProgressionCard all rendered as
+if the user were a brand-new Phase 1 member.
+
+**Discovery context:** Surfaced during M13h verification. The dashboard
+had been silently broken for every seeded user since the column was
+either renamed or never created in line with Doc 7.
+
+**Fix in M13i.A:**
+1. Change the dashboard select from `started_at` → `phase_started_at`
+2. Update the destructured field name and downstream variable references
+3. Add explicit error logging when the framework_progress fetch returns
+   an error, so silent-fail cannot recur.
+
+**Lessons-learned forward rule:**
+Any new dashboard or server-component query against framework_progress
+or other production tables must be tested against the live schema before
+merge. Supabase's JS client does NOT throw on missing columns — it
+returns null data and a populated error field. If error-handling is
+absent, the dashboard will silently render defaults.
+
+This pattern (silent fall-through on null fetched data) is a known
+launch-blocker risk for any future page that fetches member data without
+explicit error logging. Audit other server components for the same
+pattern before launch.
+
+---
+
 
 
 
