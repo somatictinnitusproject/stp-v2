@@ -77,6 +77,7 @@ export default function ExerciseView({
       <h2 className="text-heading-3 font-semibold text-text-heading">
         {exercise.name}
       </h2>
+      <p className="text-body-sm text-text-muted mt-0 mb-3">{exercise.estimatedMinutes} min</p>
       {focusLineBlock}
       <ContentBlockList blocks={exercise.fullContent} />
       {qualifyingModifiers.map((mod, idx) => (
@@ -119,6 +120,7 @@ export default function ExerciseView({
       <h2 className="text-heading-3 font-semibold text-text-heading">
         {exercise.name}
       </h2>
+      <p className="text-body-sm text-text-muted mt-0 mb-3">{exercise.estimatedMinutes} min</p>
 
       {/* 2. Expand toggle — reveals full explanation (items 1-7) inline */}
       <ExpandToggle expandedContent={fullExplanation} />
