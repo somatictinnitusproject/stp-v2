@@ -10,6 +10,7 @@ import { buildSessionExerciseList } from '@/lib/session/build-session'
 import { getExerciseById } from '@/content/exercises/_lookup'
 import { getTodayStatus, type TodayStatus } from '@/lib/session/get-today-status'
 import type { FrameworkProgressRow, Phase1AssessmentRow } from '@/lib/scoring/types'
+import ShorterSessionLink from '@/components/dashboard/ShorterSessionLink'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -276,14 +277,7 @@ export default async function DashboardPage() {
               >
                 {sessionLabel}
               </Link>
-              {currentPhase === 3 && (
-                <Link
-                  href="/session/short"
-                  className="text-[12px] text-text-muted hover:text-primary hover:underline transition-colors text-center no-underline"
-                >
-                  Limited time today? Start a shorter session.
-                </Link>
-              )}
+              {currentPhase === 3 && <ShorterSessionLink />}
             </div>
           )}
         </div>
@@ -303,14 +297,7 @@ export default async function DashboardPage() {
               >
                 {sessionLabel}
               </Link>
-              {currentPhase === 3 && (
-                <Link
-                  href="/session/short"
-                  className="text-[12px] text-text-muted hover:text-primary hover:underline transition-colors text-center no-underline"
-                >
-                  Limited time today? Start a shorter session.
-                </Link>
-              )}
+              {currentPhase === 3 && <ShorterSessionLink />}
             </div>
           )}
         </div>
