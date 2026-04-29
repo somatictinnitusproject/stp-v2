@@ -5,14 +5,16 @@
 // Writes a row to session_logs, then clears session_in_progress.
 //
 // Transaction strategy: Option B (sequential, no native transaction).
-// INSERT session_logs first. If it succeeds, UPDATE framework_progress.
-// If the UPDATE fails after a successful INSERT, session_logs row exists but
+// UPSERT session_logs first (idempotent via UNIQUE constraint on
+// user_id, session_date, phase + ignoreDuplicates:true — duplicate
+// finalise calls absorb silently). If it succeeds, UPDATE framework_progress.
+// If the UPDATE fails after a successful UPSERT, session_logs row exists but
 // session_in_progress is not cleared. On next /session load, stale-clear and
 // the all-complete branch recover correctly (completed_exercises contains all
 // IDs, so the session renders as complete until the next day).
 // Logged loudly if this inconsistency occurs.
 //
-// If the INSERT fails: return 500, do NOT clear session_in_progress.
+// If the UPSERT fails: return 500, do NOT clear session_in_progress.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -77,25 +79,35 @@ export async function POST(req: NextRequest) {
     [exerciseId]: true,
   }
 
-  // Step 1 — INSERT session_logs. If this fails, abort and return 500.
+  // Step 1 — UPSERT session_logs. UNIQUE constraint
+  // (user_id, session_date, phase) + ignoreDuplicates makes this idempotent —
+  // a duplicate finalise call absorbs silently and returns success without
+  // modifying the existing row. If this fails for any other reason, abort
+  // and return 500.
   const { error: logError } = await supabase
     .from('session_logs')
-    .insert({
-      user_id: user.id,
-      session_date: today,
-      phase: framework.current_phase,
-      exercises_completed: sip.completed_exercises,
-      session_duration_seconds: sessionDurationSeconds,
-      completed_at: nowIso,
-    })
+    .upsert(
+      {
+        user_id: user.id,
+        session_date: today,
+        phase: framework.current_phase,
+        exercises_completed: sip.completed_exercises,
+        session_duration_seconds: sessionDurationSeconds,
+        completed_at: nowIso,
+      },
+      {
+        onConflict: 'user_id,session_date,phase',
+        ignoreDuplicates: true,
+      }
+    )
 
   if (logError) {
-    console.error('[finalise] session_logs insert failed:', logError.message, 'user:', user.id)
+    console.error('[finalise] session_logs upsert failed:', logError.message, 'user:', user.id)
     return NextResponse.json({ error: 'log_failed' }, { status: 500 })
   }
 
   // Step 2 — UPDATE framework_progress: clear session_in_progress, merge exercises_viewed.
-  // If this fails after a successful insert, log loudly. Recovery: on next /session load,
+  // If this fails after a successful upsert, log loudly. Recovery: on next /session load,
   // the stale-clear or all-complete branch renders correctly.
   const { error: updateError } = await supabase
     .from('framework_progress')
@@ -108,7 +120,7 @@ export async function POST(req: NextRequest) {
 
   if (updateError) {
     console.error(
-      '[finalise] INCONSISTENCY — session_logs inserted but framework_progress update failed.',
+      '[finalise] INCONSISTENCY — session_logs upserted but framework_progress update failed.',
       'user:', user.id,
       'error:', updateError.message,
     )
