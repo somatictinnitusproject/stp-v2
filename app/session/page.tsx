@@ -8,9 +8,10 @@
 //   1. Auth gate → /login
 //   2. Phase gate → /dashboard (current_phase < 3)
 //   3. Stale-clear: session_in_progress with a past date → NULL inline
-//   4. Build exercise list (pure fn from M13d)
-//   5. Compute session state (pure fn from get-session-state.ts)
-//   6. Render via AuthShell + SessionClient
+//   4. session_logs check → showCompleteState (M13j, closes M13h.1 refresh gap)
+//   5. Build exercise list (pure fn from M13d)
+//   6. Compute session state (pure fn from get-session-state.ts)
+//   7. Render via AuthShell + SessionClient
 //
 // No data fetching in children — everything passed via props.
 // onComplete wired via SessionClient → /api/session/complete or /api/session/finalise (M13h).
@@ -24,6 +25,7 @@ import { getSessionState } from '@/lib/session/get-session-state'
 import { getExerciseById } from '@/content/exercises/_lookup'
 import SessionClient from './session-client'
 import type { FrameworkProgressRow, Phase1AssessmentRow } from '@/lib/scoring/types'
+import { getTodayStatus } from '@/lib/session/get-today-status'
 
 export default async function SessionPage() {
   const supabase = await createClient()
@@ -63,6 +65,14 @@ export default async function SessionPage() {
     framework.session_in_progress = null
   }
 
+  const { data: todaysSessionLog } = await supabase
+    .from('session_logs')
+    .select('completed_at')
+    .eq('user_id', user.id)
+    .eq('session_date', today)
+    .eq('phase', framework.current_phase)
+    .maybeSingle()
+
   // Build the ordered exercise ID list from member state (pure fn, M13d)
   const exerciseIds = buildSessionExerciseList(framework, assessment)
 
@@ -70,6 +80,13 @@ export default async function SessionPage() {
   const exerciseList = exerciseIds.map(getExerciseById)
 
   const state = getSessionState(framework, exerciseList, today)
+
+  const todayStatus = getTodayStatus({
+    sessionInProgress: framework.session_in_progress as Record<string, unknown> | null,
+    todaysSessionLog,
+    totalExerciseCount: exerciseList.length,
+    today,
+  })
 
   return (
     <AuthShell>
@@ -79,6 +96,7 @@ export default async function SessionPage() {
         initialCompletedIds={state.completedIds}
         initialState={state.kind}
         exercisesViewed={framework.exercises_viewed ?? {}}
+        showCompleteState={todayStatus.kind === 'done'}
       />
     </AuthShell>
   )

@@ -6,6 +6,10 @@ import LoudnessSparkline from '@/components/dashboard/LoudnessSparkline'
 import PhaseProgressionCard from '@/components/dashboard/PhaseProgressionCard'
 import { getDailyFocusLine } from '@/content/focus-lines'
 import { PHASE_NAMES, getMaxSessionsForPhase } from '@/content/framework-manifest'
+import { buildSessionExerciseList } from '@/lib/session/build-session'
+import { getExerciseById } from '@/content/exercises/_lookup'
+import { getTodayStatus, type TodayStatus } from '@/lib/session/get-today-status'
+import type { FrameworkProgressRow, Phase1AssessmentRow } from '@/lib/scoring/types'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -14,19 +18,26 @@ export default async function DashboardPage() {
 
   const today = new Date().toISOString().split('T')[0]
 
+  // First: framework_progress (needed for the session_logs phase filter)
+  const { data: progress, error: progressError } = await supabase
+    .from('framework_progress')
+    .select('current_phase, current_session, phase1_completed_at, phase2_completed_at, phase3_completed_at, phase4_completed_at, phase5_completed_at, resistance_phase_start, phase_started_at, session_in_progress, protocol_option, phase4_exercises_added')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (progressError) {
+    console.error('[dashboard] framework_progress fetch failed:', progressError.message, 'user:', user.id)
+  }
+
+  // Then: everything else in parallel
   const [
     { data: profile, error: profileError },
-    { data: progress, error: progressError },
     { data: todayLog, error: todayLogError },
     { data: sparklineLogs, error: sparklineError },
     { data: membership, error: membershipError },
+    { data: todaysSessionLog, error: sessionLogError },
   ] = await Promise.all([
     supabase.from('users').select('display_name').eq('id', user.id).maybeSingle(),
-    supabase
-      .from('framework_progress')
-      .select('current_phase, current_session, phase1_completed_at, phase2_completed_at, phase3_completed_at, phase4_completed_at, phase5_completed_at, resistance_phase_start, phase_started_at')
-      .eq('user_id', user.id)
-      .maybeSingle(),
     supabase
       .from('progress_logs')
       .select('tinnitus_score, jaw_tension, neck_tension, stress_level, sleep_quality')
@@ -44,11 +55,15 @@ export default async function DashboardPage() {
       .select('status, is_founding_member')
       .eq('user_id', user.id)
       .maybeSingle(),
+    supabase
+      .from('session_logs')
+      .select('completed_at')
+      .eq('user_id', user.id)
+      .eq('session_date', today)
+      .eq('phase', progress?.current_phase ?? 0)
+      .maybeSingle(),
   ])
 
-  if (progressError) {
-    console.error('[dashboard] framework_progress fetch failed:', progressError.message, 'user:', user.id)
-  }
   if (profileError) {
     console.error('[dashboard] users fetch failed:', profileError.message, 'user:', user.id)
   }
@@ -60,6 +75,9 @@ export default async function DashboardPage() {
   }
   if (membershipError) {
     console.error('[dashboard] memberships fetch failed:', membershipError.message, 'user:', user.id)
+  }
+  if (sessionLogError) {
+    console.error('[dashboard] session_logs fetch failed:', sessionLogError.message, 'user:', user.id)
   }
 
   const displayName = profile?.display_name ?? 'there'
@@ -93,12 +111,12 @@ export default async function DashboardPage() {
   // Day line construction
   let dayLine: string
   if (isFirstVisit) {
-    dayLine = "Day 1 \u2014 Let's begin \u00B7 Identification Phase"
+    dayLine = "Day 1 — Let's begin · Identification Phase"
   } else if (currentPhase === 3) {
     const suffix = resistancePhaseStart ? 'Release & Resistance' : 'Release Phase'
-    dayLine = `Day ${dayCount} \u2014 ${PHASE_NAMES[currentPhase]} \u00B7 ${suffix}`
+    dayLine = `Day ${dayCount} — ${PHASE_NAMES[currentPhase]} · ${suffix}`
   } else {
-    dayLine = `Day ${dayCount} \u2014 ${PHASE_NAMES[currentPhase]}`
+    dayLine = `Day ${dayCount} — ${PHASE_NAMES[currentPhase]}`
   }
 
   // Welcome heading
@@ -115,6 +133,47 @@ export default async function DashboardPage() {
 
   const maxSessions = getMaxSessionsForPhase(currentPhase)
 
+  // Phase 3 only: compute exercise list metrics and today's session status
+  let totalExerciseCount = 0
+  let estimatedMinutesRemaining = 0
+  let todayStatus: TodayStatus | null = null
+
+  if (currentPhase === 3 && progress) {
+    const { data: assessment } = await supabase
+      .from('phase1_assessment')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    if (assessment) {
+      const ids = buildSessionExerciseList(
+        progress as unknown as FrameworkProgressRow,
+        assessment as unknown as Phase1AssessmentRow,
+      )
+      const exercises = ids.map(id => getExerciseById(id))
+      totalExerciseCount = ids.length
+      const totalMinutes = exercises.reduce((sum, ex) => sum + (ex.estimatedMinutes ?? 0), 0)
+
+      // For in-progress: minutes remaining = total minus completed exercises
+      const sip = progress.session_in_progress as { session_date: string; completed_exercises: string[] } | null
+      if (sip && sip.session_date === today) {
+        const completedSet = new Set(sip.completed_exercises ?? [])
+        estimatedMinutesRemaining = exercises
+          .filter(ex => !completedSet.has(ex.id))
+          .reduce((sum, ex) => sum + (ex.estimatedMinutes ?? 0), 0)
+      } else {
+        estimatedMinutesRemaining = totalMinutes
+      }
+    }
+
+    todayStatus = getTodayStatus({
+      sessionInProgress: progress.session_in_progress as Record<string, unknown> | null,
+      todaysSessionLog,
+      totalExerciseCount,
+      today,
+    })
+  }
+
   const focusLine = progress
     ? getDailyFocusLine({
         current_phase: currentPhase,
@@ -124,12 +183,14 @@ export default async function DashboardPage() {
       })
     : ''
 
-  // Session CTA destination
+  // Session CTA destination — Phase 3 routes to /session
   const sessionHref = phase5CompletedAt
     ? '/framework/phase-5/maintenance'
     : isFirstVisit
     ? '/framework/phase-1/session-1'
-    : currentPhase === 3 || currentPhase === 4
+    : currentPhase === 3
+    ? '/session'
+    : currentPhase === 4
     ? `/framework/phase-${currentPhase}`
     : `/framework/phase-${currentPhase}/session-${currentSession}`
 
@@ -138,6 +199,9 @@ export default async function DashboardPage() {
     : isFirstVisit
     ? 'Begin Phase 1'
     : "Start today's session"
+
+  // Hide session button when today's Phase 3 session is done
+  const showSessionButton = todayStatus?.kind !== 'done'
 
   const scores = todayLog
     ? [
@@ -184,7 +248,7 @@ export default async function DashboardPage() {
 
       {/* Action buttons row */}
       {todayLog ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5 mb-5">
+        <div className={`grid grid-cols-1 ${showSessionButton ? 'md:grid-cols-2' : ''} gap-3 md:gap-5 mb-5`}>
           <div className="bg-surface border border-border rounded-xl p-4">
             <div className="flex justify-between gap-2 mb-2">
               {scores.map(({ label, value }) => (
@@ -204,27 +268,31 @@ export default async function DashboardPage() {
               <Link href="/tracker" className="text-primary hover:underline">Edit today&apos;s log</Link>
             </div>
           </div>
-          <Link
-            href={sessionHref}
-            className="flex items-center justify-center h-12 md:h-[52px] rounded-lg text-[15px] md:text-[16px] font-medium text-white bg-[#1A1A2E] hover:opacity-90 transition-opacity no-underline"
-          >
-            {sessionLabel}
-          </Link>
+          {showSessionButton && (
+            <Link
+              href={sessionHref}
+              className="flex items-center justify-center h-12 md:h-[52px] rounded-lg text-[15px] md:text-[16px] font-medium text-white bg-[#1A1A2E] hover:opacity-90 transition-opacity no-underline"
+            >
+              {sessionLabel}
+            </Link>
+          )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5 mb-5">
+        <div className={`grid grid-cols-1 ${showSessionButton ? 'md:grid-cols-2' : ''} gap-3 md:gap-5 mb-5`}>
           <Link
             href="/tracker"
             className="flex items-center justify-center h-12 md:h-[52px] rounded-lg text-[15px] md:text-[16px] font-medium text-white bg-primary hover:bg-primary-hover transition-colors no-underline"
           >
             Log today
           </Link>
-          <Link
-            href={sessionHref}
-            className="flex items-center justify-center h-12 md:h-[52px] rounded-lg text-[15px] md:text-[16px] font-medium text-white bg-[#1A1A2E] hover:opacity-90 transition-opacity no-underline"
-          >
-            {sessionLabel}
-          </Link>
+          {showSessionButton && (
+            <Link
+              href={sessionHref}
+              className="flex items-center justify-center h-12 md:h-[52px] rounded-lg text-[15px] md:text-[16px] font-medium text-white bg-[#1A1A2E] hover:opacity-90 transition-opacity no-underline"
+            >
+              {sessionLabel}
+            </Link>
+          )}
         </div>
       )}
 
@@ -264,7 +332,38 @@ export default async function DashboardPage() {
           </h2>
         </div>
 
-        {currentPhase === 3 ? (
+        {currentPhase === 3 && todayStatus ? (
+          todayStatus.kind === 'done' ? (
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border last:border-b-0">
+              <div className="flex items-center gap-3">
+                <svg className="w-[18px] h-[18px] shrink-0" viewBox="0 0 20 20" fill="none">
+                  <circle cx="10" cy="10" r="9" stroke="#4A9B8E" strokeWidth="1.5"/>
+                  <polyline points="6,10 9,13 14,8" stroke="#4A9B8E" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+                <span className="text-[14px] text-text-muted">Daily release practice</span>
+              </div>
+              <span className="text-[12px] text-text-muted">Completed</span>
+            </div>
+          ) : (
+            <Link
+              href="/session"
+              className="flex items-center justify-between px-5 py-4 border-b border-border last:border-b-0 no-underline hover:bg-surface-raised transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <svg className="w-[18px] h-[18px] shrink-0" viewBox="0 0 20 20" fill="none">
+                  <circle cx="10" cy="10" r="9" stroke="#1A1A2E" strokeWidth="1.5"/>
+                  <polygon points="8,7 13,10 8,13" fill="#1A1A2E"/>
+                </svg>
+                <span className="text-[14px] font-semibold text-text-heading">Daily release practice</span>
+              </div>
+              <span className="text-[12px] text-text-muted">
+                {todayStatus.kind === 'in_progress'
+                  ? `${todayStatus.completedCount} of ${todayStatus.totalCount} · ~${estimatedMinutesRemaining} min`
+                  : `~${estimatedMinutesRemaining} min`}
+              </span>
+            </Link>
+          )
+        ) : currentPhase === 3 ? (
           <div className="px-5 py-4">
             <p className="text-[14px] text-text-muted">Phase 3 session list &mdash; populate in Phase E.</p>
           </div>

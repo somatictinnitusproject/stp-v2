@@ -27,6 +27,7 @@ interface SessionClientProps {
   initialCompletedIds: string[]
   initialState: SessionStateKind
   exercisesViewed: Record<string, boolean>
+  showCompleteState: boolean
 }
 
 export default function SessionClient({
@@ -35,6 +36,7 @@ export default function SessionClient({
   initialCompletedIds,
   initialState,
   exercisesViewed,
+  showCompleteState,
 }: SessionClientProps) {
   const [completedSet, setCompletedSet] = useState<Set<string>>(
     () => new Set(initialCompletedIds),
@@ -52,6 +54,11 @@ export default function SessionClient({
       activeCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }, [completedSet])
+
+  // Server says today's session is already finalised — show complete state directly
+  if (showCompleteState) {
+    return <SessionCompleteState />
+  }
 
   if (initialState === 'empty') {
     return <EmptySessionPlaceholder />
