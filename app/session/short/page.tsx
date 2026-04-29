@@ -1,33 +1,28 @@
-// /app/session/page.tsx
+// /app/session/short/page.tsx
 // ─────────────────────────────────────────────────────────────────────────────
-// Server component. /session — the daily practice view for Phase 3 members.
-// Specified in Doc 12 §6.6; construction logic from Doc 13 §5.4–§5.9
-// (subject to errata P3-12, P3-14, P3-15, P3-16, P3-17).
+// Server component. /session/short — the shorter daily practice option.
+// Per M13i locked decisions: fixed per-profile exercise list, no rotation.
+// Reuses SessionClient from /app/session/ with isShorterSession={true}.
 //
-// Responsibilities:
-//   1. Auth gate → /login
-//   2. Phase gate → /dashboard (current_phase < 3)
-//   3. Stale-clear: session_in_progress with a past date → NULL inline
-//   4. session_logs check → showCompleteState (M13j, closes M13h.1 refresh gap)
-//   5. Build exercise list (pure fn from M13d)
-//   6. Compute session state (pure fn from get-session-state.ts)
-//   7. Render via AuthShell + SessionClient
-//
-// No data fetching in children — everything passed via props.
-// onComplete wired via SessionClient → /api/session/complete or /api/session/finalise (M13h).
+// Known limitation: session_in_progress does not differentiate shorter from
+// full sessions. A member who starts a shorter session and then navigates to
+// /session (full) will see their shorter-session SIP completed_exercises in
+// the full session list. This edge case is documented and accepted in M13i.
+// The realistic flow is: member completes shorter session (writes session_logs
+// with is_shorter_session=true), or abandons it (SIP stale-cleared next day).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import AuthShell from '@/components/shells/AuthShell'
-import { buildSessionExerciseList } from '@/lib/session/build-session'
+import { buildShorterSessionExerciseList, getShorterSessionDuration } from '@/lib/session/build-shorter-session'
 import { getSessionState } from '@/lib/session/get-session-state'
 import { getExerciseById } from '@/content/exercises/_lookup'
-import SessionClient from './session-client'
-import type { FrameworkProgressRow, Phase1AssessmentRow } from '@/lib/scoring/types'
 import { getTodayStatus } from '@/lib/session/get-today-status'
+import SessionClient from '../session-client'
+import type { FrameworkProgressRow, Phase1AssessmentRow } from '@/lib/scoring/types'
 
-export default async function SessionPage() {
+export default async function ShortSessionPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -46,16 +41,13 @@ export default async function SessionPage() {
     .eq('user_id', user.id)
     .single()
 
-  // Shouldn't happen for a Phase 3 member but handle defensively
   if (!assessmentRaw) redirect('/dashboard')
 
   const framework = frameworkRaw as unknown as FrameworkProgressRow
   const assessment = assessmentRaw as unknown as Phase1AssessmentRow
+  const today = new Date().toISOString().split('T')[0]
 
-  const today = new Date().toISOString().split('T')[0]  // YYYY-MM-DD UTC
-
-  // Stale-clear: session_in_progress from a previous day is wiped before
-  // computing state so the member starts fresh, not mid-yesterday's session.
+  // Stale-clear: same logic as /session
   const sip = framework.session_in_progress as null | { session_date: string }
   if (sip && sip.session_date !== today) {
     await supabase
@@ -73,11 +65,15 @@ export default async function SessionPage() {
     .eq('phase', framework.current_phase)
     .maybeSingle()
 
-  // Build the ordered exercise ID list from member state (pure fn, M13d)
-  const exerciseIds = buildSessionExerciseList(framework, assessment)
-
-  // Map IDs to full Exercise objects; stubs used until M13m–M13v land
-  const exerciseList = exerciseIds.map(getExerciseById)
+  // Build shorter list and apply E5 duration override
+  const exerciseIds = buildShorterSessionExerciseList(framework, assessment)
+  const exerciseList = exerciseIds.map(id => {
+    const exercise = getExerciseById(id)
+    return {
+      ...exercise,
+      estimatedMinutes: getShorterSessionDuration(id, exercise.estimatedMinutes ?? 0),
+    }
+  })
 
   const state = getSessionState(framework, exerciseList, today)
 
@@ -97,7 +93,7 @@ export default async function SessionPage() {
         initialState={state.kind}
         exercisesViewed={framework.exercises_viewed ?? {}}
         showCompleteState={todayStatus.kind === 'done'}
-        isShorterSession={false}
+        isShorterSession={true}
       />
     </AuthShell>
   )

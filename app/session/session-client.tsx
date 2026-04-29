@@ -28,6 +28,7 @@ interface SessionClientProps {
   initialState: SessionStateKind
   exercisesViewed: Record<string, boolean>
   showCompleteState: boolean
+  isShorterSession: boolean
 }
 
 export default function SessionClient({
@@ -37,6 +38,7 @@ export default function SessionClient({
   initialState,
   exercisesViewed,
   showCompleteState,
+  isShorterSession,
 }: SessionClientProps) {
   const [completedSet, setCompletedSet] = useState<Set<string>>(
     () => new Set(initialCompletedIds),
@@ -94,7 +96,7 @@ export default function SessionClient({
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ exerciseId }),
+        body: JSON.stringify({ exerciseId, isShorterSession }),
       })
       if (!res.ok) {
         console.error('[M13h] completion API failed:', res.status, await res.text())

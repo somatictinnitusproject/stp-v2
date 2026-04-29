@@ -269,12 +269,22 @@ export default async function DashboardPage() {
             </div>
           </div>
           {showSessionButton && (
-            <Link
-              href={sessionHref}
-              className="flex items-center justify-center h-12 md:h-[52px] rounded-lg text-[15px] md:text-[16px] font-medium text-white bg-[#1A1A2E] hover:opacity-90 transition-opacity no-underline"
-            >
-              {sessionLabel}
-            </Link>
+            <div className="flex flex-col gap-2">
+              <Link
+                href={sessionHref}
+                className="flex items-center justify-center h-12 md:h-[52px] rounded-lg text-[15px] md:text-[16px] font-medium text-white bg-[#1A1A2E] hover:opacity-90 transition-opacity no-underline"
+              >
+                {sessionLabel}
+              </Link>
+              {currentPhase === 3 && (
+                <Link
+                  href="/session/short"
+                  className="text-[12px] text-text-muted hover:text-primary hover:underline transition-colors text-center no-underline"
+                >
+                  Limited time today? Start a shorter session.
+                </Link>
+              )}
+            </div>
           )}
         </div>
       ) : (
@@ -286,12 +296,22 @@ export default async function DashboardPage() {
             Log today
           </Link>
           {showSessionButton && (
-            <Link
-              href={sessionHref}
-              className="flex items-center justify-center h-12 md:h-[52px] rounded-lg text-[15px] md:text-[16px] font-medium text-white bg-[#1A1A2E] hover:opacity-90 transition-opacity no-underline"
-            >
-              {sessionLabel}
-            </Link>
+            <div className="flex flex-col gap-2">
+              <Link
+                href={sessionHref}
+                className="flex items-center justify-center h-12 md:h-[52px] rounded-lg text-[15px] md:text-[16px] font-medium text-white bg-[#1A1A2E] hover:opacity-90 transition-opacity no-underline"
+              >
+                {sessionLabel}
+              </Link>
+              {currentPhase === 3 && (
+                <Link
+                  href="/session/short"
+                  className="text-[12px] text-text-muted hover:text-primary hover:underline transition-colors text-center no-underline"
+                >
+                  Limited time today? Start a shorter session.
+                </Link>
+              )}
+            </div>
           )}
         </div>
       )}

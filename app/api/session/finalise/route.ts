@@ -30,10 +30,11 @@ export async function POST(req: NextRequest) {
   try { body = await req.json() }
   catch { return NextResponse.json({ error: 'invalid_body' }, { status: 400 }) }
 
-  const { exerciseId } = body as Record<string, unknown>
+  const { exerciseId, isShorterSession: isShorterSessionRaw } = body as Record<string, unknown>
   if (typeof exerciseId !== 'string' || exerciseId.trim() === '') {
     return NextResponse.json({ error: 'invalid_exercise_id' }, { status: 400 })
   }
+  const isShorterSession = isShorterSessionRaw === true
 
   const { data: frameworkRaw, error: fetchError } = await supabase
     .from('framework_progress')
@@ -94,6 +95,7 @@ export async function POST(req: NextRequest) {
         exercises_completed: sip.completed_exercises,
         session_duration_seconds: sessionDurationSeconds,
         completed_at: nowIso,
+        is_shorter_session: isShorterSession,
       },
       {
         onConflict: 'user_id,session_date,phase',
