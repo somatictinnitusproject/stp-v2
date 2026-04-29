@@ -15,16 +15,16 @@ export default async function DashboardPage() {
   const today = new Date().toISOString().split('T')[0]
 
   const [
-    { data: profile },
-    { data: progress },
-    { data: todayLog },
-    { data: sparklineLogs },
-    { data: membership },
+    { data: profile, error: profileError },
+    { data: progress, error: progressError },
+    { data: todayLog, error: todayLogError },
+    { data: sparklineLogs, error: sparklineError },
+    { data: membership, error: membershipError },
   ] = await Promise.all([
     supabase.from('users').select('display_name').eq('id', user.id).maybeSingle(),
     supabase
       .from('framework_progress')
-      .select('current_phase, current_session, phase1_completed_at, phase2_completed_at, phase3_completed_at, phase4_completed_at, phase5_completed_at, resistance_phase_start, started_at')
+      .select('current_phase, current_session, phase1_completed_at, phase2_completed_at, phase3_completed_at, phase4_completed_at, phase5_completed_at, resistance_phase_start, phase_started_at')
       .eq('user_id', user.id)
       .maybeSingle(),
     supabase
@@ -46,13 +46,29 @@ export default async function DashboardPage() {
       .maybeSingle(),
   ])
 
+  if (progressError) {
+    console.error('[dashboard] framework_progress fetch failed:', progressError.message, 'user:', user.id)
+  }
+  if (profileError) {
+    console.error('[dashboard] users fetch failed:', profileError.message, 'user:', user.id)
+  }
+  if (todayLogError) {
+    console.error('[dashboard] progress_logs (today) fetch failed:', todayLogError.message, 'user:', user.id)
+  }
+  if (sparklineError) {
+    console.error('[dashboard] progress_logs (sparkline) fetch failed:', sparklineError.message, 'user:', user.id)
+  }
+  if (membershipError) {
+    console.error('[dashboard] memberships fetch failed:', membershipError.message, 'user:', user.id)
+  }
+
   const displayName = profile?.display_name ?? 'there'
   const firstName = displayName.split(' ')[0]
   const currentPhase = progress?.current_phase ?? 1
   const currentSession = progress?.current_session ?? 1
   const resistancePhaseStart = progress?.resistance_phase_start ?? null
   const phase5CompletedAt = progress?.phase5_completed_at ?? null
-  const startedAt = progress?.started_at ?? null
+  const phaseStartedAt = progress?.phase_started_at ?? null
 
   const completedAtMap: Record<number, boolean> = {
     1: !!progress?.phase1_completed_at,
@@ -65,13 +81,13 @@ export default async function DashboardPage() {
   const isPastDue = membership?.status === 'past_due' && !membership?.is_founding_member
 
   // Day count calculation
-  const dayCount = startedAt
-    ? Math.floor((Date.now() - new Date(startedAt).getTime()) / (1000 * 60 * 60 * 24)) + 1
+  const dayCount = phaseStartedAt
+    ? Math.floor((Date.now() - new Date(phaseStartedAt).getTime()) / (1000 * 60 * 60 * 24)) + 1
     : 1
 
-  // First visit: started_at within 5 minutes of now
-  const isFirstVisit = startedAt
-    ? Date.now() - new Date(startedAt).getTime() < 5 * 60 * 1000
+  // First visit: phase_started_at within 5 minutes of now
+  const isFirstVisit = phaseStartedAt
+    ? Date.now() - new Date(phaseStartedAt).getTime() < 5 * 60 * 1000
     : false
 
   // Day line construction
