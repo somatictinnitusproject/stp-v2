@@ -5,8 +5,8 @@
 // Client component. Interactive shell for the /session page.
 // Owns completedSet state and derives active exercise from it on each render.
 //
-// onComplete stub: optimistic update + console.log. M13h replaces with
-// POST /api/session/complete. No API call in this sub-step.
+// onComplete: optimistic update + background POST to /api/session/complete
+// or /api/session/finalise (M13h). Silent failure per locked architecture.
 //
 // ExerciseView prop note: ExerciseView (M13e) requires `phase1` to filter
 // profile modifiers. This is passed down from the server component via props.
@@ -71,13 +71,30 @@ export default function SessionClient({
     .reduce((sum, ex) => sum + (ex.estimatedMinutes ?? 0), 0)
 
   const handleComplete = async (exerciseId: string): Promise<void> => {
+    // Determine endpoint before the optimistic update (completedSet size not yet incremented)
+    const willBeFinal = completedSet.size + 1 === exerciseList.length
+
+    // Optimistic update — local state changes immediately
     setCompletedSet((prev) => {
       const next = new Set(prev)
       next.add(exerciseId)
       return next
     })
-    console.log('[M13g stub] complete:', exerciseId)
-    // M13h: POST /api/session/complete here
+
+    // Background fire-and-forget POST. Silent failure per locked architecture.
+    const endpoint = willBeFinal ? '/api/session/finalise' : '/api/session/complete'
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ exerciseId }),
+      })
+      if (!res.ok) {
+        console.error('[M13h] completion API failed:', res.status, await res.text())
+      }
+    } catch (err) {
+      console.error('[M13h] completion network error:', err)
+    }
   }
 
   return (

@@ -13,7 +13,7 @@
 //   6. Render via AuthShell + SessionClient
 //
 // No data fetching in children — everything passed via props.
-// onComplete stub wired here; M13h replaces with real API call.
+// onComplete wired via SessionClient → /api/session/complete or /api/session/finalise (M13h).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { redirect } from 'next/navigation'
