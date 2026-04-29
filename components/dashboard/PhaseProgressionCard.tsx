@@ -61,7 +61,7 @@ export default function PhaseProgressionCard({
 
           const content = (
             <div
-              className="min-w-[80px] h-[72px] rounded-[10px] p-[10px] flex flex-col justify-between flex-shrink-0"
+              className="min-w-[80px] h-[88px] rounded-[10px] p-[10px] flex flex-col justify-between flex-shrink-0"
               style={{ background: s.bg, border: s.border }}
             >
               <div
