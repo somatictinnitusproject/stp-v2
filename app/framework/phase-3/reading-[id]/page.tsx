@@ -19,20 +19,14 @@ import { getReadingSectionById } from '@/content/framework/phase-3/_lookup'
 import { PHASE_3_READING_IDS } from '@/content/framework/phase-3'
 import type { FrameworkProgressRow, Phase1AssessmentRow } from '@/lib/scoring/types'
 
+export const dynamic = 'force-dynamic'
+
 interface Props {
   params: Promise<{ id: string }>
 }
 
 export default async function ReadingPage({ params }: Props) {
   const { id } = await params
-
-  console.log('[reading-page] hit', {
-    id,
-    idType: typeof id,
-    idLength: id.length,
-    setHas: PHASE_3_READING_IDS.has(id),
-    setContents: Array.from(PHASE_3_READING_IDS),
-  })
 
   if (!PHASE_3_READING_IDS.has(id)) notFound()
 
