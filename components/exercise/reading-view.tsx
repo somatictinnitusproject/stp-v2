@@ -29,12 +29,18 @@ const PROTOCOL_OPTION_TEXT: Record<number, string> = {
   3: 'You selected Option 3: Prioritised Parallel. Full primary protocol daily plus your key secondary exercises.',
 }
 
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
 interface ReadingViewProps {
   section: ReadingSection
   phase1: Phase1AssessmentRow
   protocolOption: number | null
   onAcknowledge?: () => Promise<void>
   reviewMode?: boolean
+  d13Gate?: 'absent' | 'gated' | 'open'
+  d13UnlockDate?: Date | null
 }
 
 export default function ReadingView({
@@ -43,6 +49,8 @@ export default function ReadingView({
   protocolOption,
   onAcknowledge,
   reviewMode = false,
+  d13Gate,
+  d13UnlockDate,
 }: ReadingViewProps) {
   const profileType = phase1.profile_type ?? ''
   const qualifyingModifiers = filterQualifyingModifiers(section.profileModifiers ?? [], phase1)
@@ -56,7 +64,7 @@ export default function ReadingView({
       {/* Section heading */}
       <div>
         <h2 className="text-heading-3 font-semibold text-text-heading">{section.title}</h2>
-        <p className="text-body-sm text-text-muted mt-1">{section.estimatedMinutes} min</p>
+        <p className="text-body-sm text-text-muted mt-1">~{section.estimatedMinutes} min</p>
       </div>
 
       {/* Content blocks — dynamic blocks resolved inline */}
@@ -95,7 +103,24 @@ export default function ReadingView({
 
       {/* Acknowledge button — hidden in reviewMode (re-reading after acknowledgement) */}
       {!reviewMode && onAcknowledge && (
-        <CompleteButton onComplete={onAcknowledge} label="Acknowledge" />
+        section.id === 'D13_resistance_intro' && d13Gate === 'gated' ? (
+          <div className="space-y-2">
+            <button
+              type="button"
+              disabled
+              className="w-full py-3 px-4 rounded-lg bg-surface-raised border border-border text-text-muted text-body font-semibold cursor-not-allowed opacity-60"
+            >
+              Acknowledge
+            </button>
+            {d13UnlockDate && (
+              <p className="text-body-sm text-text-muted text-center">
+                Available from {formatDate(d13UnlockDate)}. Minimum one week of release work before resistance phase begins.
+              </p>
+            )}
+          </div>
+        ) : (
+          <CompleteButton onComplete={onAcknowledge} label="Acknowledge" />
+        )
       )}
     </div>
   )

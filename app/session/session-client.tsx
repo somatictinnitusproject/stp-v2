@@ -38,6 +38,8 @@ interface SessionClientProps {
   exercisesViewed: Record<string, boolean>
   showCompleteState: boolean
   isShorterSession: boolean
+  d13Gate?: 'absent' | 'gated' | 'open'
+  d13UnlockDate?: Date | null
 }
 
 export default function SessionClient({
@@ -49,6 +51,8 @@ export default function SessionClient({
   exercisesViewed,
   showCompleteState,
   isShorterSession,
+  d13Gate,
+  d13UnlockDate,
 }: SessionClientProps) {
   const [completedSet, setCompletedSet] = useState<Set<string>>(
     () => new Set(initialCompletedIds),
@@ -160,6 +164,8 @@ export default function SessionClient({
                       phase1={phase1}
                       protocolOption={protocolOption}
                       onAcknowledge={() => handleComplete(item.id)}
+                      d13Gate={item.id === 'D13_resistance_intro' ? d13Gate : undefined}
+                      d13UnlockDate={item.id === 'D13_resistance_intro' ? d13UnlockDate : undefined}
                     />
                   </div>
                 )}

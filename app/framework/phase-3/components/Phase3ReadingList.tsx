@@ -57,7 +57,7 @@ export default function Phase3ReadingList({
             >
               <div>
                 <p className="text-[14px] font-medium text-text-heading">{section.title}</p>
-                <p className="text-[12px] text-text-muted mt-0.5">{minutes} min</p>
+                <p className="text-[12px] text-text-muted mt-0.5">~{minutes} min</p>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0 ml-3">
                 {isRead && (

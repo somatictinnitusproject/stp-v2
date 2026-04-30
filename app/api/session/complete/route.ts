@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 
   const { data: frameworkRaw, error: fetchError } = await supabase
     .from('framework_progress')
-    .select('current_phase, session_in_progress, exercises_viewed')
+    .select('current_phase, session_in_progress, exercises_viewed, phase2_completed_at, resistance_phase_start')
     .eq('user_id', user.id)
     .single()
 
@@ -42,6 +42,8 @@ export async function POST(req: NextRequest) {
     current_phase: number
     session_in_progress: Record<string, unknown> | null
     exercises_viewed: Record<string, boolean>
+    phase2_completed_at: string | null
+    resistance_phase_start: string | null
   }
 
   if (framework.current_phase < 3) {
@@ -58,13 +60,30 @@ export async function POST(req: NextRequest) {
     [exerciseId]: true,
   }
 
+  const updateData: Record<string, unknown> = {
+    session_in_progress: sip,
+    exercises_viewed: mergedViewed,
+    updated_at: nowIso,
+  }
+
+  // D.13 acknowledgement: server-side 7-day gate + resistance_phase_start write.
+  if (exerciseId === 'D13_resistance_intro') {
+    const phase2 = framework.phase2_completed_at
+    if (!phase2) {
+      return NextResponse.json({ error: 'phase2_not_complete' }, { status: 400 })
+    }
+    const unlockMs = new Date(phase2).getTime() + 7 * 24 * 60 * 60 * 1000
+    if (Date.now() < unlockMs) {
+      return NextResponse.json({ error: 'resistance_gate_not_met' }, { status: 400 })
+    }
+    if (framework.resistance_phase_start === null) {
+      updateData.resistance_phase_start = nowIso
+    }
+  }
+
   const { error: updateError } = await supabase
     .from('framework_progress')
-    .update({
-      session_in_progress: sip,
-      exercises_viewed: mergedViewed,
-      updated_at: nowIso,
-    })
+    .update(updateData)
     .eq('user_id', user.id)
 
   if (updateError) {

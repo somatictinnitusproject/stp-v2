@@ -20,7 +20,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import AuthShell from '@/components/shells/AuthShell'
-import { buildSessionExerciseList, buildPhase3OrientationList } from '@/lib/session/build-session'
+import { buildSessionExerciseList, buildPhase3OrientationState } from '@/lib/session/build-session'
 import { getSessionState } from '@/lib/session/get-session-state'
 import { getExerciseById } from '@/content/exercises/_lookup'
 import { getReadingSectionById } from '@/content/framework/phase-3/_lookup'
@@ -78,9 +78,11 @@ export default async function SessionPage() {
   // Build orientation reading IDs for TMJ members (M13l). Cervical readings
   // (E.1–E.4) are M13r. Acknowledged readings (exercises_viewed[id] === true)
   // are excluded — they drop out of the session list permanently.
-  const orientationIds = assessment.tmj_protocol_assigned
-    ? buildPhase3OrientationList(framework.exercises_viewed ?? {})
-    : []
+  const phase2Date = framework.phase2_completed_at ? new Date(framework.phase2_completed_at) : null
+  const orientationState = assessment.tmj_protocol_assigned
+    ? buildPhase3OrientationState(framework.exercises_viewed ?? {}, phase2Date)
+    : { ids: [], d13Gate: 'absent' as const, d13UnlockDate: null }
+  const orientationIds = orientationState.ids
 
   // Build exercise IDs from member state (pure fn, M13d)
   const exerciseIds = buildSessionExerciseList(framework, assessment)
@@ -113,6 +115,8 @@ export default async function SessionPage() {
         exercisesViewed={framework.exercises_viewed ?? {}}
         showCompleteState={todayStatus.kind === 'done'}
         isShorterSession={false}
+        d13Gate={orientationState.d13Gate}
+        d13UnlockDate={orientationState.d13UnlockDate}
       />
     </AuthShell>
   )

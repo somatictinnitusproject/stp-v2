@@ -23,6 +23,7 @@ import AuthShell from '@/components/shells/AuthShell'
 import { PHASE_NAMES } from '@/content/framework-manifest'
 import { SCORING_THRESHOLDS } from '@/content/scoring-thresholds'
 import { getReadingSectionById } from '@/content/framework/phase-3/_lookup'
+import { buildPhase3OrientationState } from '@/lib/session/build-session'
 import type { Phase1AssessmentRow } from '@/lib/scoring/types'
 import StateSummary from './components/StateSummary'
 import Phase3CompletionBlock from './components/Phase3CompletionBlock'
@@ -64,10 +65,20 @@ export default async function Phase3OverviewPage() {
   const tmjAssigned = assessment?.tmj_protocol_assigned === true
   const exercisesViewed = (progress.exercises_viewed ?? {}) as Record<string, boolean>
 
+  const phase2CompletedAt = new Date(progress.phase2_completed_at)
+  const now = new Date()
+
+  const d13State = buildPhase3OrientationState(exercisesViewed, phase2CompletedAt, now)
+  const showD13 =
+    exercisesViewed['D13_resistance_intro'] ||
+    d13State.d13Gate === 'gated' ||
+    d13State.d13Gate === 'open'
+
   const readingRowDefs = [
     { id: 'D1_phase3_opening', minutes: 5 },
     { id: 'D2_forewarning', minutes: 4 },
     { id: 'D3_release_intro', minutes: 4 },
+    ...(showD13 ? [{ id: 'D13_resistance_intro', minutes: 4 }] : []),
   ]
 
   const readings = readingRowDefs.map(({ id, minutes }) => ({
@@ -75,9 +86,6 @@ export default async function Phase3OverviewPage() {
     isRead: !!exercisesViewed[id],
     minutes,
   }))
-
-  const phase2CompletedAt = new Date(progress.phase2_completed_at)
-  const now = new Date()
 
   const releasePhaseSince = formatDate(phase2CompletedAt)
   const resistanceStartDate = progress.resistance_phase_start
