@@ -76,7 +76,7 @@ const d3: ReadingSection = {
       text: 'Some members are ready closer to one week. Others with longer-standing dysfunction or significant disc pathology take longer. Both are normal. The tissue tells you — not the calendar.',
     },
     {
-      type: 'emphasis',
+      type: 'acknowledge_prompt',
       text: 'I understand the purpose of the release phase and how to recognise when I’m ready to progress.',
     },
   ],

@@ -69,6 +69,13 @@ export function ContentBlock({ block }: ContentBlockProps) {
         </p>
       )
 
+    case 'acknowledge_prompt':
+      return (
+        <p className="text-body text-text-body leading-relaxed font-semibold">
+          {block.text}
+        </p>
+      )
+
     default:
       return null
   }

@@ -80,6 +80,10 @@ export default function ReadingView({
             // Null protocol_option or unknown source — silently omit
             return null
           }
+          // Suppress acknowledge_prompt blocks in reviewMode (inline expand on /framework/phase-3)
+          if (block.type === 'acknowledge_prompt' && reviewMode) {
+            return null
+          }
           return <ContentBlock key={idx} block={block as ContentBlockType} />
         })}
       </div>

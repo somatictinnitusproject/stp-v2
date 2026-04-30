@@ -66,7 +66,7 @@ const d1: ReadingSection = {
       text: 'Both phases are covered in full in the sections that follow. Read everything before beginning.',
     },
     {
-      type: 'emphasis',
+      type: 'acknowledge_prompt',
       text: 'I’ve read the protocol overview and I’m ready to continue.',
     },
   ],

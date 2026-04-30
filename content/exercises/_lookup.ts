@@ -10,6 +10,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Exercise } from './_types'
+import d4HeatApplication from './d4-heat-application'
+import d5TemporalisRelease from './d5-temporalis-release'
+import d6MasseterRelease from './d6-masseter-release'
+import d7IntraoralPterygoidRelease from './d7-intraoral-pterygoid-release'
 
 // ── Stub factory ──────────────────────────────────────────────────────────────
 // Returns a minimal valid Exercise conforming to the type contract.
@@ -52,16 +56,11 @@ function stub(
 
 const EXERCISE_MAP = new Map<string, Exercise>([
   // ── TMJ release (7) — content in M13m + M13n ───────────────────────────────
-  // TODO M13m: replace D4, D5, D6, D7 stubs with real imports
   // TODO M13n: replace D8, D9, D10 stubs with real imports
-  ['D4_heat_application',
-    stub('D4_heat_application', 'D.4', 'Heat Application', 'jaw-release', 10)],
-  ['D5_temporalis_release',
-    stub('D5_temporalis_release', 'D.5', 'Temporalis Release', 'jaw-release', 5)],
-  ['D6_masseter_release',
-    stub('D6_masseter_release', 'D.6', 'Masseter Release', 'jaw-release', 5)],
-  ['D7_intraoral_pterygoid_release',
-    stub('D7_intraoral_pterygoid_release', 'D.7', 'Intraoral Pterygoid Release', 'jaw-release', 2)],
+  [d4HeatApplication.id, d4HeatApplication],
+  [d5TemporalisRelease.id, d5TemporalisRelease],
+  [d6MasseterRelease.id, d6MasseterRelease],
+  [d7IntraoralPterygoidRelease.id, d7IntraoralPterygoidRelease],
   ['D8_lateral_pterygoid_release',
     stub('D8_lateral_pterygoid_release', 'D.8', 'Lateral Pterygoid Release', 'jaw-release', 2)],
   ['D9_auriculotemporal_nerve_mob',

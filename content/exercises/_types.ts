@@ -22,6 +22,7 @@ export type ContentBlock =
   | { type: 'list'; items: string[]; ordered?: boolean }
   | { type: 'callout'; tone: 'info' | 'warning'; text: string }
   | { type: 'emphasis'; text: string }
+  | { type: 'acknowledge_prompt'; text: string }
   | { type: 'dynamic'; source: 'protocol_assignment' | 'protocol_option' }
 
 // ── ProfileModifier ───────────────────────────────────────────────────────────

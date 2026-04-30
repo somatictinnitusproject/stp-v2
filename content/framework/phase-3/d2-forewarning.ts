@@ -68,7 +68,7 @@ const d2: ReadingSection = {
       text: 'If tinnitus increase persists beyond two to three weeks of consistent release work without any settling, that is worth noting in your progress tracker and reviewing. A sustained increase beyond that window is not the expected pattern.',
     },
     {
-      type: 'emphasis',
+      type: 'acknowledge_prompt',
       text: 'I understand that temporary tinnitus increase is a normal part of the early release phase and I will not use morning loudness as my primary progress indicator during this period.',
     },
   ],
