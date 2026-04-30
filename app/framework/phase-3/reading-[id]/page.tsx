@@ -28,6 +28,15 @@ interface Props {
 export default async function ReadingPage({ params }: Props) {
   const { id } = await params
 
+  console.log('[reading-page-v2]', JSON.stringify({
+    id,
+    idTypeOf: typeof id,
+    hasFn: typeof PHASE_3_READING_IDS?.has,
+    setSize: PHASE_3_READING_IDS?.size,
+    setArray: PHASE_3_READING_IDS ? Array.from(PHASE_3_READING_IDS) : null,
+    setHas: PHASE_3_READING_IDS?.has?.(id),
+  }))
+
   if (!PHASE_3_READING_IDS.has(id)) notFound()
 
   const supabase = await createClient()
