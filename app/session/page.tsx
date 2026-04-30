@@ -9,20 +9,22 @@
 //   2. Phase gate → /dashboard (current_phase < 3)
 //   3. Stale-clear: session_in_progress with a past date → NULL inline
 //   4. session_logs check → showCompleteState (M13j, closes M13h.1 refresh gap)
-//   5. Build exercise list (pure fn from M13d)
-//   6. Compute session state (pure fn from get-session-state.ts)
-//   7. Render via AuthShell + SessionClient
+//   5. Build orientation reading IDs (TMJ members, M13l) + exercise IDs
+//   6. Resolve mixed IDs to (Exercise | ReadingSection)[] session list
+//   7. Compute session state (pure fn from get-session-state.ts)
+//   8. Render via AuthShell + SessionClient
 //
 // No data fetching in children — everything passed via props.
-// onComplete wired via SessionClient → /api/session/complete or /api/session/finalise (M13h).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import AuthShell from '@/components/shells/AuthShell'
-import { buildSessionExerciseList } from '@/lib/session/build-session'
+import { buildSessionExerciseList, buildPhase3OrientationList } from '@/lib/session/build-session'
 import { getSessionState } from '@/lib/session/get-session-state'
 import { getExerciseById } from '@/content/exercises/_lookup'
+import { getReadingSectionById } from '@/content/framework/phase-3/_lookup'
+import { PHASE_3_READING_IDS } from '@/content/framework/phase-3'
 import SessionClient from './session-client'
 import type { FrameworkProgressRow, Phase1AssessmentRow } from '@/lib/scoring/types'
 import { getTodayStatus } from '@/lib/session/get-today-status'
@@ -73,26 +75,39 @@ export default async function SessionPage() {
     .eq('phase', framework.current_phase)
     .maybeSingle()
 
-  // Build the ordered exercise ID list from member state (pure fn, M13d)
+  // Build orientation reading IDs for TMJ members (M13l). Cervical readings
+  // (E.1–E.4) are M13r. Acknowledged readings (exercises_viewed[id] === true)
+  // are excluded — they drop out of the session list permanently.
+  const orientationIds = assessment.tmj_protocol_assigned
+    ? buildPhase3OrientationList(framework.exercises_viewed ?? {})
+    : []
+
+  // Build exercise IDs from member state (pure fn, M13d)
   const exerciseIds = buildSessionExerciseList(framework, assessment)
 
-  // Map IDs to full Exercise objects; stubs used until M13m–M13v land
-  const exerciseList = exerciseIds.map(getExerciseById)
+  // Combined list: orientation readings first, then exercises
+  const allIds = [...orientationIds, ...exerciseIds]
 
-  const state = getSessionState(framework, exerciseList, today)
+  // Map each ID to its full object — readings via reading lookup, exercises via exercise lookup
+  const sessionList = allIds.map((id) =>
+    PHASE_3_READING_IDS.has(id) ? getReadingSectionById(id) : getExerciseById(id),
+  )
+
+  const state = getSessionState(framework, sessionList, today)
 
   const todayStatus = getTodayStatus({
     sessionInProgress: framework.session_in_progress as Record<string, unknown> | null,
     todaysSessionLog,
-    totalExerciseCount: exerciseList.length,
+    totalExerciseCount: sessionList.length,
     today,
   })
 
   return (
     <AuthShell>
       <SessionClient
-        exerciseList={exerciseList}
+        sessionList={sessionList}
         phase1={assessment}
+        protocolOption={framework.protocol_option}
         initialCompletedIds={state.completedIds}
         initialState={state.kind}
         exercisesViewed={framework.exercises_viewed ?? {}}

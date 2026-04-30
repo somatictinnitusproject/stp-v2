@@ -11,37 +11,22 @@
 // No data fetching here — all data comes via props.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { Exercise, ProfileModifier } from '@/content/exercises/_types'
+import type { Exercise } from '@/content/exercises/_types'
 import type { Phase1AssessmentRow } from '@/lib/scoring/types'
 import { ContentBlock, ContentBlockList } from './content-block'
 import { ProfileModifierBlock } from './profile-modifier-block'
 import { ExpandToggle } from './expand-toggle'
 import { CompleteButton } from './complete-button'
+import { filterQualifyingModifiers } from './_helpers'
+
+// Re-exported so existing test imports (./exercise-view) continue to work.
+export { filterQualifyingModifiers } from './_helpers'
 
 interface ExerciseViewProps {
   exercise: Exercise
   phase1: Phase1AssessmentRow
   firstView: boolean          // derived from exercises_viewed[exercise.id] in parent
   onComplete: () => Promise<void>  // Server Action wired by M13g
-}
-
-/**
- * Filter profile modifiers to those whose triggerFlag strictly equals
- * triggerValue on the given phase1 row.
- *
- * Per errata P3-13: flags missing from phase1_assessment resolve to
- * undefined at runtime. undefined !== any triggerValue → silently omitted.
- * No error, no warning, no UI artifact.
- *
- * Exported for isolated unit testing (vitest helper-test path).
- */
-export function filterQualifyingModifiers(
-  modifiers: ProfileModifier[],
-  phase1: Phase1AssessmentRow,
-): ProfileModifier[] {
-  return modifiers.filter(
-    (mod) => (phase1 as unknown as Record<string, unknown>)[mod.triggerFlag] === mod.triggerValue
-  )
 }
 
 export default function ExerciseView({

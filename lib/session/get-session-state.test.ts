@@ -15,6 +15,7 @@ const STALE_DATE = '2026-04-27'
 
 function makeExercise(id: string): Exercise {
   return {
+    kind: 'exercise',
     id,
     sectionRef: 'D.1',
     name: id,

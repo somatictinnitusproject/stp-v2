@@ -87,7 +87,7 @@ export default async function ShortSessionPage() {
   return (
     <AuthShell>
       <SessionClient
-        exerciseList={exerciseList}
+        sessionList={exerciseList}
         phase1={assessment}
         initialCompletedIds={state.completedIds}
         initialState={state.kind}

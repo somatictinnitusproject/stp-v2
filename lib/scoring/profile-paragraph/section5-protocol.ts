@@ -15,7 +15,8 @@ import type { ParagraphContext } from './types'
 // These are NOT §4.4 runtime placeholder tokens.
 
 // Doc 8 B.7 Section 5 — Protocol Assignment Statement (verbatim)
-const protocolAssignmentText: Record<string, string> = {
+// Exported for reuse in reading-view.tsx (M13l) — same strings, no duplication.
+export const protocolAssignmentText: Record<string, string> = {
   TMJ_DOMINANT:
     'Full jaw release protocol (Weeks 1–2 daily) → jaw resistance and retraining phase (Week 3+) → suboccipital release as optional secondary component.',
 

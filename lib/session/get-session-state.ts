@@ -5,7 +5,6 @@
 // stale-clear have already been handled upstream.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { Exercise } from '@/content/exercises/_types'
 import type { FrameworkProgressRow } from '@/lib/scoring/types'
 
 export type SessionStateKind = 'fresh' | 'resume' | 'complete' | 'empty'
@@ -13,7 +12,7 @@ export type SessionStateKind = 'fresh' | 'resume' | 'complete' | 'empty'
 export interface SessionState {
   kind: SessionStateKind
   completedIds: string[]
-  activeIndex: number  // index into exerciseList; -1 when complete or empty
+  activeIndex: number  // index into sessionList; -1 when complete or empty
 }
 
 // Shape of the session_in_progress JSONB stored in framework_progress.
@@ -29,17 +28,17 @@ interface SessionInProgress {
  * Phase gating (current_phase < 3) and stale-clear (session_in_progress
  * with a past date) must be handled upstream before this is called.
  *
- * 'empty'    — exerciseList.length === 0 (theoretical; should not fire for Phase 3)
+ * 'empty'    — sessionList.length === 0 (theoretical; should not fire for Phase 3)
  * 'fresh'    — no in-progress session today; member starts from the top
- * 'resume'   — partial completion today; first non-completed exercise is active
- * 'complete' — all exercises done today; render the completion screen
+ * 'resume'   — partial completion today; first non-completed item is active
+ * 'complete' — all items done today; render the completion screen
  */
 export function getSessionState(
   framework: Pick<FrameworkProgressRow, 'session_in_progress'>,
-  exerciseList: Exercise[],
+  sessionList: Array<{ id: string }>,
   today: string,
 ): SessionState {
-  if (exerciseList.length === 0) {
+  if (sessionList.length === 0) {
     return { kind: 'empty', completedIds: [], activeIndex: -1 }
   }
 
@@ -51,12 +50,12 @@ export function getSessionState(
 
   const completedIds = sip.completed_exercises ?? []
   const completedSet = new Set(completedIds)
-  const allDone = exerciseList.every((ex) => completedSet.has(ex.id))
+  const allDone = sessionList.every((item) => completedSet.has(item.id))
 
   if (allDone) {
     return { kind: 'complete', completedIds, activeIndex: -1 }
   }
 
-  const activeIndex = exerciseList.findIndex((ex) => !completedSet.has(ex.id))
+  const activeIndex = sessionList.findIndex((item) => !completedSet.has(item.id))
   return { kind: 'resume', completedIds, activeIndex }
 }

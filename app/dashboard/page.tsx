@@ -22,7 +22,7 @@ export default async function DashboardPage() {
   // First: framework_progress (needed for the session_logs phase filter)
   const { data: progress, error: progressError } = await supabase
     .from('framework_progress')
-    .select('current_phase, current_session, phase1_completed_at, phase2_completed_at, phase3_completed_at, phase4_completed_at, phase5_completed_at, resistance_phase_start, phase_started_at, session_in_progress, protocol_option, phase4_exercises_added')
+    .select('current_phase, current_session, phase1_completed_at, phase2_completed_at, phase3_completed_at, phase4_completed_at, phase5_completed_at, resistance_phase_start, phase_started_at, session_in_progress, protocol_option, phase4_exercises_added, exercises_viewed')
     .eq('user_id', user.id)
     .maybeSingle()
 
@@ -138,6 +138,7 @@ export default async function DashboardPage() {
   let totalExerciseCount = 0
   let estimatedMinutesRemaining = 0
   let todayStatus: TodayStatus | null = null
+  let tmjProtocolAssigned = false
 
   if (currentPhase === 3 && progress) {
     const { data: assessment } = await supabase
@@ -147,6 +148,7 @@ export default async function DashboardPage() {
       .maybeSingle()
 
     if (assessment) {
+      tmjProtocolAssigned = assessment.tmj_protocol_assigned === true
       const ids = buildSessionExerciseList(
         progress as unknown as FrameworkProgressRow,
         assessment as unknown as Phase1AssessmentRow,
@@ -174,6 +176,16 @@ export default async function DashboardPage() {
       today,
     })
   }
+
+  const exercisesViewed = (progress?.exercises_viewed ?? {}) as Record<string, boolean>
+
+  // Reading rows for Phase 3 TMJ members (M13l). Three orientation sections
+  // displayed above "Daily release practice". Acknowledged → done state.
+  const tmjReadingRows = [
+    { id: 'D1_phase3_opening', label: 'Phase 3 Opening and Orientation', minutes: 5 },
+    { id: 'D2_forewarning', label: 'Forewarning: What to Expect in the First Week', minutes: 4 },
+    { id: 'D3_release_intro', label: 'Release Phase Introduction', minutes: 4 },
+  ]
 
   const focusLine = progress
     ? getDailyFocusLine({
@@ -340,36 +352,71 @@ export default async function DashboardPage() {
         </div>
 
         {currentPhase === 3 && todayStatus ? (
-          todayStatus.kind === 'done' ? (
-            <div className="flex items-center justify-between px-5 py-4 border-b border-border last:border-b-0">
-              <div className="flex items-center gap-3">
-                <svg className="w-[18px] h-[18px] shrink-0" viewBox="0 0 20 20" fill="none">
-                  <circle cx="10" cy="10" r="9" stroke="#4A9B8E" strokeWidth="1.5"/>
-                  <polyline points="6,10 9,13 14,8" stroke="#4A9B8E" strokeWidth="1.5" strokeLinecap="round"/>
-                </svg>
-                <span className="text-[14px] text-text-muted">Daily release practice</span>
+          <>
+            {/* D.1 / D.2 / D.3 orientation rows — TMJ members only (M13l) */}
+            {tmjProtocolAssigned && tmjReadingRows.map(({ id, label, minutes }) => {
+              const done = !!exercisesViewed[id]
+              return done ? (
+                <div key={id} className="flex items-center justify-between px-5 py-4 border-b border-border">
+                  <div className="flex items-center gap-3">
+                    <svg className="w-[18px] h-[18px] shrink-0" viewBox="0 0 20 20" fill="none">
+                      <circle cx="10" cy="10" r="9" stroke="#4A9B8E" strokeWidth="1.5"/>
+                      <polyline points="6,10 9,13 14,8" stroke="#4A9B8E" strokeWidth="1.5" strokeLinecap="round"/>
+                    </svg>
+                    <span className="text-[14px] line-through text-text-muted">{label}</span>
+                  </div>
+                  <span className="text-[12px] text-text-muted">Completed</span>
+                </div>
+              ) : (
+                <Link
+                  key={id}
+                  href="/session"
+                  className="flex items-center justify-between px-5 py-4 border-b border-border no-underline hover:bg-surface-raised transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <svg className="w-[18px] h-[18px] shrink-0" viewBox="0 0 20 20" fill="none">
+                      <circle cx="10" cy="10" r="9" stroke="#1A1A2E" strokeWidth="1.5"/>
+                      <polygon points="8,7 13,10 8,13" fill="#1A1A2E"/>
+                    </svg>
+                    <span className="text-[14px] font-semibold text-text-heading">{label}</span>
+                  </div>
+                  <span className="text-[12px] text-text-muted">~{minutes} min</span>
+                </Link>
+              )
+            })}
+
+            {/* Daily release practice row */}
+            {todayStatus.kind === 'done' ? (
+              <div className="flex items-center justify-between px-5 py-4 border-b border-border last:border-b-0">
+                <div className="flex items-center gap-3">
+                  <svg className="w-[18px] h-[18px] shrink-0" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="10" r="9" stroke="#4A9B8E" strokeWidth="1.5"/>
+                    <polyline points="6,10 9,13 14,8" stroke="#4A9B8E" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                  <span className="text-[14px] text-text-muted">Daily release practice</span>
+                </div>
+                <span className="text-[12px] text-text-muted">Completed</span>
               </div>
-              <span className="text-[12px] text-text-muted">Completed</span>
-            </div>
-          ) : (
-            <Link
-              href="/session"
-              className="flex items-center justify-between px-5 py-4 border-b border-border last:border-b-0 no-underline hover:bg-surface-raised transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <svg className="w-[18px] h-[18px] shrink-0" viewBox="0 0 20 20" fill="none">
-                  <circle cx="10" cy="10" r="9" stroke="#1A1A2E" strokeWidth="1.5"/>
-                  <polygon points="8,7 13,10 8,13" fill="#1A1A2E"/>
-                </svg>
-                <span className="text-[14px] font-semibold text-text-heading">Daily release practice</span>
-              </div>
-              <span className="text-[12px] text-text-muted">
-                {todayStatus.kind === 'in_progress'
-                  ? `${todayStatus.completedCount} of ${todayStatus.totalCount} · ~${estimatedMinutesRemaining} min`
-                  : `~${estimatedMinutesRemaining} min`}
-              </span>
-            </Link>
-          )
+            ) : (
+              <Link
+                href="/session"
+                className="flex items-center justify-between px-5 py-4 border-b border-border last:border-b-0 no-underline hover:bg-surface-raised transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <svg className="w-[18px] h-[18px] shrink-0" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="10" r="9" stroke="#1A1A2E" strokeWidth="1.5"/>
+                    <polygon points="8,7 13,10 8,13" fill="#1A1A2E"/>
+                  </svg>
+                  <span className="text-[14px] font-semibold text-text-heading">Daily release practice</span>
+                </div>
+                <span className="text-[12px] text-text-muted">
+                  {todayStatus.kind === 'in_progress'
+                    ? `${todayStatus.completedCount} of ${todayStatus.totalCount} · ~${estimatedMinutesRemaining} min`
+                    : `~${estimatedMinutesRemaining} min`}
+                </span>
+              </Link>
+            )}
+          </>
         ) : currentPhase === 3 ? (
           <div className="px-5 py-4">
             <p className="text-[14px] text-text-muted">Phase 3 session list &mdash; populate in Phase E.</p>

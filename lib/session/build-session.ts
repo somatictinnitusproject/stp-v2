@@ -73,6 +73,18 @@ export function buildLowConfidenceList(): string[] {
   return ['D6_masseter_release', 'E5_suboccipital_tennis_ball']
 }
 
+/**
+ * Returns unacknowledged Phase 3 TMJ orientation reading IDs in order.
+ * Called for TMJ-assigned members only (M13l). Cervical orientation (E.1–E.4)
+ * is M13r. A reading ID is omitted once exercises_viewed[id] === true.
+ */
+export function buildPhase3OrientationList(
+  exercisesViewed: Record<string, boolean>,
+): string[] {
+  const all = ['D1_phase3_opening', 'D2_forewarning', 'D3_release_intro']
+  return all.filter((id) => !exercisesViewed[id])
+}
+
 /** TMJ resistance — 4 daily exercises per errata P3-5 (Doc 13 §5.5 had 3, was wrong). */
 export function buildTmjResistanceList(): string[] {
   return [

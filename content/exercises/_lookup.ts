@@ -23,6 +23,7 @@ function stub(
   estimatedMinutes: number,
 ): Exercise {
   return {
+    kind: 'exercise',
     id,
     sectionRef,
     name,

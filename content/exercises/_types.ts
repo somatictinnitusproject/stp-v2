@@ -22,6 +22,7 @@ export type ContentBlock =
   | { type: 'list'; items: string[]; ordered?: boolean }
   | { type: 'callout'; tone: 'info' | 'warning'; text: string }
   | { type: 'emphasis'; text: string }
+  | { type: 'dynamic'; source: 'protocol_assignment' | 'protocol_option' }
 
 // ── ProfileModifier ───────────────────────────────────────────────────────────
 // Data-driven personalisation block. Renders only when
@@ -67,6 +68,7 @@ export interface TimerConfig {
 // See /content/exercises/README.md for the full exercise list.
 
 export interface Exercise {
+  kind: 'exercise'    // discriminant for (Exercise | ReadingSection)[] union in session client
   // ── Identity ────────────────────────────────────────────────────────────
   id: string          // matches Doc 8 section letter per errata P3-2, e.g. 'D6_masseter_release'
   sectionRef: string  // traceability reference, e.g. 'D.6'

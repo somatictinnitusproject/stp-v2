@@ -3,10 +3,14 @@
 // /app/session/session-client.tsx
 // ─────────────────────────────────────────────────────────────────────────────
 // Client component. Interactive shell for the /session page.
-// Owns completedSet state and derives active exercise from it on each render.
+// Owns completedSet state and derives active item from it on each render.
 //
-// onComplete: optimistic update + background POST to /api/session/complete
-// or /api/session/finalise (M13h). Silent failure per locked architecture.
+// sessionList accepts both Exercise and ReadingSection items (M13l union).
+// Render loop branches on item.kind: 'reading' → ReadingView, else → ExerciseView.
+//
+// onComplete / onAcknowledge: optimistic update + background POST to
+// /api/session/complete or /api/session/finalise (M13h). Silent failure per
+// locked architecture.
 //
 // ExerciseView prop note: ExerciseView (M13e) requires `phase1` to filter
 // profile modifiers. This is passed down from the server component via props.
@@ -17,13 +21,18 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { CheckCircle2 } from 'lucide-react'
 import type { Exercise } from '@/content/exercises/_types'
+import type { ReadingSection } from '@/content/framework/phase-3/types'
 import type { Phase1AssessmentRow } from '@/lib/scoring/types'
 import ExerciseView from '@/components/exercise/exercise-view'
+import ReadingView from '@/components/exercise/reading-view'
 import type { SessionStateKind } from '@/lib/session/get-session-state'
 
+type SessionItem = Exercise | ReadingSection
+
 interface SessionClientProps {
-  exerciseList: Exercise[]
+  sessionList: SessionItem[]
   phase1: Phase1AssessmentRow
+  protocolOption?: number | null
   initialCompletedIds: string[]
   initialState: SessionStateKind
   exercisesViewed: Record<string, boolean>
@@ -32,8 +41,9 @@ interface SessionClientProps {
 }
 
 export default function SessionClient({
-  exerciseList,
+  sessionList,
   phase1,
+  protocolOption = null,
   initialCompletedIds,
   initialState,
   exercisesViewed,
@@ -46,7 +56,7 @@ export default function SessionClient({
   const activeCardRef = useRef<HTMLLIElement | null>(null)
   const hasMounted = useRef(false)
 
-  // Auto-scroll to active card on Complete tap (not on initial mount)
+  // Auto-scroll to active card on Complete/Acknowledge tap (not on initial mount)
   useEffect(() => {
     if (!hasMounted.current) {
       hasMounted.current = true
@@ -66,27 +76,27 @@ export default function SessionClient({
     return <EmptySessionPlaceholder />
   }
 
-  const allComplete = exerciseList.every((ex) => completedSet.has(ex.id))
+  const allComplete = sessionList.every((item) => completedSet.has(item.id))
 
   if (allComplete) {
     return <SessionCompleteState />
   }
 
-  const activeIndex = exerciseList.findIndex((ex) => !completedSet.has(ex.id))
+  const activeIndex = sessionList.findIndex((item) => !completedSet.has(item.id))
   const completedCount = completedSet.size
-  const totalCount = exerciseList.length
-  const remainingMinutes = exerciseList
-    .filter((ex) => !completedSet.has(ex.id))
-    .reduce((sum, ex) => sum + (ex.estimatedMinutes ?? 0), 0)
+  const totalCount = sessionList.length
+  const remainingMinutes = sessionList
+    .filter((item) => !completedSet.has(item.id))
+    .reduce((sum, item) => sum + (item.estimatedMinutes ?? 0), 0)
 
-  const handleComplete = async (exerciseId: string): Promise<void> => {
+  const handleComplete = async (itemId: string): Promise<void> => {
     // Determine endpoint before the optimistic update (completedSet size not yet incremented)
-    const willBeFinal = completedSet.size + 1 === exerciseList.length
+    const willBeFinal = completedSet.size + 1 === sessionList.length
 
     // Optimistic update — local state changes immediately
     setCompletedSet((prev) => {
       const next = new Set(prev)
-      next.add(exerciseId)
+      next.add(itemId)
       return next
     })
 
@@ -96,7 +106,7 @@ export default function SessionClient({
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ exerciseId, isShorterSession }),
+        body: JSON.stringify({ exerciseId: itemId, isShorterSession }),
       })
       if (!res.ok) {
         console.error('[M13h] completion API failed:', res.status, await res.text())
@@ -111,7 +121,7 @@ export default function SessionClient({
       <header className="mb-6">
         <h1 className="text-heading-1 font-bold text-text-heading">Today&apos;s session</h1>
         <p className="text-body-sm text-text-muted mt-1">
-          {completedCount} of {totalCount} exercises complete
+          {completedCount} of {totalCount} complete
         </p>
         <p className="text-body-sm text-text-muted">
           {remainingMinutes < 1 ? 'Almost done' : `~${remainingMinutes} min remaining`}
@@ -119,14 +129,56 @@ export default function SessionClient({
       </header>
 
       <ul className="space-y-3">
-        {exerciseList.map((exercise, idx) => {
-          const isCompleted = completedSet.has(exercise.id)
+        {sessionList.map((item, idx) => {
+          const isCompleted = completedSet.has(item.id)
           const isActive = idx === activeIndex
-          const firstView = !exercisesViewed[exercise.id]
 
+          if (item.kind === 'reading') {
+            return (
+              <li
+                key={item.id}
+                ref={isActive ? activeCardRef : null}
+                className={[
+                  'rounded-lg border transition-colors',
+                  isCompleted && 'bg-surface-raised border-border opacity-80',
+                  isActive && 'border-primary border-2 bg-surface',
+                  !isCompleted && !isActive && 'border-border bg-surface opacity-70',
+                ].filter(Boolean).join(' ')}
+              >
+                {isCompleted && (
+                  <div className="flex items-center gap-2 p-4">
+                    <CheckCircle2 className="text-primary flex-shrink-0" size={20} />
+                    <span className="text-body line-through text-text-muted">
+                      {item.title}
+                    </span>
+                  </div>
+                )}
+                {isActive && (
+                  <div className="p-4">
+                    <ReadingView
+                      section={item}
+                      phase1={phase1}
+                      protocolOption={protocolOption}
+                      onAcknowledge={() => handleComplete(item.id)}
+                    />
+                  </div>
+                )}
+                {!isCompleted && !isActive && (
+                  <div className="p-4">
+                    <h3 className="text-heading-3 font-semibold text-text-heading">
+                      {item.title}
+                    </h3>
+                  </div>
+                )}
+              </li>
+            )
+          }
+
+          // Exercise item
+          const firstView = !exercisesViewed[item.id]
           return (
             <li
-              key={exercise.id}
+              key={item.id}
               ref={isActive ? activeCardRef : null}
               className={[
                 'rounded-lg border transition-colors',
@@ -139,7 +191,7 @@ export default function SessionClient({
                 <div className="flex items-center gap-2 p-4">
                   <CheckCircle2 className="text-primary flex-shrink-0" size={20} />
                   <span className="text-body line-through text-text-muted">
-                    {exercise.name}
+                    {item.name}
                   </span>
                 </div>
               )}
@@ -147,10 +199,10 @@ export default function SessionClient({
               {isActive && (
                 <div className="p-4">
                   <ExerciseView
-                    exercise={exercise}
+                    exercise={item}
                     phase1={phase1}
                     firstView={firstView}
-                    onComplete={() => handleComplete(exercise.id)}
+                    onComplete={() => handleComplete(item.id)}
                   />
                 </div>
               )}
@@ -158,7 +210,7 @@ export default function SessionClient({
               {!isCompleted && !isActive && (
                 <div className="p-4">
                   <h3 className="text-heading-3 font-semibold text-text-heading">
-                    {exercise.name}
+                    {item.name}
                   </h3>
                 </div>
               )}
