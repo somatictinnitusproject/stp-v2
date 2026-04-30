@@ -110,10 +110,8 @@ export default function ExerciseView({
       {/* 2. Expand toggle — reveals full explanation (items 1-7) inline */}
       <ExpandToggle expandedContent={fullExplanation} />
 
-      {/* 3. Brief summary — first ContentBlock from fullContent */}
-      {exercise.fullContent.length > 0 && (
-        <ContentBlock block={exercise.fullContent[0]} />
-      )}
+      {/* Condensed summary — technique recap authored per exercise */}
+      <ContentBlockList blocks={exercise.condensedSummary} />
 
       {/* 4. Video placeholder */}
       {videoPlaceholder}
