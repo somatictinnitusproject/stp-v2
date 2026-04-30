@@ -90,7 +90,10 @@ export default function PhaseProgressionCard({
             </div>
           )
 
-          if (status === 'locked') {
+          // P3 and P4 only are tappable (M13k). P1, P2, P5 are inert regardless of status.
+          const isTappable = phase === 3 || phase === 4
+
+          if (!isTappable) {
             return <div key={phase} className="flex-1 flex">{content}</div>
           }
           return (
