@@ -63,21 +63,24 @@ const d3: ReadingSection = {
       items: [
         'Tenderness on masseter and temporalis self-palpation has reduced noticeably.',
         'The release work feels less effortful — tissues responding more readily to pressure.',
-        'Jaw drift on mirror check has reduced or is less consistent.',
         'Release sessions are producing a clear sense of tissue softening rather than resistance.',
       ],
     },
     {
       type: 'p',
-      text: 'You do not need all four. A clear pattern of improvement across most of them is sufficient.',
+      text: 'You do not need all three. A clear pattern of improvement across most of them is sufficient.',
     },
     {
       type: 'p',
       text: 'Some members are ready closer to one week. Others with longer-standing dysfunction or significant disc pathology take longer. Both are normal. The tissue tells you — not the calendar.',
     },
     {
+      type: 'p',
+      text: 'When the signals above are showing across most days — normally after one to two weeks of consistent release work — you\'ll find the resistance phase entry point on your Phase 3 overview page. Some members are ready closer to one week; others take longer. The protocol does not push you forward — you decide when you\'re ready.',
+    },
+    {
       type: 'acknowledge_prompt',
-      text: 'I understand the purpose of the release phase and how to recognise when I’m ready to progress.',
+      text: 'I understand the purpose of the release phase and how to recognise when I\'m ready to progress.',
     },
   ],
 }

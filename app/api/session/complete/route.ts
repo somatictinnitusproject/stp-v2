@@ -66,15 +66,12 @@ export async function POST(req: NextRequest) {
     updated_at: nowIso,
   }
 
-  // D.13 acknowledgement: server-side 7-day gate + resistance_phase_start write.
+  // D.13 acknowledgement: defensive phase2 null guard + resistance_phase_start write.
+  // 7-day soft gate is client-side (ResistancePhaseCard modal) — not enforced server-side.
   if (exerciseId === 'D13_resistance_intro') {
     const phase2 = framework.phase2_completed_at
     if (!phase2) {
       return NextResponse.json({ error: 'phase2_not_complete' }, { status: 400 })
-    }
-    const unlockMs = new Date(phase2).getTime() + 7 * 24 * 60 * 60 * 1000
-    if (Date.now() < unlockMs) {
-      return NextResponse.json({ error: 'resistance_gate_not_met' }, { status: 400 })
     }
     if (framework.resistance_phase_start === null) {
       updateData.resistance_phase_start = nowIso

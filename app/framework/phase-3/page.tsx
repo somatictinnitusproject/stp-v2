@@ -23,11 +23,11 @@ import AuthShell from '@/components/shells/AuthShell'
 import { PHASE_NAMES } from '@/content/framework-manifest'
 import { SCORING_THRESHOLDS } from '@/content/scoring-thresholds'
 import { getReadingSectionById } from '@/content/framework/phase-3/_lookup'
-import { buildPhase3OrientationState } from '@/lib/session/build-session'
 import type { Phase1AssessmentRow } from '@/lib/scoring/types'
 import StateSummary from './components/StateSummary'
 import Phase3CompletionBlock from './components/Phase3CompletionBlock'
 import Phase3ReadingList from './components/Phase3ReadingList'
+import ResistancePhaseCard from './components/ResistancePhaseCard'
 import { advancePhase3ToPhase5 } from './actions'
 
 function formatDate(date: Date): string {
@@ -68,11 +68,8 @@ export default async function Phase3OverviewPage() {
   const phase2CompletedAt = new Date(progress.phase2_completed_at)
   const now = new Date()
 
-  const d13State = buildPhase3OrientationState(exercisesViewed, phase2CompletedAt, now)
-  const showD13 =
-    exercisesViewed['D13_resistance_intro'] ||
-    d13State.d13Gate === 'gated' ||
-    d13State.d13Gate === 'open'
+  // D.13 appears in the reading card only once acknowledged — re-readable inline expand.
+  const showD13 = !!exercisesViewed['D13_resistance_intro']
 
   const readingRowDefs = [
     { id: 'D1_phase3_opening', minutes: 5 },
@@ -134,6 +131,16 @@ export default async function Phase3OverviewPage() {
           resistanceState={resistanceState}
           daysIntoPhase3={daysIntoPhase3}
         />
+
+        {/* Resistance phase entry point — TMJ members only (D.13). */}
+        {tmjAssigned && assessment && (
+          <ResistancePhaseCard
+            resistancePhaseStart={progress.resistance_phase_start ?? null}
+            phase2CompletedAt={progress.phase2_completed_at}
+            phase1={assessment}
+            protocolOption={progress.protocol_option ?? null}
+          />
+        )}
 
         {/* Phase 3 reading — TMJ members only (M13l.2). Cervical readings land M13r. */}
         {tmjAssigned && assessment && (

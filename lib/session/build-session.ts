@@ -73,70 +73,25 @@ export function buildLowConfidenceList(): string[] {
   return ['D6_masseter_release', 'E5_suboccipital_tennis_ball']
 }
 
-// ── Phase 3 orientation gate state ───────────────────────────────────────────
-
-export interface OrientationGateState {
-  ids: string[]                          // IDs to include in the session list
-  d13Gate: 'absent' | 'gated' | 'open'  // 'absent' = prereqs not met; 'gated' = pre-7-days; 'open' = ready
-  d13UnlockDate: Date | null             // set only when d13Gate === 'gated'
-}
+// ── Phase 3 orientation reading IDs ──────────────────────────────────────────
 
 /**
- * Computes orientation reading IDs and D.13 gate state for a TMJ-assigned member.
- * Pure function — testable via the optional `now` param.
- *
- * D.13 inclusion requires D.1/D.2/D.3 all acknowledged, phase2CompletedAt
- * non-null, 7+ days elapsed, and D.13 not yet acknowledged (§4.3).
- * When the 7-day gate has not elapsed, D.13 is included with gate='gated'
- * so the member can read the content before they can acknowledge it.
+ * Returns unacknowledged D.1/D.2/D.3 orientation reading IDs for TMJ members.
+ * D.13 is no longer part of the session flow — it lives on /framework/phase-3
+ * via ResistancePhaseCard (M13o.1).
  */
 export function buildPhase3OrientationState(
   exercisesViewed: Record<string, boolean>,
-  phase2CompletedAt: Date | null,
-  now: Date = new Date(),
-): OrientationGateState {
-  const base = ['D1_phase3_opening', 'D2_forewarning', 'D3_release_intro']
-    .filter((id) => !exercisesViewed[id])
-
-  if (base.length > 0) {
-    return { ids: base, d13Gate: 'absent', d13UnlockDate: null }
-  }
-
-  // D.1/D.2/D.3 all acknowledged. Check D.13 conditions.
-
-  if (exercisesViewed['D13_resistance_intro']) {
-    return { ids: [], d13Gate: 'absent', d13UnlockDate: null }
-  }
-
-  if (phase2CompletedAt === null) {
-    return { ids: [], d13Gate: 'absent', d13UnlockDate: null }
-  }
-
-  const unlockTimestamp = phase2CompletedAt.getTime() + 7 * 24 * 60 * 60 * 1000
-
-  if (now.getTime() >= unlockTimestamp) {
-    return { ids: ['D13_resistance_intro'], d13Gate: 'open', d13UnlockDate: null }
-  }
-
-  return {
-    ids: ['D13_resistance_intro'],
-    d13Gate: 'gated',
-    d13UnlockDate: new Date(unlockTimestamp),
-  }
+): { ids: string[] } {
+  const all = ['D1_phase3_opening', 'D2_forewarning', 'D3_release_intro']
+  return { ids: all.filter((id) => !exercisesViewed[id]) }
 }
 
-/**
- * Returns unacknowledged Phase 3 TMJ orientation reading IDs in order.
- * Thin wrapper around buildPhase3OrientationState — kept for call-site
- * backward compatibility. Callers that need D.13 gate state should use
- * buildPhase3OrientationState directly.
- */
+/** Thin wrapper — returns the ids array directly. */
 export function buildPhase3OrientationList(
   exercisesViewed: Record<string, boolean>,
-  phase2CompletedAt: Date | null = null,
-  now: Date = new Date(),
 ): string[] {
-  return buildPhase3OrientationState(exercisesViewed, phase2CompletedAt, now).ids
+  return buildPhase3OrientationState(exercisesViewed).ids
 }
 
 /** TMJ resistance — 4 daily exercises per errata P3-5 (Doc 13 §5.5 had 3, was wrong). */
