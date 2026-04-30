@@ -63,7 +63,7 @@ export default function SessionClient({
       return
     }
     if (activeCardRef.current) {
-      activeCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      activeCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   }, [completedSet])
 
@@ -141,7 +141,7 @@ export default function SessionClient({
                 className={[
                   'rounded-lg border transition-colors',
                   isCompleted && 'bg-surface-raised border-border opacity-80',
-                  isActive && 'border-primary border-2 bg-surface',
+                  isActive && 'border-primary border-2 bg-surface scroll-mt-[68px]',
                   !isCompleted && !isActive && 'border-border bg-surface opacity-70',
                 ].filter(Boolean).join(' ')}
               >
@@ -183,7 +183,7 @@ export default function SessionClient({
               className={[
                 'rounded-lg border transition-colors',
                 isCompleted && 'bg-surface-raised border-border opacity-80',
-                isActive && 'border-primary border-2 bg-surface',
+                isActive && 'border-primary border-2 bg-surface scroll-mt-[68px]',
                 !isCompleted && !isActive && 'border-border bg-surface opacity-70',
               ].filter(Boolean).join(' ')}
             >

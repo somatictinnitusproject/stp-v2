@@ -33,7 +33,8 @@ interface ReadingViewProps {
   section: ReadingSection
   phase1: Phase1AssessmentRow
   protocolOption: number | null
-  onAcknowledge: () => Promise<void>
+  onAcknowledge?: () => Promise<void>
+  reviewMode?: boolean
 }
 
 export default function ReadingView({
@@ -41,6 +42,7 @@ export default function ReadingView({
   phase1,
   protocolOption,
   onAcknowledge,
+  reviewMode = false,
 }: ReadingViewProps) {
   const profileType = phase1.profile_type ?? ''
   const qualifyingModifiers = filterQualifyingModifiers(section.profileModifiers ?? [], phase1)
@@ -87,8 +89,10 @@ export default function ReadingView({
         <ProfileModifierBlock key={idx} title={mod.title} content={mod.content} />
       ))}
 
-      {/* Acknowledge button — same visual as CompleteButton */}
-      <CompleteButton onComplete={onAcknowledge} label="Acknowledge" />
+      {/* Acknowledge button — hidden in reviewMode (re-reading after acknowledgement) */}
+      {!reviewMode && onAcknowledge && (
+        <CompleteButton onComplete={onAcknowledge} label="Acknowledge" />
+      )}
     </div>
   )
 }
