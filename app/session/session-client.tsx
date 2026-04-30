@@ -18,6 +18,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useRef, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { CheckCircle2 } from 'lucide-react'
 import type { Exercise } from '@/content/exercises/_types'
@@ -28,6 +29,15 @@ import ReadingView from '@/components/exercise/reading-view'
 import type { SessionStateKind } from '@/lib/session/get-session-state'
 
 type SessionItem = Exercise | ReadingSection
+
+// D.13 becomes visible only after these three are acknowledged. router.refresh()
+// after each one re-renders the server component with updated exercises_viewed
+// so D.13 is inserted into the list once all three are done.
+const ORIENTATION_PREREQ_IDS = new Set([
+  'D1_phase3_opening',
+  'D2_forewarning',
+  'D3_release_intro',
+])
 
 interface SessionClientProps {
   sessionList: SessionItem[]
@@ -54,6 +64,7 @@ export default function SessionClient({
   d13Gate,
   d13UnlockDate,
 }: SessionClientProps) {
+  const router = useRouter()
   const [completedSet, setCompletedSet] = useState<Set<string>>(
     () => new Set(initialCompletedIds),
   )
@@ -114,6 +125,10 @@ export default function SessionClient({
       })
       if (!res.ok) {
         console.error('[M13h] completion API failed:', res.status, await res.text())
+      } else if (ORIENTATION_PREREQ_IDS.has(itemId)) {
+        // Re-render server component with updated exercises_viewed so D.13
+        // is inserted into the session list once all three prereqs are done.
+        router.refresh()
       }
     } catch (err) {
       console.error('[M13h] completion network error:', err)
