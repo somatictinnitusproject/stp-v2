@@ -6,6 +6,7 @@
 // Renders:
 //   - Phase 3 header (eyebrow + h1)
 //   - StateSummary card (release-since, resistance state, day count)
+//   - Phase3ReadingList (TMJ members only — expandable inline readings, M13l.2)
 //   - Phase3CompletionBlock (gate-enforced button + modal + permanent prompt)
 //
 // Gate logic (both required for button active):
@@ -17,13 +18,15 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import AuthShell from '@/components/shells/AuthShell'
 import { PHASE_NAMES } from '@/content/framework-manifest'
 import { SCORING_THRESHOLDS } from '@/content/scoring-thresholds'
+import { getReadingSectionById } from '@/content/framework/phase-3/_lookup'
+import type { Phase1AssessmentRow } from '@/lib/scoring/types'
 import StateSummary from './components/StateSummary'
 import Phase3CompletionBlock from './components/Phase3CompletionBlock'
+import Phase3ReadingList from './components/Phase3ReadingList'
 import { advancePhase3ToPhase5 } from './actions'
 
 function formatDate(date: Date): string {
@@ -37,7 +40,7 @@ export default async function Phase3OverviewPage() {
 
   const { data: progress, error } = await supabase
     .from('framework_progress')
-    .select('current_phase, phase2_completed_at, phase3_completed_at, resistance_phase_start, exercises_viewed')
+    .select('current_phase, phase2_completed_at, phase3_completed_at, resistance_phase_start, exercises_viewed, protocol_option')
     .eq('user_id', user.id)
     .maybeSingle()
 
@@ -50,20 +53,28 @@ export default async function Phase3OverviewPage() {
   // Member has already advanced past Phase 3
   if (progress.phase3_completed_at) redirect('/framework/phase-5')
 
-  // Fetch phase1_assessment for tmj_protocol_assigned (reading rows gate, M13l.1)
-  const { data: assessment } = await supabase
+  // Fetch full phase1_assessment row — needed for ReadingView profile modifiers (M13l.2)
+  const { data: assessmentRaw } = await supabase
     .from('phase1_assessment')
-    .select('tmj_protocol_assigned')
+    .select('*')
     .eq('user_id', user.id)
     .maybeSingle()
 
+  const assessment = assessmentRaw as Phase1AssessmentRow | null
   const tmjAssigned = assessment?.tmj_protocol_assigned === true
   const exercisesViewed = (progress.exercises_viewed ?? {}) as Record<string, boolean>
-  const readingRows = [
-    { id: 'D1_phase3_opening', title: 'Phase 3 Opening and Orientation', minutes: 5 },
-    { id: 'D2_forewarning', title: 'Forewarning: What to Expect in the First Week', minutes: 4 },
-    { id: 'D3_release_intro', title: 'Release Phase Introduction', minutes: 4 },
+
+  const readingRowDefs = [
+    { id: 'D1_phase3_opening', minutes: 5 },
+    { id: 'D2_forewarning', minutes: 4 },
+    { id: 'D3_release_intro', minutes: 4 },
   ]
+
+  const readings = readingRowDefs.map(({ id, minutes }) => ({
+    section: getReadingSectionById(id),
+    isRead: !!exercisesViewed[id],
+    minutes,
+  }))
 
   const phase2CompletedAt = new Date(progress.phase2_completed_at)
   const now = new Date()
@@ -116,33 +127,15 @@ export default async function Phase3OverviewPage() {
           daysIntoPhase3={daysIntoPhase3}
         />
 
-        {/* Phase 3 reading — TMJ members only (M13l.1). Cervical readings land M13r. */}
-        {tmjAssigned && (
+        {/* Phase 3 reading — TMJ members only (M13l.2). Cervical readings land M13r. */}
+        {tmjAssigned && assessment && (
           <div className="bg-surface border border-border rounded-[12px] p-5 mb-6">
             <p className="text-[14px] font-semibold text-text-heading mb-3">Phase 3 reading</p>
-            <div className="-mx-5">
-              {readingRows.map(({ id, title, minutes }, idx) => {
-                const isRead = !!exercisesViewed[id]
-                return (
-                  <Link
-                    key={id}
-                    href={`/framework/phase-3/reading-${id}`}
-                    className={[
-                      'flex items-center justify-between px-5 py-3 no-underline hover:bg-surface-raised transition-colors',
-                      idx < readingRows.length - 1 ? 'border-b border-border' : '',
-                    ].join(' ')}
-                  >
-                    <div>
-                      <p className="text-[14px] font-medium text-text-heading">{title}</p>
-                      <p className="text-[12px] text-text-muted mt-0.5">{minutes} min</p>
-                    </div>
-                    {isRead && (
-                      <span className="text-[12px] text-primary font-medium">✓ Read</span>
-                    )}
-                  </Link>
-                )
-              })}
-            </div>
+            <Phase3ReadingList
+              readings={readings}
+              phase1={assessment}
+              protocolOption={progress.protocol_option ?? null}
+            />
           </div>
         )}
 
