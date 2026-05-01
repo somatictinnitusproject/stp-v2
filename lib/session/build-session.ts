@@ -91,13 +91,30 @@ export function buildPhase3OrientationList(
   return buildPhase3OrientationState(exercisesViewed).ids
 }
 
-/** TMJ resistance — 3 daily exercises post-pre-launch (D.16 eccentric jaw control removed §1.15, library-only). */
-export function buildTmjResistanceList(): string[] {
-  return [
+/**
+ * TMJ resistance — D.14 and D.15 always included. D.17 conditionally
+ * included for members with disc displacement indicators in
+ * phase1_assessment: tmj_joint_sounds, tmj_opening_restriction, or
+ * jaw_locking. Members without any of these findings skip D.17 in
+ * the structured session — it remains accessible via the exercise
+ * library.
+ *
+ * Per pre-launch §1.15 (D.16 removed, library-only) and Doc 8 §D.17
+ * conditional inclusion rule.
+ */
+export function buildTmjResistanceList(phase1: Phase1AssessmentRow): string[] {
+  const base = [
     'D14_jaw_symmetry_retraining',
     'D15_progressive_resistance',
-    'D17_condylar_repositioning',
   ]
+  const includeD17 =
+    phase1.tmj_joint_sounds === true ||
+    phase1.tmj_opening_restriction === true ||
+    phase1.jaw_locking === true
+  if (includeD17) {
+    base.push('D17_condylar_repositioning')
+  }
+  return base
 }
 
 /** Cervical retraining — 3 daily exercises. */
@@ -162,7 +179,7 @@ export function buildSessionExerciseList(
       exercises = [
         ...exercises,
         ...buildCervRetainingList(),
-        ...buildTmjResistanceList(),
+        ...buildTmjResistanceList(phase1),
       ]
     }
     exercises = [...exercises, ...(progress.phase4_exercises_added ?? [])]
@@ -198,7 +215,7 @@ export function buildSessionExerciseList(
       exercises = [...exercises, ...buildCervRetainingList()]
     }
     if (tmjAssigned) {
-      exercises = [...exercises, ...buildTmjResistanceList()]
+      exercises = [...exercises, ...buildTmjResistanceList(phase1)]
     }
   }
 

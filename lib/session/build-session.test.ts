@@ -201,9 +201,46 @@ describe('buildLowConfidenceList', () => {
 })
 
 describe('buildTmjResistanceList', () => {
-  it('returns 3 IDs post-pre-launch (D.16 removed §1.15)', () => {
-    const list = buildTmjResistanceList()
+  it('no gating flags → 2 IDs (D.14 and D.15 only, D.17 gated out)', () => {
+    const phase1 = makePhase1()  // all gating flags null by default
+    const list = buildTmjResistanceList(phase1)
+    expect(list).toEqual([
+      'D14_jaw_symmetry_retraining',
+      'D15_progressive_resistance',
+    ])
+  })
+
+  it('tmj_joint_sounds = true → 3 IDs (D.17 included)', () => {
+    const phase1 = makePhase1({ tmj_joint_sounds: true })
+    const list = buildTmjResistanceList(phase1)
+    expect(list).toEqual([
+      'D14_jaw_symmetry_retraining',
+      'D15_progressive_resistance',
+      'D17_condylar_repositioning',
+    ])
+  })
+
+  it('tmj_opening_restriction = true → 3 IDs (D.17 included)', () => {
+    const phase1 = makePhase1({ tmj_opening_restriction: true })
+    const list = buildTmjResistanceList(phase1)
     expect(list).toHaveLength(3)
+    expect(list).toContain('D17_condylar_repositioning')
+  })
+
+  it('jaw_locking = true → 3 IDs (D.17 included)', () => {
+    const phase1 = makePhase1({ jaw_locking: true })
+    const list = buildTmjResistanceList(phase1)
+    expect(list).toHaveLength(3)
+    expect(list).toContain('D17_condylar_repositioning')
+  })
+
+  it('all three gating flags true → 3 IDs (single D.17 inclusion, no duplicates)', () => {
+    const phase1 = makePhase1({
+      tmj_joint_sounds: true,
+      tmj_opening_restriction: true,
+      jaw_locking: true,
+    })
+    const list = buildTmjResistanceList(phase1)
     expect(list).toEqual([
       'D14_jaw_symmetry_retraining',
       'D15_progressive_resistance',
@@ -260,12 +297,12 @@ describe('buildSessionExerciseList', () => {
 
   // C2 — TMJ_DOMINANT, Option 1, resistance → 9 IDs (TMJ release + TMJ resistance, no cervical per P3-16)
   it('C2: TMJ_DOMINANT / Option 1 / resistance → 9 IDs (no cervical cross-pickup per P3-16)', () => {
-    const phase1 = makePhase1({ profile_type: 'TMJ_DOMINANT', tmj_protocol_assigned: true, cerv_protocol_assigned: false })
+    const phase1 = makePhase1({ profile_type: 'TMJ_DOMINANT', tmj_protocol_assigned: true, cerv_protocol_assigned: false, tmj_joint_sounds: true })
     const progress = makeProgress({ protocol_option: 1, resistance_phase_start: '2026-04-01T00:00:00Z' })
     const result = buildSessionExerciseList(progress, phase1)
     expect(result).toHaveLength(9)
     expect(result.slice(0, 6)).toEqual(buildTmjReleaseList())
-    expect(result.slice(6, 9)).toEqual(buildTmjResistanceList())
+    expect(result.slice(6, 9)).toEqual(buildTmjResistanceList(phase1))
   })
 
   // C3 — CERV_DOMINANT, Option 1, no resistance → 5 IDs (cervical release only)
@@ -299,14 +336,14 @@ describe('buildSessionExerciseList', () => {
 
   // C6 — DUAL_DRIVER, Option 2, resistance → 17 IDs
   it('C6: DUAL_DRIVER / Option 2 / resistance → 17 IDs', () => {
-    const phase1 = makePhase1()
+    const phase1 = makePhase1({ tmj_joint_sounds: true })
     const progress = makeProgress({ protocol_option: 2, resistance_phase_start: '2026-04-01T00:00:00Z' })
     const result = buildSessionExerciseList(progress, phase1)
     expect(result).toHaveLength(17)
     expect(result.slice(0, 5)).toEqual(buildCervReleaseList())
     expect(result.slice(5, 11)).toEqual(buildTmjReleaseList())
     expect(result.slice(11, 14)).toEqual(buildCervRetainingList())
-    expect(result.slice(14, 17)).toEqual(buildTmjResistanceList())
+    expect(result.slice(14, 17)).toEqual(buildTmjResistanceList(phase1))
   })
 
   // C7 — TMJ_PRIMARY_WITH_SECONDARY, Option 3, no resistance → 7 IDs (TMJ release + 1 reduced cervical)
@@ -321,14 +358,14 @@ describe('buildSessionExerciseList', () => {
 
   // C8 — TMJ_PRIMARY_WITH_SECONDARY, Option 3, resistance → 13 IDs
   it('C8: TMJ_PRIMARY_WITH_SECONDARY / Option 3 / resistance → 13 IDs', () => {
-    const phase1 = makePhase1({ profile_type: 'TMJ_PRIMARY_WITH_SECONDARY', tmj_protocol_assigned: true, cerv_protocol_assigned: true })
+    const phase1 = makePhase1({ profile_type: 'TMJ_PRIMARY_WITH_SECONDARY', tmj_protocol_assigned: true, cerv_protocol_assigned: true, tmj_joint_sounds: true })
     const progress = makeProgress({ protocol_option: 3, resistance_phase_start: '2026-04-01T00:00:00Z' })
     const result = buildSessionExerciseList(progress, phase1)
     expect(result).toHaveLength(13)
     expect(result.slice(0, 6)).toEqual(buildTmjReleaseList())
     expect(result.slice(6, 7)).toEqual(buildReducedCervList('TMJ_PRIMARY_WITH_SECONDARY'))
     expect(result.slice(7, 10)).toEqual(buildCervRetainingList())
-    expect(result.slice(10, 13)).toEqual(buildTmjResistanceList())
+    expect(result.slice(10, 13)).toEqual(buildTmjResistanceList(phase1))
   })
 
   // C9 — TMJ_PRIMARY_STRONG_SECONDARY, Option 3, no resistance → 8 IDs
@@ -373,7 +410,7 @@ describe('buildSessionExerciseList', () => {
 
   // C13 — DUAL_DRIVER, Option 3, resistance → 17 IDs
   it('C13: DUAL_DRIVER / Option 3 / resistance → 17 IDs', () => {
-    const phase1 = makePhase1()
+    const phase1 = makePhase1({ tmj_joint_sounds: true })
     const progress = makeProgress({ protocol_option: 3, resistance_phase_start: '2026-04-01T00:00:00Z' })
     const result = buildSessionExerciseList(progress, phase1)
     expect(result).toHaveLength(17)
@@ -390,13 +427,13 @@ describe('buildSessionExerciseList', () => {
 
   // C15 — Low-confidence, null protocol_option, resistance → 8 IDs (2 + 3 cerv + 3 TMJ)
   it('C15: low-confidence / null option / resistance → 8 IDs (both resistance lists per P3-16)', () => {
-    const phase1 = makePhase1({ tmj_normalised_score: 17, cerv_normalised_score: 12 })
+    const phase1 = makePhase1({ tmj_normalised_score: 17, cerv_normalised_score: 12, tmj_joint_sounds: true })
     const progress = makeProgress({ protocol_option: null, resistance_phase_start: '2026-04-01T00:00:00Z' })
     const result = buildSessionExerciseList(progress, phase1)
     expect(result).toHaveLength(8)
     expect(result.slice(0, 2)).toEqual(buildLowConfidenceList())
     expect(result.slice(2, 5)).toEqual(buildCervRetainingList())
-    expect(result.slice(5, 8)).toEqual(buildTmjResistanceList())
+    expect(result.slice(5, 8)).toEqual(buildTmjResistanceList(phase1))
   })
 
   // C16 — DUAL_DRIVER, Option 2, no resistance, Phase 4 opt-in → 13 IDs
@@ -411,7 +448,7 @@ describe('buildSessionExerciseList', () => {
 
   // C17 — TMJ_DOMINANT, Option 1, resistance, Phase 4 opt-in → 10 IDs
   it('C17: TMJ_DOMINANT / Option 1 / resistance / Phase 4 added → 10 IDs (Phase 4 last)', () => {
-    const phase1 = makePhase1({ profile_type: 'TMJ_DOMINANT', tmj_protocol_assigned: true, cerv_protocol_assigned: false })
+    const phase1 = makePhase1({ profile_type: 'TMJ_DOMINANT', tmj_protocol_assigned: true, cerv_protocol_assigned: false, tmj_joint_sounds: true })
     const progress = makeProgress({
       protocol_option: 1,
       resistance_phase_start: '2026-04-01T00:00:00Z',
@@ -420,8 +457,35 @@ describe('buildSessionExerciseList', () => {
     const result = buildSessionExerciseList(progress, phase1)
     expect(result).toHaveLength(10)
     expect(result.slice(0, 6)).toEqual(buildTmjReleaseList())
-    expect(result.slice(6, 9)).toEqual(buildTmjResistanceList())
+    expect(result.slice(6, 9)).toEqual(buildTmjResistanceList(phase1))
     expect(result.slice(9)).toEqual(['F5_breath'])
+  })
+
+  // C18 — DUAL_DRIVER, Option 2, resistance, no gating flags → 16 IDs (D.17 absent)
+  it('C18: DUAL_DRIVER / Option 2 / resistance / no gating flags → 16 IDs (D.17 gated out)', () => {
+    const phase1 = makePhase1()  // no gating flags set
+    const progress = makeProgress({ protocol_option: 2, resistance_phase_start: '2026-04-01T00:00:00Z' })
+    const result = buildSessionExerciseList(progress, phase1)
+    expect(result).toHaveLength(16)
+    expect(result).not.toContain('D17_condylar_repositioning')
+    expect(result).toContain('D14_jaw_symmetry_retraining')
+    expect(result).toContain('D15_progressive_resistance')
+  })
+
+  // C19 — User-3-equivalent profile (DUAL_DRIVER, jaw_drift only) → D.17 absent
+  it('C19: User-3 equivalent (DUAL_DRIVER, tmj_jaw_drift=true only) → D.17 absent from session', () => {
+    const phase1 = makePhase1({
+      tmj_jaw_drift: true,
+      tmj_jaw_drift_direction: 'left',
+      tmj_masseter_asymmetry: true,
+      tmj_pterygoid_tenderness: true,
+      tmj_morning_soreness: true,
+      tmj_daytime_clenching: true,
+      // No joint sounds, no opening restriction, no locking
+    })
+    const progress = makeProgress({ protocol_option: 2, resistance_phase_start: '2026-04-01T00:00:00Z' })
+    const result = buildSessionExerciseList(progress, phase1)
+    expect(result).not.toContain('D17_condylar_repositioning')
   })
 })
 
@@ -441,10 +505,10 @@ describe('session list ordering', () => {
 
   it('D2: DUAL_DRIVER Option 2 with resistance — all resistance IDs come after all release IDs', () => {
     const progress = makeProgress({ protocol_option: 2, resistance_phase_start: '2026-04-01T00:00:00Z' })
-    const result = buildSessionExerciseList(progress, makePhase1())
+    const result = buildSessionExerciseList(progress, makePhase1({ tmj_joint_sounds: true }))
     const releaseCount = buildCervReleaseList().length + buildTmjReleaseList().length  // 11
     const cervRetaining = buildCervRetainingList()
-    const tmjResistance = buildTmjResistanceList()
+    const tmjResistance = buildTmjResistanceList(makePhase1({ tmj_joint_sounds: true }))
     expect(result.slice(releaseCount, releaseCount + cervRetaining.length)).toEqual(cervRetaining)
     expect(result.slice(releaseCount + cervRetaining.length)).toEqual(tmjResistance)
   })
