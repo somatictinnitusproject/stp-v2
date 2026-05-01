@@ -68,15 +68,13 @@ const EXERCISE_MAP = new Map<string, Exercise>([
   [d10TmjDistraction.id, d10TmjDistraction],
 
   // ── TMJ resistance (4) — content in M13p ───────────────────────────────────
-  // TODO M13p: replace D14, D15, D16, D17 stubs with real imports
+  // TODO M13p: replace D14, D15, D17 stubs with real imports
   ['D14_jaw_symmetry_retraining',
-    stub('D14_jaw_symmetry_retraining', 'D.14', 'Jaw Symmetry Retraining', 'resistance-training', 5)],
+    stub('D14_jaw_symmetry_retraining', 'D.14', 'Jaw Symmetry Retraining', 'resistance-training', 3)],
   ['D15_progressive_resistance',
-    stub('D15_progressive_resistance', 'D.15', 'Progressive Resistance Exercises', 'resistance-training', 6)],
-  ['D16_eccentric_jaw_control',
-    stub('D16_eccentric_jaw_control', 'D.16', 'Eccentric Jaw Control', 'resistance-training', 5)],
+    stub('D15_progressive_resistance', 'D.15', 'Progressive Resistance Exercises', 'resistance-training', 3)],
   ['D17_condylar_repositioning',
-    stub('D17_condylar_repositioning', 'D.17', 'Condylar Repositioning', 'resistance-training', 5)],
+    stub('D17_condylar_repositioning', 'D.17', 'Condylar Repositioning', 'resistance-training', 2)],
 
   // ── Cervical release (6) — content in M13s + M13t ──────────────────────────
   // TODO M13s: replace E5, E6, E7, E8 stubs with real imports

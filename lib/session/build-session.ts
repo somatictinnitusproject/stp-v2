@@ -29,14 +29,13 @@ export function buildTmjReleaseList(): string[] {
   ]
 }
 
-/** Full cervical release list. 6 exercises post-pre-launch (E.10 thoracic removed §4.5, E.11 replaced §1.8). */
+/** Full cervical release list. 5 exercises post-pre-launch (E.10 thoracic removed §4.5, E.11 replaced §1.8, E.9 removed §1.14). */
 export function buildCervReleaseList(): string[] {
   return [
     'E5_suboccipital_tennis_ball',
     'E6_scm_stretching',
     'E7_levator_scapulae_stretching',
     'E8_upper_trap_scalene_release',
-    'E9_suboccipital_specific_stretching',
     'E11_chin_tuck_rotation',
   ]
 }
@@ -50,7 +49,6 @@ export function buildReducedCervList(profileType: string): string[] {
     return [
       'E5_suboccipital_tennis_ball',
       'E6_scm_stretching',
-      'E9_suboccipital_specific_stretching',
     ]
   }
   return []
@@ -93,12 +91,11 @@ export function buildPhase3OrientationList(
   return buildPhase3OrientationState(exercisesViewed).ids
 }
 
-/** TMJ resistance — 4 daily exercises per errata P3-5 (Doc 13 §5.5 had 3, was wrong). */
+/** TMJ resistance — 3 daily exercises post-pre-launch (D.16 eccentric jaw control removed §1.15, library-only). */
 export function buildTmjResistanceList(): string[] {
   return [
     'D14_jaw_symmetry_retraining',
     'D15_progressive_resistance',
-    'D16_eccentric_jaw_control',
     'D17_condylar_repositioning',
   ]
 }
