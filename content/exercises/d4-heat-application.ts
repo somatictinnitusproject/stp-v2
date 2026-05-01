@@ -17,6 +17,10 @@ const d4HeatApplication: Exercise = {
   fullContent: [
     {
       type: 'p',
+      text: 'Heat is optional preparation, not a required exercise. If you have access to a heat source and a few extra minutes, applying warmth before the release work improves tissue response. If you do not, the release exercises that follow still produce most of their benefit. Skip without concern when convenient.',
+    },
+    {
+      type: 'p',
       text: 'Apply moist heat over the masseter and TMJ area for ten minutes before beginning any manual release work. A warm damp towel or heat pack held over both sides of the jaw simultaneously — from just in front of the ear down to the lower jaw.',
     },
     {
@@ -33,7 +37,7 @@ const d4HeatApplication: Exercise = {
     },
     {
       type: 'emphasis',
-      text: 'Skipping heat to save time reduces the effectiveness of every exercise that follows. The ten minutes is not a warm-up formality — it is part of the protocol.',
+      text: 'Heat materially improves tissue response when used. On days when adding ten minutes is realistic, do it — the release work that follows lands better. On days when it is not, the release work alone still produces most of its benefit. Use what fits the day rather than skipping the session entirely.',
     },
     {
       type: 'subhead',

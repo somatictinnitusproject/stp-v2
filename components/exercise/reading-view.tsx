@@ -56,7 +56,6 @@ export default function ReadingView({
       {/* Section heading */}
       <div>
         <h2 className="text-heading-3 font-semibold text-text-heading">{section.title}</h2>
-        <p className="text-body-sm text-text-muted mt-1">~{section.estimatedMinutes} min</p>
       </div>
 
       {/* Content blocks — dynamic blocks resolved inline */}

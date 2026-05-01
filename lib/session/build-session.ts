@@ -17,7 +17,7 @@ import type { Phase1AssessmentRow, FrameworkProgressRow } from '@/lib/scoring/ty
 
 // ── List builders — exact exercise IDs per errata P3-2 ───────────────────────
 
-/** Full TMJ release list. 7 exercises post-pre-launch (D.11 hyoid removed §1.7). */
+/** Full TMJ release list. 6 exercises post-pre-launch (D.9 auriculotemporal removed §1.13, D.11 hyoid removed §1.7). */
 export function buildTmjReleaseList(): string[] {
   return [
     'D4_heat_application',
@@ -25,7 +25,6 @@ export function buildTmjReleaseList(): string[] {
     'D6_masseter_release',
     'D7_intraoral_pterygoid_release',
     'D8_lateral_pterygoid_release',
-    'D9_auriculotemporal_nerve_mob',
     'D10_tmj_distraction',
   ]
 }
