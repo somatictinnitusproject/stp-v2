@@ -84,16 +84,19 @@ export default function SessionClient({
 
   const activeIndex = sessionList.findIndex((item) => !completedSet.has(item.id))
 
-  // Optional exercises (D.4 heat) excluded from "X of N" count and ~min total.
-  const optionalIds = new Set(
+  // Reading sections (D.1, D.2, D.3) excluded from "X of N" count and
+  // ~min total — they are orientation reading, not practice. Optional
+  // exercises (D.4 heat) also excluded.
+  const countableIds = new Set(
     sessionList
-      .filter((item): item is Exercise => item.kind === 'exercise' && !!item.optional)
+      .filter((item): item is Exercise => item.kind === 'exercise' && !item.optional)
       .map((item) => item.id),
   )
-  const completedCount = [...completedSet].filter((id) => !optionalIds.has(id)).length
-  const totalCount = sessionList.filter((item) => !optionalIds.has(item.id)).length
+  const completedCount = [...completedSet].filter((id) => countableIds.has(id)).length
+  const totalCount = countableIds.size
   const remainingMinutes = sessionList
-    .filter((item) => !completedSet.has(item.id) && !optionalIds.has(item.id))
+    .filter((item): item is Exercise => item.kind === 'exercise' && !item.optional)
+    .filter((item) => !completedSet.has(item.id))
     .reduce((sum, item) => sum + (item.estimatedMinutes ?? 0), 0)
 
   const handleComplete = async (itemId: string): Promise<void> => {

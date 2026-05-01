@@ -154,14 +154,20 @@ export default async function DashboardPage() {
         assessment as unknown as Phase1AssessmentRow,
       )
       const exercises = ids.map(id => getExerciseById(id))
-      totalExerciseCount = ids.length
-      const totalMinutes = exercises.reduce((sum, ex) => sum + (ex.estimatedMinutes ?? 0), 0)
 
-      // For in-progress: minutes remaining = total minus completed exercises
+      // Optional exercises (D.4 heat) excluded from ~min total to match
+      // session-client behaviour. totalExerciseCount remains based on
+      // ids.length so the dashboard chip shows all clickable items.
+      const nonOptionalExercises = exercises.filter(ex => !ex.optional)
+      totalExerciseCount = ids.length
+      const totalMinutes = nonOptionalExercises.reduce((sum, ex) => sum + (ex.estimatedMinutes ?? 0), 0)
+
+      // For in-progress: minutes remaining = non-optional exercises not yet
+      // completed.
       const sip = progress.session_in_progress as { session_date: string; completed_exercises: string[] } | null
       if (sip && sip.session_date === today) {
         const completedSet = new Set(sip.completed_exercises ?? [])
-        estimatedMinutesRemaining = exercises
+        estimatedMinutesRemaining = nonOptionalExercises
           .filter(ex => !completedSet.has(ex.id))
           .reduce((sum, ex) => sum + (ex.estimatedMinutes ?? 0), 0)
       } else {
