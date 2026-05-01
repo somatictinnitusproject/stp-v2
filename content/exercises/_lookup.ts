@@ -84,24 +84,24 @@ const EXERCISE_MAP = new Map<string, Exercise>([
   ['E5_suboccipital_tennis_ball',
     stub('E5_suboccipital_tennis_ball', 'E.5', 'Suboccipital Tennis Ball Release', 'cervical-release', 10)],
   ['E6_scm_stretching',
-    stub('E6_scm_stretching', 'E.6', 'SCM Stretching', 'cervical-release', 4)],
+    stub('E6_scm_stretching', 'E.6', 'SCM Stretching', 'cervical-release', 2)],
   ['E7_levator_scapulae_stretching',
-    stub('E7_levator_scapulae_stretching', 'E.7', 'Levator Scapulae Stretching', 'cervical-release', 4)],
+    stub('E7_levator_scapulae_stretching', 'E.7', 'Levator Scapulae Stretching', 'cervical-release', 2)],
   ['E8_upper_trap_scalene_release',
-    stub('E8_upper_trap_scalene_release', 'E.8', 'Upper Trapezius and Scalene Release', 'cervical-release', 5)],
+    stub('E8_upper_trap_scalene_release', 'E.8', 'Upper Trapezius and Scalene Release', 'cervical-release', 4)],
   ['E9_suboccipital_specific_stretching',
     stub('E9_suboccipital_specific_stretching', 'E.9', 'Suboccipital Specific Stretching', 'cervical-release', 3)],
   ['E11_chin_tuck_rotation',
-    stub('E11_chin_tuck_rotation', 'E.11', 'Controlled Chin Tuck with Rotation', 'cervical-release', 4)],
+    stub('E11_chin_tuck_rotation', 'E.11', 'Controlled Chin Tuck with Rotation', 'cervical-release', 2)],
 
   // ── Cervical retraining (3) — content in M13v ──────────────────────────────
   // TODO M13v: replace E13, E14, E15 stubs with real imports
   ['E13_deep_cervical_flexor_training',
-    stub('E13_deep_cervical_flexor_training', 'E.13', 'Deep Cervical Flexor Training', 'resistance-training', 5)],
+    stub('E13_deep_cervical_flexor_training', 'E.13', 'Deep Cervical Flexor Training', 'resistance-training', 4)],
   ['E14_cervical_rotation_holds',
     stub('E14_cervical_rotation_holds', 'E.14', 'Cervical Rotation Holds', 'resistance-training', 4)],
   ['E15_cervical_proprioception',
-    stub('E15_cervical_proprioception', 'E.15', 'Cervical Proprioception Retraining', 'resistance-training', 4)],
+    stub('E15_cervical_proprioception', 'E.15', 'Cervical Proprioception Retraining', 'resistance-training', 3)],
 ])
 
 /**

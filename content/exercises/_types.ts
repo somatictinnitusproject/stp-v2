@@ -104,4 +104,10 @@ export interface Exercise {
   // null for all exercises except D5_temporalis_release, D6_masseter_release,
   // and E5_suboccipital_tennis_ball.
   timer: TimerConfig | null
+
+  // ── Optional preamble flag ───────────────────────────────────────────────
+  // true only for D4_heat_application. Optional exercises are excluded from
+  // session "X of N" count and ~min remaining total. UI shows Continue + Skip
+  // instead of Complete. Omit (or set false) for all other exercises.
+  optional?: boolean
 }

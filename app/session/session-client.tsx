@@ -83,10 +83,17 @@ export default function SessionClient({
   }
 
   const activeIndex = sessionList.findIndex((item) => !completedSet.has(item.id))
-  const completedCount = completedSet.size
-  const totalCount = sessionList.length
+
+  // Optional exercises (D.4 heat) excluded from "X of N" count and ~min total.
+  const optionalIds = new Set(
+    sessionList
+      .filter((item): item is Exercise => item.kind === 'exercise' && !!item.optional)
+      .map((item) => item.id),
+  )
+  const completedCount = [...completedSet].filter((id) => !optionalIds.has(id)).length
+  const totalCount = sessionList.filter((item) => !optionalIds.has(item.id)).length
   const remainingMinutes = sessionList
-    .filter((item) => !completedSet.has(item.id))
+    .filter((item) => !completedSet.has(item.id) && !optionalIds.has(item.id))
     .reduce((sum, item) => sum + (item.estimatedMinutes ?? 0), 0)
 
   const handleComplete = async (itemId: string): Promise<void> => {

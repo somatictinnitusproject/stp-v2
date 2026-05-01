@@ -37,8 +37,27 @@ export default function ExerciseView({
 }: ExerciseViewProps) {
   const qualifyingModifiers = filterQualifyingModifiers(exercise.profileModifiers, phase1)
 
-  // Complete affordance — sustained-pressure timer deferred per P3-17
-  const completeAffordance = <CompleteButton onComplete={onComplete} />
+  // Complete affordance — optional exercises get Continue + Skip (same handler, same API path).
+  const completeAffordance = exercise.optional ? (
+    <div className="flex flex-col gap-3">
+      <button
+        type="button"
+        onClick={onComplete}
+        className="w-full py-3 px-4 rounded-lg bg-primary hover:bg-primary-hover text-white text-body font-semibold transition-colors"
+      >
+        Continue
+      </button>
+      <button
+        type="button"
+        onClick={onComplete}
+        className="w-full py-3 px-4 rounded-lg border border-primary text-primary text-body font-semibold hover:bg-primary/5 transition-colors"
+      >
+        Skip
+      </button>
+    </div>
+  ) : (
+    <CompleteButton onComplete={onComplete} />
+  )
 
   // Video placeholder — shown when videoId is available
   const videoPlaceholder = exercise.videoId !== null && (
@@ -62,7 +81,9 @@ export default function ExerciseView({
       <h2 className="text-heading-3 font-semibold text-text-heading">
         {exercise.name}
       </h2>
-      <p className="text-body-sm text-text-muted mt-0 mb-3">~{exercise.estimatedMinutes} min</p>
+      {!exercise.optional && (
+        <p className="text-body-sm text-text-muted mt-0 mb-3">~{exercise.estimatedMinutes} min</p>
+      )}
       {focusLineBlock}
       <ContentBlockList blocks={exercise.fullContent} />
       {qualifyingModifiers.map((mod, idx) => (
@@ -105,7 +126,9 @@ export default function ExerciseView({
       <h2 className="text-heading-3 font-semibold text-text-heading">
         {exercise.name}
       </h2>
-      <p className="text-body-sm text-text-muted mt-0 mb-3">~{exercise.estimatedMinutes} min</p>
+      {!exercise.optional && (
+        <p className="text-body-sm text-text-muted mt-0 mb-3">~{exercise.estimatedMinutes} min</p>
+      )}
 
       {/* 2. Expand toggle — reveals full explanation (items 1-7) inline */}
       <ExpandToggle expandedContent={fullExplanation} />

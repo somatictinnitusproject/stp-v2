@@ -63,6 +63,7 @@ const d4HeatApplication: Exercise = {
   shorter_session_eligible: true,
   rotation_slot: null,
   timer: null,
+  optional: true,
 }
 
 export default d4HeatApplication
