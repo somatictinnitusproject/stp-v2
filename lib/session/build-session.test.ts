@@ -39,6 +39,8 @@ function makePhase1(overrides: Partial<Phase1AssessmentRow> = {}): Phase1Assessm
     // All other fields null by default
     tmj_m1_jaw_opening: null,
     tmj_m2_jaw_protrusion: null,
+    jaw_clicking: null,
+    jaw_locking: null,
     tmj_jaw_drift: null,
     tmj_jaw_drift_direction: null,
     tmj_masseter_asymmetry: null,

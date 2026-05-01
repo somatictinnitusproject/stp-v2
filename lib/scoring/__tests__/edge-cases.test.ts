@@ -18,6 +18,8 @@ function blankAssessment(): Phase1AssessmentRow {
     completed_at: null,
     tmj_m1_jaw_opening: null,
     tmj_m2_jaw_protrusion: null,
+    jaw_clicking: null,
+    jaw_locking: null,
     tmj_jaw_drift: null,
     tmj_jaw_drift_direction: null,
     tmj_masseter_asymmetry: null,

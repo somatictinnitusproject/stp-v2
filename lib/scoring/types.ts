@@ -11,6 +11,8 @@ export interface Phase1AssessmentRow {
   // TMJ module
   tmj_m1_jaw_opening: boolean | null     // D1: live movement test, replaces intake fallback
   tmj_m2_jaw_protrusion: boolean | null  // D1: live movement test, replaces intake fallback
+  jaw_clicking: boolean | null           // M13p.3.0: schema present, type drift fixed
+  jaw_locking: boolean | null            // M13p.3.0: schema present, type drift fixed
   tmj_jaw_drift: boolean | null
   tmj_jaw_drift_direction: string | null
   tmj_masseter_asymmetry: boolean | null
