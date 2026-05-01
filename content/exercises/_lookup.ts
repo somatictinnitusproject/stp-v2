@@ -17,6 +17,7 @@ import d7IntraoralPterygoidRelease from './d7-intraoral-pterygoid-release'
 import d8LateralPterygoidRelease from './d8-lateral-pterygoid-release'
 import d9AuriculotemporalNerveMob from './d9-auriculotemporal-nerve-mobilisation'
 import d10TmjDistraction from './d10-tmj-distraction'
+import d14JawSymmetryRetraining from './d14-jaw-symmetry-retraining'
 
 // ── Stub factory ──────────────────────────────────────────────────────────────
 // Returns a minimal valid Exercise conforming to the type contract.
@@ -68,9 +69,8 @@ const EXERCISE_MAP = new Map<string, Exercise>([
   [d10TmjDistraction.id, d10TmjDistraction],
 
   // ── TMJ resistance (4) — content in M13p ───────────────────────────────────
-  // TODO M13p: replace D14, D15, D17 stubs with real imports
-  ['D14_jaw_symmetry_retraining',
-    stub('D14_jaw_symmetry_retraining', 'D.14', 'Jaw Symmetry Retraining', 'resistance-training', 3)],
+  // TODO M13p: replace D15, D17 stubs with real imports
+  [d14JawSymmetryRetraining.id, d14JawSymmetryRetraining],
   ['D15_progressive_resistance',
     stub('D15_progressive_resistance', 'D.15', 'Progressive Resistance Exercises', 'resistance-training', 3)],
   ['D17_condylar_repositioning',
