@@ -97,10 +97,6 @@ const f3: ReadingSection = {
       type: 'p',
       text: 'A practical approach: once per hour, stand up and move for two to three minutes. This is not a significant time cost and its cumulative effect on reducing daily cervical load is meaningful. Members who find it difficult to remember can use a simple recurring reminder.',
     },
-    {
-      type: 'acknowledge_prompt',
-      text: 'Done',
-    },
   ],
   profileModifiers: [
     {

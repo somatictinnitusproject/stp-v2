@@ -115,10 +115,6 @@ const f7: ReadingSection = {
       type: 'p',
       text: 'Over time, consistent early interruption gradually reduces the automaticity of the loop. The nervous system learns, through repeated experience, that the tinnitus signal does not require threat-level monitoring — not because it has been told this, but because the loop consistently fails to complete. This is the same habituation mechanism that makes previously noticeable background sounds invisible over time. It is slow and nonlinear, but it is real and it compounds.',
     },
-    {
-      type: 'acknowledge_prompt',
-      text: 'Done',
-    },
   ],
   profileModifiers: [
     {

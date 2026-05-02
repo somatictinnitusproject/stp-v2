@@ -76,7 +76,7 @@ export default function PhaseProgressionCard({
                   {SHORT_NAMES[phase]}
                 </div>
                 {phase === 3 && status === 'active' && (
-                  <div className="text-[10px] mt-[2px]" style={{ color: '#6B7280' }}>
+                  <div className="text-[10px] mt-[2px] whitespace-normal break-words leading-tight" style={{ color: '#6B7280' }}>
                     {resistancePhaseStart ? 'Release + Resistance' : 'Release Phase'}
                   </div>
                 )}

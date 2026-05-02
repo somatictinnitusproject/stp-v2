@@ -92,10 +92,6 @@ const f9: ReadingSection = {
       type: 'p',
       text: 'The test for whether masking use has become counterproductive is simple: does the absence of the masking sound produce anxiety? If yes, the masking has become a safety behaviour rather than a tool — and safety behaviours maintain the anxiety they appear to relieve.',
     },
-    {
-      type: 'acknowledge_prompt',
-      text: 'Done',
-    },
   ],
   profileModifiers: [
     {

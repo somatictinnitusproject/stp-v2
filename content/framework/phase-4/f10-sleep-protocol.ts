@@ -103,10 +103,6 @@ const f10: ReadingSection = {
       type: 'p',
       text: 'If return to sleep is not achieved within twenty minutes, getting up briefly and doing something calm in low light — then returning to bed — produces better outcomes than continued lying awake. Sustained wakefulness in bed with tinnitus prominent strengthens the association between the bed environment and tinnitus distress, which compounds the sleep problem over time.',
     },
-    {
-      type: 'acknowledge_prompt',
-      text: 'Done',
-    },
   ],
   profileModifiers: [
     {

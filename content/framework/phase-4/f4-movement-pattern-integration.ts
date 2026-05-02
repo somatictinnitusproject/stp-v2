@@ -112,10 +112,6 @@ const f4: ReadingSection = {
       type: 'p',
       text: 'Pick the one or two patterns above that are most relevant to your daily life and apply the corrections consistently for two weeks before adding others. Attempting to change all of them simultaneously produces none of them reliably.',
     },
-    {
-      type: 'acknowledge_prompt',
-      text: 'Done',
-    },
   ],
 }
 

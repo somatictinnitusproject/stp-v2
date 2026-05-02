@@ -69,10 +69,6 @@ const f11: ReadingSection = {
       type: 'p',
       text: 'Seeking professional support is not an indication that the framework has failed or that the somatic component is absent. The physical driver work and the psychological support work are not competing — they address different layers of the same problem and work better together than either does alone. Members who engage with professional psychological support alongside the framework typically progress faster in both dimensions, not slower.',
     },
-    {
-      type: 'acknowledge_prompt',
-      text: 'Done',
-    },
   ],
   profileModifiers: [
     {

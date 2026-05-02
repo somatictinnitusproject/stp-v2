@@ -79,10 +79,6 @@ const f6: ReadingSection = {
       type: 'p',
       text: 'After two to three weeks of consistent daily practice most members notice a measurable reduction in baseline stress and anxiety levels and a corresponding reduction in tinnitus variability on high-stress days. The autonomic recalibration takes time to accumulate — this is a weeks-level intervention, not a single-session fix.',
     },
-    {
-      type: 'acknowledge_prompt',
-      text: 'Done',
-    },
   ],
 }
 
