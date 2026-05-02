@@ -20,6 +20,7 @@ import d10TmjDistraction from './d10-tmj-distraction'
 import d14JawSymmetryRetraining from './d14-jaw-symmetry-retraining'
 import d15ProgressiveResistance from './d15-progressive-resistance'
 import d17CondylarRepositioning from './d17-condylar-repositioning'
+import e5SuboccipitalTennisBall from './e5-suboccipital-tennis-ball'
 
 // ── Stub factory ──────────────────────────────────────────────────────────────
 // Returns a minimal valid Exercise conforming to the type contract.
@@ -76,10 +77,9 @@ const EXERCISE_MAP = new Map<string, Exercise>([
   [d17CondylarRepositioning.id, d17CondylarRepositioning],
 
   // ── Cervical release (6) — content in M13s + M13t ──────────────────────────
-  // TODO M13s: replace E5, E6, E7, E8 stubs with real imports
+  // TODO M13s: replace E6, E7, E8 stubs with real imports
   // TODO M13t: replace E9, E11 stubs with real imports
-  ['E5_suboccipital_tennis_ball',
-    stub('E5_suboccipital_tennis_ball', 'E.5', 'Suboccipital Tennis Ball Release', 'cervical-release', 10)],
+  [e5SuboccipitalTennisBall.id, e5SuboccipitalTennisBall],
   ['E6_scm_stretching',
     stub('E6_scm_stretching', 'E.6', 'SCM Stretching', 'cervical-release', 2)],
   ['E7_levator_scapulae_stretching',
