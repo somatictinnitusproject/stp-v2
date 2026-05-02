@@ -5,7 +5,8 @@
 // ─────────────────────────────────────────────────────────────────
 
 import type { ReadingSection } from './types'
+import f1 from './f1-opening'
 
 export type { ReadingSection } from './types'
 
-export const PHASE_4_READINGS: ReadingSection[] = []
+export const PHASE_4_READINGS: ReadingSection[] = [f1]
