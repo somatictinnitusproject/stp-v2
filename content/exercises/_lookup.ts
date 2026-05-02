@@ -21,6 +21,9 @@ import d14JawSymmetryRetraining from './d14-jaw-symmetry-retraining'
 import d15ProgressiveResistance from './d15-progressive-resistance'
 import d17CondylarRepositioning from './d17-condylar-repositioning'
 import e5SuboccipitalTennisBall from './e5-suboccipital-tennis-ball'
+import e6ScmStretching from './e6-scm-stretching'
+import e7LevatorScapulaeStretching from './e7-levator-scapulae-stretching'
+import e8UpperTrapScaleneRelease from './e8-upper-trap-scalene-release'
 
 // ── Stub factory ──────────────────────────────────────────────────────────────
 // Returns a minimal valid Exercise conforming to the type contract.
@@ -77,15 +80,11 @@ const EXERCISE_MAP = new Map<string, Exercise>([
   [d17CondylarRepositioning.id, d17CondylarRepositioning],
 
   // ── Cervical release (6) — content in M13s + M13t ──────────────────────────
-  // TODO M13s: replace E6, E7, E8 stubs with real imports
   // TODO M13t: replace E9, E11 stubs with real imports
   [e5SuboccipitalTennisBall.id, e5SuboccipitalTennisBall],
-  ['E6_scm_stretching',
-    stub('E6_scm_stretching', 'E.6', 'SCM Stretching', 'cervical-release', 2)],
-  ['E7_levator_scapulae_stretching',
-    stub('E7_levator_scapulae_stretching', 'E.7', 'Levator Scapulae Stretching', 'cervical-release', 2)],
-  ['E8_upper_trap_scalene_release',
-    stub('E8_upper_trap_scalene_release', 'E.8', 'Upper Trapezius and Scalene Release', 'cervical-release', 4)],
+  [e6ScmStretching.id, e6ScmStretching],
+  [e7LevatorScapulaeStretching.id, e7LevatorScapulaeStretching],
+  [e8UpperTrapScaleneRelease.id, e8UpperTrapScaleneRelease],
   ['E9_suboccipital_specific_stretching',
     stub('E9_suboccipital_specific_stretching', 'E.9', 'Suboccipital Specific Stretching', 'cervical-release', 3)],
   ['E11_chin_tuck_rotation',
