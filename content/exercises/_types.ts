@@ -26,8 +26,18 @@ export type ContentBlock =
   | { type: 'dynamic'; source: 'protocol_assignment' | 'protocol_option' | 'phase4_confirmed_flags' }
 
 // ── ProfileModifier ───────────────────────────────────────────────────────────
-// Data-driven personalisation block. Renders only when
-// phase1Assessment[triggerFlag] strictly equals triggerValue.
+// Data-driven personalisation block. Discriminated union supporting three
+// trigger variants:
+//
+//   triggerFlag + triggerValue: strict equality on a single Phase 1 column.
+//     Existing pattern — used by all Phase 3 modifiers and Phase 4 F.2/F.3.
+//
+//   triggerAllFalse: array of Phase 1 columns, all of which must strictly
+//     === false. null does NOT qualify — the column must have been explicitly
+//     recorded as false. Used by F.5 and F.8 "No NS Flags Confirmed" blocks.
+//
+//   triggerAnyTrue: array of Phase 1 columns, any of which strictly === true.
+//     Anticipates F.11 multi-flag OR conditions.
 //
 // Per errata P3-13: five Phase 1 flags referenced in Doc 8 are NOT persisted
 // to phase1_assessment (masseter_tenderness, temporalis_tenderness,
@@ -35,12 +45,23 @@ export type ContentBlock =
 // column reference resolves to undefined, strict equality fails, and the
 // block is silently omitted — no error, no UI artifact.
 
-export interface ProfileModifier {
-  triggerFlag: keyof Phase1AssessmentRow
-  triggerValue: boolean | string  // true | 'left' | 'right' | etc.
-  title: string                   // e.g. 'Daytime Clenching Confirmed'
-  content: ContentBlock[]
-}
+export type ProfileModifier =
+  | {
+      triggerFlag: keyof Phase1AssessmentRow
+      triggerValue: boolean | string  // true | 'left' | 'right' | etc.
+      title: string                    // e.g. 'Daytime Clenching Confirmed'
+      content: ContentBlock[]
+    }
+  | {
+      triggerAllFalse: (keyof Phase1AssessmentRow)[]
+      title: string
+      content: ContentBlock[]
+    }
+  | {
+      triggerAnyTrue: (keyof Phase1AssessmentRow)[]
+      title: string
+      content: ContentBlock[]
+    }
 
 // ── TimerConfig ───────────────────────────────────────────────────────────────
 // Per pre-launch §4.1 and errata P3-8.

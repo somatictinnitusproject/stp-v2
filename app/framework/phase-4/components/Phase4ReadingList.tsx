@@ -94,9 +94,18 @@ export default function Phase4ReadingList({
                     isReadEffective
                       ? undefined
                       : async () => {
+                          // Optimistic ✓ Read chip — show immediately on the row.
                           setLocallyAcknowledgedIds((prev) => {
                             const next = new Set(prev)
                             next.add(section.id)
+                            return next
+                          })
+                          // Collapse the row — user is "done" with this reading,
+                          // returning them to the list view rather than leaving them
+                          // stranded at the bottom of long content (M14d UX fix).
+                          setOpenIds((prev) => {
+                            const next = new Set(prev)
+                            next.delete(section.id)
                             return next
                           })
                           try {
