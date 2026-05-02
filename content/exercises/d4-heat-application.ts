@@ -1,7 +1,21 @@
 // /content/exercises/d4-heat-application.ts
 // D.4 — Heat Application
-// Verbatim member-facing copy from Document 8 Part D, section D.4.
-// Prepares tissue for subsequent manual release work.
+// Unified preparation step covering both jaw and cervical regions.
+// Authored from Document 8 Part D §D.4 (jaw heat copy) and Document
+// 8 Part E §E.5 "Before you begin" warmth preamble (cervical heat
+// guidance). M13s.0a authoring decision: single unified copy rather
+// than profile-conditional modifiers — most members run both
+// protocols (DUAL_DRIVER + 4 PRIMARY/SECONDARY profile types), so
+// the modifier overhead is not warranted.
+//
+// Session list ordering (D.4 at top of /session for all release-phase
+// members regardless of protocol assignment) is implemented in
+// M13s.0b. In M13s.0a D.4 still lives in buildTmjReleaseList.
+//
+// Closing emphasis block addresses the minority of members on
+// single-region protocols (TMJ_DOMINANT or CERV_DOMINANT) — gives
+// them explicit guidance to focus heat on the region their protocol
+// is targeting that day.
 
 import type { Exercise } from './_types'
 
@@ -21,7 +35,7 @@ const d4HeatApplication: Exercise = {
     },
     {
       type: 'p',
-      text: 'Apply moist heat over the masseter and TMJ area for ten minutes before beginning any manual release work. A warm damp towel or heat pack held over both sides of the jaw simultaneously — from just in front of the ear down to the lower jaw.',
+      text: 'Apply moist heat over the masseter and TMJ area, the posterior neck, and the base of the skull for ten minutes before beginning any manual release work. A warm damp towel or heat pack held over the relevant region works well — for the jaw, from just in front of the ear down to the lower jaw; for the cervical region, across the back of the neck and the base of the skull.',
     },
     {
       type: 'p',
@@ -47,12 +61,16 @@ const d4HeatApplication: Exercise = {
       type: 'p',
       text: 'A warm damp towel wrung out and held in place works well. A reusable heat pack microwaved to a comfortable temperature is a straightforward alternative. Either is fine. Moist heat penetrates tissue more effectively than dry heat at the same surface temperature — a damp towel or moist heat pack is preferable to a dry heat pad where possible.',
     },
+    {
+      type: 'emphasis',
+      text: 'If your protocol targets only the jaw or only the cervical region, focus heat application on the relevant region — no need to warm tissue you are not working that day.',
+    },
   ],
 
   condensedSummary: [
     {
       type: 'p',
-      text: 'Apply moist heat over the masseter and TMJ area for ten minutes before beginning any manual release work. Warm and comfortable, not hot.',
+      text: 'Apply moist heat over the jaw, the posterior neck, and the base of the skull for ten minutes before beginning any manual release work. Warm and comfortable, not hot. If your protocol targets only one region, focus the heat there.',
     },
   ],
 
