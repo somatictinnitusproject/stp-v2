@@ -54,7 +54,7 @@ export default function Phase4ReadingList({
 
   return (
     <div className="-mx-5">
-      {readings.map(({ section, isRead, minutes }, idx) => {
+      {readings.map(({ section, isRead }, idx) => {
         const isOpen = openIds.has(section.id)
         const isLast = idx === readings.length - 1
         const isReadEffective = isRead || locallyAcknowledgedIds.has(section.id)
@@ -68,7 +68,6 @@ export default function Phase4ReadingList({
             >
               <div>
                 <p className="text-[14px] font-medium text-text-heading">{section.title}</p>
-                <p className="text-[12px] text-text-muted mt-0.5">~{minutes} min</p>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0 ml-3">
                 {isReadEffective && (
