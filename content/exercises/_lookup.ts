@@ -25,6 +25,7 @@ import e6ScmStretching from './e6-scm-stretching'
 import e7LevatorScapulaeStretching from './e7-levator-scapulae-stretching'
 import e8UpperTrapScaleneRelease from './e8-upper-trap-scalene-release'
 import e11ChinTuckRotation from './e11-chin-tuck-rotation'
+import e13DeepCervicalFlexorTraining from './e13-deep-cervical-flexor-training'
 
 // ── Stub factory ──────────────────────────────────────────────────────────────
 // Returns a minimal valid Exercise conforming to the type contract.
@@ -91,9 +92,8 @@ const EXERCISE_MAP = new Map<string, Exercise>([
   [e11ChinTuckRotation.id, e11ChinTuckRotation],
 
   // ── Cervical retraining (3) — content in M13v ──────────────────────────────
-  // TODO M13v: replace E13, E14, E15 stubs with real imports
-  ['E13_deep_cervical_flexor_training',
-    stub('E13_deep_cervical_flexor_training', 'E.13', 'Deep Cervical Flexor Training', 'resistance-training', 4)],
+  // TODO M13v: replace E14, E15 stubs with real imports
+  [e13DeepCervicalFlexorTraining.id, e13DeepCervicalFlexorTraining],
   ['E14_cervical_rotation_holds',
     stub('E14_cervical_rotation_holds', 'E.14', 'Cervical Rotation Holds', 'resistance-training', 4)],
   ['E15_cervical_proprioception',
