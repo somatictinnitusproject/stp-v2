@@ -23,7 +23,7 @@ export type ContentBlock =
   | { type: 'callout'; tone: 'info' | 'warning'; text: string }
   | { type: 'emphasis'; text: string }
   | { type: 'acknowledge_prompt'; text: string }
-  | { type: 'dynamic'; source: 'protocol_assignment' | 'protocol_option' }
+  | { type: 'dynamic'; source: 'protocol_assignment' | 'protocol_option' | 'phase4_confirmed_flags' }
 
 // ── ProfileModifier ───────────────────────────────────────────────────────────
 // Data-driven personalisation block. Renders only when

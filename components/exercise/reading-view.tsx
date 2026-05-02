@@ -76,7 +76,50 @@ export default function ReadingView({
                 </p>
               )
             }
-            // Null protocol_option or unknown source — silently omit
+            if (block.source === 'phase4_confirmed_flags') {
+              const confirmedFlags: string[] = []
+              if (phase1.post_sustained_desk_load === true)
+                confirmedFlags.push('Sustained desk load confirmed')
+              if (phase1.post_shoulder_asymmetry === true) {
+                const side = phase1.post_elevated_side
+                confirmedFlags.push(
+                  side
+                    ? `Shoulder asymmetry confirmed (elevated ${side} side)`
+                    : 'Shoulder asymmetry confirmed (elevated side)'
+                )
+              }
+              if (phase1.cerv_forward_head_posture === true)
+                confirmedFlags.push('Forward head posture confirmed')
+              if (phase1.ns_stress_tinnitus_correlation === true)
+                confirmedFlags.push('High stress-tinnitus correlation confirmed')
+              if (phase1.ns_hypervigilance === true)
+                confirmedFlags.push('Hypervigilance pattern identified')
+              if (phase1.ns_anxiety_loop === true)
+                confirmedFlags.push('Anxiety-tinnitus loop identified')
+              if (phase1.ns_sleep_disruption === true)
+                confirmedFlags.push('Significant sleep disruption identified')
+
+              if (confirmedFlags.length === 0) {
+                return (
+                  <p key={idx} className="text-body text-text-body leading-relaxed">
+                    Your Phase 1 assessment did not identify specific maintaining factors — Phase 4 still covers postural and nervous system content that supports and consolidates Phase 3 work.
+                  </p>
+                )
+              }
+              return (
+                <div key={idx} className="space-y-2">
+                  <p className="text-body text-text-body leading-relaxed">
+                    Your Phase 1 assessment identified the following maintaining factors as confirmed for you:
+                  </p>
+                  <ul className="list-disc list-outside pl-5 space-y-1 text-body text-text-body leading-relaxed">
+                    {confirmedFlags.map((flag, i) => (
+                      <li key={i}>{flag}</li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            }
+            // Unknown source — silently omit
             return null
           }
           // Suppress acknowledge_prompt blocks in reviewMode (inline expand on /framework/phase-3)
