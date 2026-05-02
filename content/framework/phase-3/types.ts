@@ -21,4 +21,5 @@ export interface ReadingSection {
   estimatedMinutes: number
   content: ContentBlock[]           // may include { type: 'dynamic' } blocks for D.1
   profileModifiers?: ProfileModifier[]  // optional; same interface as Exercise profile modifiers
+  acknowledgeLabel?: string         // optional; defaults to 'Acknowledge'. Phase 4 practical sections (F.3, F.4, F.6+) set this to 'Done'.
 }

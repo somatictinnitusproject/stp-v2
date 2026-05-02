@@ -135,9 +135,11 @@ export default function ReadingView({
         <ProfileModifierBlock key={idx} title={mod.title} content={mod.content} />
       ))}
 
-      {/* Acknowledge button — hidden in reviewMode (re-reading after acknowledgement) */}
+      {/* Acknowledge button — hidden in reviewMode (re-reading after acknowledgement).
+          Label defaults to "Acknowledge"; Phase 4 practical sections (F.3, F.4, F.6+)
+          override via section.acknowledgeLabel = "Done". */}
       {!reviewMode && onAcknowledge && (
-        <CompleteButton onComplete={onAcknowledge} label="Acknowledge" />
+        <CompleteButton onComplete={onAcknowledge} label={section.acknowledgeLabel ?? 'Acknowledge'} />
       )}
     </div>
   )
