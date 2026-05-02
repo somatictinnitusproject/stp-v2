@@ -127,9 +127,8 @@ function makeProgress(overrides: Partial<FrameworkProgressRow> = {}): FrameworkP
 // ── Block A — List builder unit tests ─────────────────────────────────────────
 
 describe('buildTmjReleaseList', () => {
-  it('returns 6 IDs in exact spec order (D4–D10 minus D.9, D9 auriculotemporal removed per §1.13, D11 hyoid absent per §1.7)', () => {
+  it('returns 5 IDs post-M13s.0b (D.4 heat moved to top of session list for all release members)', () => {
     expect(buildTmjReleaseList()).toEqual([
-      'D4_heat_application',
       'D5_temporalis_release',
       'D6_masseter_release',
       'D7_intraoral_pterygoid_release',
@@ -286,52 +285,57 @@ describe('isLowConfidence', () => {
 // ── Block C — Orchestrator tests ──────────────────────────────────────────────
 
 describe('buildSessionExerciseList', () => {
-  // C1 — TMJ_DOMINANT, Option 1, no resistance → 6 IDs (TMJ release only)
-  it('C1: TMJ_DOMINANT / Option 1 / no resistance → 6 IDs (TMJ release only)', () => {
+  // C1 — TMJ_DOMINANT, Option 1, no resistance → 6 IDs (D.4 + TMJ release)
+  it('C1: TMJ_DOMINANT / Option 1 / no resistance → 6 IDs (D.4 + TMJ release)', () => {
     const phase1 = makePhase1({ profile_type: 'TMJ_DOMINANT', tmj_protocol_assigned: true, cerv_protocol_assigned: false })
     const progress = makeProgress({ protocol_option: 1 })
     const result = buildSessionExerciseList(progress, phase1)
     expect(result).toHaveLength(6)
-    expect(result).toEqual(buildTmjReleaseList())
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1)).toEqual(buildTmjReleaseList())
   })
 
-  // C2 — TMJ_DOMINANT, Option 1, resistance → 9 IDs (TMJ release + TMJ resistance, no cervical per P3-16)
+  // C2 — TMJ_DOMINANT, Option 1, resistance → 9 IDs (D.4 + TMJ release + TMJ resistance, no cervical per P3-16)
   it('C2: TMJ_DOMINANT / Option 1 / resistance → 9 IDs (no cervical cross-pickup per P3-16)', () => {
     const phase1 = makePhase1({ profile_type: 'TMJ_DOMINANT', tmj_protocol_assigned: true, cerv_protocol_assigned: false, tmj_joint_sounds: true })
     const progress = makeProgress({ protocol_option: 1, resistance_phase_start: '2026-04-01T00:00:00Z' })
     const result = buildSessionExerciseList(progress, phase1)
     expect(result).toHaveLength(9)
-    expect(result.slice(0, 6)).toEqual(buildTmjReleaseList())
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 6)).toEqual(buildTmjReleaseList())
     expect(result.slice(6, 9)).toEqual(buildTmjResistanceList(phase1))
   })
 
-  // C3 — CERV_DOMINANT, Option 1, no resistance → 5 IDs (cervical release only)
-  it('C3: CERV_DOMINANT / Option 1 / no resistance → 5 IDs (cervical release only)', () => {
+  // C3 — CERV_DOMINANT, Option 1, no resistance → 6 IDs (D.4 now included for cervical-only members)
+  it('C3: CERV_DOMINANT / Option 1 / no resistance → 6 IDs (D.4 now included for cervical-only members)', () => {
     const phase1 = makePhase1({ profile_type: 'CERV_DOMINANT', tmj_protocol_assigned: false, cerv_protocol_assigned: true })
     const progress = makeProgress({ protocol_option: 1 })
     const result = buildSessionExerciseList(progress, phase1)
-    expect(result).toHaveLength(5)
-    expect(result).toEqual(buildCervReleaseList())
+    expect(result).toHaveLength(6)  // D.4 now included for cervical-only members
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1)).toEqual(buildCervReleaseList())
   })
 
-  // C4 — CERV_DOMINANT, Option 1, resistance → 8 IDs (cervical release + cervical retraining, no TMJ per P3-16)
-  it('C4: CERV_DOMINANT / Option 1 / resistance → 8 IDs (no TMJ cross-pickup per P3-16)', () => {
+  // C4 — CERV_DOMINANT, Option 1, resistance → 9 IDs (+1 for D.4, no TMJ per P3-16)
+  it('C4: CERV_DOMINANT / Option 1 / resistance → 9 IDs (no TMJ cross-pickup per P3-16)', () => {
     const phase1 = makePhase1({ profile_type: 'CERV_DOMINANT', tmj_protocol_assigned: false, cerv_protocol_assigned: true })
     const progress = makeProgress({ protocol_option: 1, resistance_phase_start: '2026-04-01T00:00:00Z' })
     const result = buildSessionExerciseList(progress, phase1)
-    expect(result).toHaveLength(8)
-    expect(result.slice(0, 5)).toEqual(buildCervReleaseList())
-    expect(result.slice(5, 8)).toEqual(buildCervRetainingList())
+    expect(result).toHaveLength(9)  // +1 for D.4
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 6)).toEqual(buildCervReleaseList())
+    expect(result.slice(6, 9)).toEqual(buildCervRetainingList())
   })
 
-  // C5 — DUAL_DRIVER, Option 2, no resistance → 11 IDs (cervical release + TMJ release)
+  // C5 — DUAL_DRIVER, Option 2, no resistance → 11 IDs (D.4 + cervical release + TMJ release)
   it('C5: DUAL_DRIVER / Option 2 / no resistance → 11 IDs', () => {
     const phase1 = makePhase1()  // default DUAL_DRIVER, both assigned
     const progress = makeProgress({ protocol_option: 2 })
     const result = buildSessionExerciseList(progress, phase1)
     expect(result).toHaveLength(11)
-    expect(result.slice(0, 5)).toEqual(buildCervReleaseList())
-    expect(result.slice(5, 11)).toEqual(buildTmjReleaseList())
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 6)).toEqual(buildCervReleaseList())
+    expect(result.slice(6, 11)).toEqual(buildTmjReleaseList())
   })
 
   // C6 — DUAL_DRIVER, Option 2, resistance → 17 IDs
@@ -340,19 +344,21 @@ describe('buildSessionExerciseList', () => {
     const progress = makeProgress({ protocol_option: 2, resistance_phase_start: '2026-04-01T00:00:00Z' })
     const result = buildSessionExerciseList(progress, phase1)
     expect(result).toHaveLength(17)
-    expect(result.slice(0, 5)).toEqual(buildCervReleaseList())
-    expect(result.slice(5, 11)).toEqual(buildTmjReleaseList())
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 6)).toEqual(buildCervReleaseList())
+    expect(result.slice(6, 11)).toEqual(buildTmjReleaseList())
     expect(result.slice(11, 14)).toEqual(buildCervRetainingList())
     expect(result.slice(14, 17)).toEqual(buildTmjResistanceList(phase1))
   })
 
-  // C7 — TMJ_PRIMARY_WITH_SECONDARY, Option 3, no resistance → 7 IDs (TMJ release + 1 reduced cervical)
+  // C7 — TMJ_PRIMARY_WITH_SECONDARY, Option 3, no resistance → 7 IDs (D.4 + TMJ release + 1 reduced cervical)
   it('C7: TMJ_PRIMARY_WITH_SECONDARY / Option 3 / no resistance → 7 IDs', () => {
     const phase1 = makePhase1({ profile_type: 'TMJ_PRIMARY_WITH_SECONDARY', tmj_protocol_assigned: true, cerv_protocol_assigned: true })
     const progress = makeProgress({ protocol_option: 3 })
     const result = buildSessionExerciseList(progress, phase1)
-    expect(result).toHaveLength(7)
-    expect(result.slice(0, 6)).toEqual(buildTmjReleaseList())
+    expect(result).toHaveLength(7)  // 1 D.4 + 5 TMJ release + 1 reduced cerv
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 6)).toEqual(buildTmjReleaseList())
     expect(result.slice(6, 7)).toEqual(buildReducedCervList('TMJ_PRIMARY_WITH_SECONDARY'))
   })
 
@@ -361,8 +367,9 @@ describe('buildSessionExerciseList', () => {
     const phase1 = makePhase1({ profile_type: 'TMJ_PRIMARY_WITH_SECONDARY', tmj_protocol_assigned: true, cerv_protocol_assigned: true, tmj_joint_sounds: true })
     const progress = makeProgress({ protocol_option: 3, resistance_phase_start: '2026-04-01T00:00:00Z' })
     const result = buildSessionExerciseList(progress, phase1)
-    expect(result).toHaveLength(13)
-    expect(result.slice(0, 6)).toEqual(buildTmjReleaseList())
+    expect(result).toHaveLength(13)  // 1 D.4 + 5 TMJ + 1 reduced cerv + 3 cerv retraining + 3 TMJ resistance
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 6)).toEqual(buildTmjReleaseList())
     expect(result.slice(6, 7)).toEqual(buildReducedCervList('TMJ_PRIMARY_WITH_SECONDARY'))
     expect(result.slice(7, 10)).toEqual(buildCervRetainingList())
     expect(result.slice(10, 13)).toEqual(buildTmjResistanceList(phase1))
@@ -373,29 +380,32 @@ describe('buildSessionExerciseList', () => {
     const phase1 = makePhase1({ profile_type: 'TMJ_PRIMARY_STRONG_SECONDARY', tmj_protocol_assigned: true, cerv_protocol_assigned: true })
     const progress = makeProgress({ protocol_option: 3 })
     const result = buildSessionExerciseList(progress, phase1)
-    expect(result).toHaveLength(8)
-    expect(result.slice(0, 6)).toEqual(buildTmjReleaseList())
+    expect(result).toHaveLength(8)  // 1 D.4 + 5 TMJ + 2 reduced cerv
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 6)).toEqual(buildTmjReleaseList())
     expect(result.slice(6, 8)).toEqual(buildReducedCervList('TMJ_PRIMARY_STRONG_SECONDARY'))
   })
 
-  // C10 — CERV_PRIMARY_WITH_SECONDARY, Option 3, no resistance → 6 IDs
-  it('C10: CERV_PRIMARY_WITH_SECONDARY / Option 3 / no resistance → 6 IDs', () => {
+  // C10 — CERV_PRIMARY_WITH_SECONDARY, Option 3, no resistance → 7 IDs
+  it('C10: CERV_PRIMARY_WITH_SECONDARY / Option 3 / no resistance → 7 IDs', () => {
     const phase1 = makePhase1({ profile_type: 'CERV_PRIMARY_WITH_SECONDARY', tmj_protocol_assigned: true, cerv_protocol_assigned: true })
     const progress = makeProgress({ protocol_option: 3 })
     const result = buildSessionExerciseList(progress, phase1)
-    expect(result).toHaveLength(6)
-    expect(result.slice(0, 5)).toEqual(buildCervReleaseList())
-    expect(result.slice(5, 6)).toEqual(buildReducedTmjList('CERV_PRIMARY_WITH_SECONDARY'))
+    expect(result).toHaveLength(7)  // 1 D.4 + 5 cerv + 1 reduced TMJ
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 6)).toEqual(buildCervReleaseList())
+    expect(result.slice(6, 7)).toEqual(buildReducedTmjList('CERV_PRIMARY_WITH_SECONDARY'))
   })
 
-  // C11 — CERV_PRIMARY_STRONG_SECONDARY, Option 3, no resistance → 7 IDs
-  it('C11: CERV_PRIMARY_STRONG_SECONDARY / Option 3 / no resistance → 7 IDs', () => {
+  // C11 — CERV_PRIMARY_STRONG_SECONDARY, Option 3, no resistance → 8 IDs
+  it('C11: CERV_PRIMARY_STRONG_SECONDARY / Option 3 / no resistance → 8 IDs', () => {
     const phase1 = makePhase1({ profile_type: 'CERV_PRIMARY_STRONG_SECONDARY', tmj_protocol_assigned: true, cerv_protocol_assigned: true })
     const progress = makeProgress({ protocol_option: 3 })
     const result = buildSessionExerciseList(progress, phase1)
-    expect(result).toHaveLength(7)
-    expect(result.slice(0, 5)).toEqual(buildCervReleaseList())
-    expect(result.slice(5, 7)).toEqual(buildReducedTmjList('CERV_PRIMARY_STRONG_SECONDARY'))
+    expect(result).toHaveLength(8)  // 1 D.4 + 5 cerv + 2 reduced TMJ
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 6)).toEqual(buildCervReleaseList())
+    expect(result.slice(6, 8)).toEqual(buildReducedTmjList('CERV_PRIMARY_STRONG_SECONDARY'))
   })
 
   // C12 — DUAL_DRIVER, Option 3, no resistance → 11 IDs (same as Option 2)
@@ -403,9 +413,10 @@ describe('buildSessionExerciseList', () => {
     const phase1 = makePhase1()
     const progress = makeProgress({ protocol_option: 3 })
     const result = buildSessionExerciseList(progress, phase1)
-    expect(result).toHaveLength(11)
-    expect(result.slice(0, 5)).toEqual(buildCervReleaseList())
-    expect(result.slice(5, 11)).toEqual(buildTmjReleaseList())
+    expect(result).toHaveLength(11)  // 1 D.4 + 5 cerv + 5 TMJ
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 6)).toEqual(buildCervReleaseList())
+    expect(result.slice(6, 11)).toEqual(buildTmjReleaseList())
   })
 
   // C13 — DUAL_DRIVER, Option 3, resistance → 17 IDs
@@ -413,27 +424,30 @@ describe('buildSessionExerciseList', () => {
     const phase1 = makePhase1({ tmj_joint_sounds: true })
     const progress = makeProgress({ protocol_option: 3, resistance_phase_start: '2026-04-01T00:00:00Z' })
     const result = buildSessionExerciseList(progress, phase1)
-    expect(result).toHaveLength(17)
+    expect(result).toHaveLength(17)  // unchanged total: 1 D.4 + 5 cerv + 5 TMJ + 3 + 3
+    expect(result[0]).toBe('D4_heat_application')
   })
 
-  // C14 — Low-confidence (norm 17/12), null protocol_option, no resistance → 2 IDs
-  it('C14: low-confidence (norm 17, 12) / null option / no resistance → 2 IDs', () => {
+  // C14 — Low-confidence (norm 17/12), null protocol_option, no resistance → 3 IDs
+  it('C14: low-confidence (norm 17, 12) / null option / no resistance → 3 IDs', () => {
     const phase1 = makePhase1({ tmj_normalised_score: 17, cerv_normalised_score: 12 })
     const progress = makeProgress({ protocol_option: null })
     const result = buildSessionExerciseList(progress, phase1)
-    expect(result).toHaveLength(2)
-    expect(result).toEqual(buildLowConfidenceList())
+    expect(result).toHaveLength(3)  // +1 for D.4
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1)).toEqual(buildLowConfidenceList())
   })
 
-  // C15 — Low-confidence, null protocol_option, resistance → 8 IDs (2 + 3 cerv + 3 TMJ)
-  it('C15: low-confidence / null option / resistance → 8 IDs (both resistance lists per P3-16)', () => {
+  // C15 — Low-confidence, null protocol_option, resistance → 9 IDs (D.4 + 2 + 3 cerv + 3 TMJ)
+  it('C15: low-confidence / null option / resistance → 9 IDs (both resistance lists per P3-16)', () => {
     const phase1 = makePhase1({ tmj_normalised_score: 17, cerv_normalised_score: 12, tmj_joint_sounds: true })
     const progress = makeProgress({ protocol_option: null, resistance_phase_start: '2026-04-01T00:00:00Z' })
     const result = buildSessionExerciseList(progress, phase1)
-    expect(result).toHaveLength(8)
-    expect(result.slice(0, 2)).toEqual(buildLowConfidenceList())
-    expect(result.slice(2, 5)).toEqual(buildCervRetainingList())
-    expect(result.slice(5, 8)).toEqual(buildTmjResistanceList(phase1))
+    expect(result).toHaveLength(9)  // +1 for D.4
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 3)).toEqual(buildLowConfidenceList())
+    expect(result.slice(3, 6)).toEqual(buildCervRetainingList())
+    expect(result.slice(6, 9)).toEqual(buildTmjResistanceList(phase1))
   })
 
   // C16 — DUAL_DRIVER, Option 2, no resistance, Phase 4 opt-in → 13 IDs
@@ -441,8 +455,9 @@ describe('buildSessionExerciseList', () => {
     const phase1 = makePhase1()
     const progress = makeProgress({ phase4_exercises_added: ['F5_breath', 'F8_neut'] })
     const result = buildSessionExerciseList(progress, phase1)
-    expect(result).toHaveLength(13)
-    expect(result.slice(0, 11)).toEqual([...buildCervReleaseList(), ...buildTmjReleaseList()])
+    expect(result).toHaveLength(13)  // unchanged: 1 D.4 + 11 release + 2 phase 4
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 11)).toEqual([...buildCervReleaseList(), ...buildTmjReleaseList()])
     expect(result.slice(11)).toEqual(['F5_breath', 'F8_neut'])
   })
 
@@ -455,8 +470,9 @@ describe('buildSessionExerciseList', () => {
       phase4_exercises_added: ['F5_breath'],
     })
     const result = buildSessionExerciseList(progress, phase1)
-    expect(result).toHaveLength(10)
-    expect(result.slice(0, 6)).toEqual(buildTmjReleaseList())
+    expect(result).toHaveLength(10)  // unchanged: 1 D.4 + 5 release + 3 resistance + 1 phase 4
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 6)).toEqual(buildTmjReleaseList())
     expect(result.slice(6, 9)).toEqual(buildTmjResistanceList(phase1))
     expect(result.slice(9)).toEqual(['F5_breath'])
   })
@@ -496,21 +512,20 @@ describe('session list ordering', () => {
     const result = buildSessionExerciseList(makeProgress({ protocol_option: 2 }), makePhase1())
     const cervIds = buildCervReleaseList()
     const tmjIds = buildTmjReleaseList()
-    const firstTmjIndex = result.indexOf(tmjIds[0])
-    const lastCervIndex = result.lastIndexOf(cervIds[cervIds.length - 1])
-    expect(lastCervIndex).toBeLessThan(firstTmjIndex)
-    expect(result.slice(0, cervIds.length)).toEqual(cervIds)
-    expect(result.slice(cervIds.length, cervIds.length + tmjIds.length)).toEqual(tmjIds)
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 1 + cervIds.length)).toEqual(cervIds)
+    expect(result.slice(1 + cervIds.length, 1 + cervIds.length + tmjIds.length)).toEqual(tmjIds)
   })
 
   it('D2: DUAL_DRIVER Option 2 with resistance — all resistance IDs come after all release IDs', () => {
     const progress = makeProgress({ protocol_option: 2, resistance_phase_start: '2026-04-01T00:00:00Z' })
     const result = buildSessionExerciseList(progress, makePhase1({ tmj_joint_sounds: true }))
-    const releaseCount = buildCervReleaseList().length + buildTmjReleaseList().length  // 11
+    const releaseCount = buildCervReleaseList().length + buildTmjReleaseList().length  // 10
     const cervRetaining = buildCervRetainingList()
     const tmjResistance = buildTmjResistanceList(makePhase1({ tmj_joint_sounds: true }))
-    expect(result.slice(releaseCount, releaseCount + cervRetaining.length)).toEqual(cervRetaining)
-    expect(result.slice(releaseCount + cervRetaining.length)).toEqual(tmjResistance)
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1 + releaseCount, 1 + releaseCount + cervRetaining.length)).toEqual(cervRetaining)
+    expect(result.slice(1 + releaseCount + cervRetaining.length)).toEqual(tmjResistance)
   })
 
   it('D3: Phase 4 opt-in IDs always appear at the END of the session list', () => {
@@ -518,5 +533,20 @@ describe('session list ordering', () => {
     const progress = makeProgress({ phase4_exercises_added: phase4Ids })
     const result = buildSessionExerciseList(progress, makePhase1())
     expect(result.slice(-phase4Ids.length)).toEqual(phase4Ids)
+  })
+
+  it('D4: D.4 heat application is always at index 0 for any release-phase member', () => {
+    const profileVariants = [
+      { phase1: makePhase1({ profile_type: 'TMJ_DOMINANT', tmj_protocol_assigned: true, cerv_protocol_assigned: false }), option: 1 },
+      { phase1: makePhase1({ profile_type: 'CERV_DOMINANT', tmj_protocol_assigned: false, cerv_protocol_assigned: true }), option: 1 },
+      { phase1: makePhase1(), option: 2 },  // DUAL_DRIVER Option 2
+      { phase1: makePhase1({ profile_type: 'TMJ_PRIMARY_WITH_SECONDARY', tmj_protocol_assigned: true, cerv_protocol_assigned: true }), option: 3 },
+      { phase1: makePhase1({ profile_type: 'CERV_PRIMARY_STRONG_SECONDARY', tmj_protocol_assigned: true, cerv_protocol_assigned: true }), option: 3 },
+      { phase1: makePhase1({ tmj_normalised_score: 17, cerv_normalised_score: 12 }), option: null },  // low-confidence
+    ]
+    for (const { phase1, option } of profileVariants) {
+      const result = buildSessionExerciseList(makeProgress({ protocol_option: option as 1 | 2 | 3 | null }), phase1)
+      expect(result[0]).toBe('D4_heat_application')
+    }
   })
 })

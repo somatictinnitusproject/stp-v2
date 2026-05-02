@@ -17,10 +17,11 @@ import type { Phase1AssessmentRow, FrameworkProgressRow } from '@/lib/scoring/ty
 
 // ── List builders — exact exercise IDs per errata P3-2 ───────────────────────
 
-/** Full TMJ release list. 6 exercises post-pre-launch (D.9 auriculotemporal removed §1.13, D.11 hyoid removed §1.7). */
+/** Full TMJ release list. 5 exercises post-M13s.0b (D.4 heat moved to
+ *  top of session for all release-phase members; D.9 auriculotemporal
+ *  removed §1.13; D.11 hyoid removed §1.7). */
 export function buildTmjReleaseList(): string[] {
   return [
-    'D4_heat_application',
     'D5_temporalis_release',
     'D6_masseter_release',
     'D7_intraoral_pterygoid_release',
@@ -183,44 +184,51 @@ export function buildSessionExerciseList(
       ]
     }
     exercises = [...exercises, ...(progress.phase4_exercises_added ?? [])]
-    return exercises
-  }
-
-  // ── Release-phase branching — varies by protocol_option ──────────────────
-  if (protocolOption === 1) {
-    // Sequential — only the assigned driver's release list runs
-    if (tmjAssigned) {
-      exercises = buildTmjReleaseList()
-    } else if (cervAssigned) {
-      exercises = buildCervReleaseList()
-    }
-  } else if (protocolOption === 2) {
-    // Parallel — both full protocols, cervical first per Doc 12 §6.6
-    exercises = [...buildCervReleaseList(), ...buildTmjReleaseList()]
-  } else if (protocolOption === 3) {
-    // Prioritised Parallel — full primary + reduced secondary
-    if (profileType === 'DUAL_DRIVER') {
-      // Dual on Option 3 = same as Option 2
+  } else {
+    // ── Release-phase branching — varies by protocol_option ──────────────────
+    if (protocolOption === 1) {
+      // Sequential — only the assigned driver's release list runs
+      if (tmjAssigned) {
+        exercises = buildTmjReleaseList()
+      } else if (cervAssigned) {
+        exercises = buildCervReleaseList()
+      }
+    } else if (protocolOption === 2) {
+      // Parallel — both full protocols, cervical first per Doc 12 §6.6
       exercises = [...buildCervReleaseList(), ...buildTmjReleaseList()]
-    } else if (profileType?.startsWith('TMJ')) {
-      exercises = [...buildTmjReleaseList(), ...buildReducedCervList(profileType)]
-    } else if (profileType?.startsWith('CERV')) {
-      exercises = [...buildCervReleaseList(), ...buildReducedTmjList(profileType)]
+    } else if (protocolOption === 3) {
+      // Prioritised Parallel — full primary + reduced secondary
+      if (profileType === 'DUAL_DRIVER') {
+        // Dual on Option 3 = same as Option 2
+        exercises = [...buildCervReleaseList(), ...buildTmjReleaseList()]
+      } else if (profileType?.startsWith('TMJ')) {
+        exercises = [...buildTmjReleaseList(), ...buildReducedCervList(profileType)]
+      } else if (profileType?.startsWith('CERV')) {
+        exercises = [...buildCervReleaseList(), ...buildReducedTmjList(profileType)]
+      }
     }
+
+    // ── Resistance-phase append — uniform across all options per P3-16 ────────
+    if (resistanceStart !== null) {
+      if (cervAssigned) {
+        exercises = [...exercises, ...buildCervRetainingList()]
+      }
+      if (tmjAssigned) {
+        exercises = [...exercises, ...buildTmjResistanceList(phase1)]
+      }
+    }
+
+    // ── Phase 4 opt-in — appended last per P3-15 ──────────────────────────────
+    exercises = [...exercises, ...(progress.phase4_exercises_added ?? [])]
   }
 
-  // ── Resistance-phase append — uniform across all options per P3-16 ────────
-  if (resistanceStart !== null) {
-    if (cervAssigned) {
-      exercises = [...exercises, ...buildCervRetainingList()]
-    }
-    if (tmjAssigned) {
-      exercises = [...exercises, ...buildTmjResistanceList(phase1)]
-    }
+  // M13s.0b: D.4 heat application leads every release-phase session
+  // list, regardless of protocol assignment. Optional preamble — does
+  // not count toward "X of N" or ~min total per existing optional
+  // exercise treatment.
+  if (exercises.length > 0 && !exercises.includes('D4_heat_application')) {
+    exercises = ['D4_heat_application', ...exercises]
   }
-
-  // ── Phase 4 opt-in — appended last per P3-15 ──────────────────────────────
-  exercises = [...exercises, ...(progress.phase4_exercises_added ?? [])]
 
   return exercises
 }
