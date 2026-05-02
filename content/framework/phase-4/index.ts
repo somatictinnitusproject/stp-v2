@@ -11,7 +11,8 @@ import f3 from './f3-workstation-setup'
 import f4 from './f4-movement-pattern-integration'
 import f5 from './f5-ns-framing'
 import f6 from './f6-breath-work'
+import f7 from './f7-hypervigilance-interruption'
 
 export type { ReadingSection } from './types'
 
-export const PHASE_4_READINGS: ReadingSection[] = [f1, f2, f3, f4, f5, f6]
+export const PHASE_4_READINGS: ReadingSection[] = [f1, f2, f3, f4, f5, f6, f7]
