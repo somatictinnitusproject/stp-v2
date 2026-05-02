@@ -24,6 +24,7 @@ import e5SuboccipitalTennisBall from './e5-suboccipital-tennis-ball'
 import e6ScmStretching from './e6-scm-stretching'
 import e7LevatorScapulaeStretching from './e7-levator-scapulae-stretching'
 import e8UpperTrapScaleneRelease from './e8-upper-trap-scalene-release'
+import e11ChinTuckRotation from './e11-chin-tuck-rotation'
 
 // ── Stub factory ──────────────────────────────────────────────────────────────
 // Returns a minimal valid Exercise conforming to the type contract.
@@ -80,15 +81,14 @@ const EXERCISE_MAP = new Map<string, Exercise>([
   [d17CondylarRepositioning.id, d17CondylarRepositioning],
 
   // ── Cervical release (6) — content in M13s + M13t ──────────────────────────
-  // TODO M13t: replace E9, E11 stubs with real imports
+  // TODO library-wiring: E9 stub remains for future library page (§1.14 — moved to library, structured protocol exit)
   [e5SuboccipitalTennisBall.id, e5SuboccipitalTennisBall],
   [e6ScmStretching.id, e6ScmStretching],
   [e7LevatorScapulaeStretching.id, e7LevatorScapulaeStretching],
   [e8UpperTrapScaleneRelease.id, e8UpperTrapScaleneRelease],
   ['E9_suboccipital_specific_stretching',
     stub('E9_suboccipital_specific_stretching', 'E.9', 'Suboccipital Specific Stretching', 'cervical-release', 3)],
-  ['E11_chin_tuck_rotation',
-    stub('E11_chin_tuck_rotation', 'E.11', 'Controlled Chin Tuck with Rotation', 'cervical-release', 2)],
+  [e11ChinTuckRotation.id, e11ChinTuckRotation],
 
   // ── Cervical retraining (3) — content in M13v ──────────────────────────────
   // TODO M13v: replace E13, E14, E15 stubs with real imports
