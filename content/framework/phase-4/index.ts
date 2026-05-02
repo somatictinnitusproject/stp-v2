@@ -6,7 +6,8 @@
 
 import type { ReadingSection } from './types'
 import f1 from './f1-opening'
+import f2 from './f2-postural-framing'
 
 export type { ReadingSection } from './types'
 
-export const PHASE_4_READINGS: ReadingSection[] = [f1]
+export const PHASE_4_READINGS: ReadingSection[] = [f1, f2]
