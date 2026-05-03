@@ -28,6 +28,7 @@ import PersonalBests from '@/components/analytics/PersonalBests'
 import LoudnessDistribution from '@/components/analytics/LoudnessDistribution'
 import ProgressSincePhase3 from '@/components/analytics/ProgressSincePhase3'
 import CorrelationInsights from '@/components/analytics/CorrelationInsights'
+import CommunityResearchInsight from '@/components/analytics/CommunityResearchInsight'
 
 interface ActiveMetrics {
   jaw_tension: boolean
@@ -160,7 +161,7 @@ export default function AnalyticsPageClient({ data }: Props) {
       </div>
 
       <div className="mb-6">
-        {/* community research insight — Gf */}
+        <CommunityResearchInsight />
       </div>
     </div>
   )

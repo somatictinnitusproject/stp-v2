@@ -1,6 +1,6 @@
 'use client'
 
-import { Activity, AlertCircle, Moon, TrendingUp, BarChart3 } from 'lucide-react'
+import { Activity, AlertCircle, Moon, TrendingUp } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import InsightCard from './InsightCard'
 import { computeInsights } from '@/lib/analytics/insights'
@@ -149,15 +149,6 @@ export default function CorrelationInsights({ logs, profileType }: Props) {
             />
           </div>
         </div>
-      )}
-
-      {result.kind === 'no_patterns' && (
-        <InsightCard
-          kind="best_worst"
-          icon={BarChart3}
-          headline="No strong patterns yet"
-          body="No strong patterns have emerged in your data yet. This may change as more data accumulates, or your tinnitus may not strongly track these specific factors."
-        />
       )}
 
       {result.kind === 'insights' && (

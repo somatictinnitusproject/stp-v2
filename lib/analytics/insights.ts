@@ -35,7 +35,6 @@ export type InsightCard = CorrelationCard | BestWorstDayCard
 
 type InsightResult =
   | { kind: 'below_threshold'; logCount: number }
-  | { kind: 'no_patterns' }
   | { kind: 'insights'; cards: InsightCard[] }
 
 function avg(nums: number[]): number {
@@ -113,10 +112,6 @@ export function computeInsights(
       worstAvgJaw:    avg(worst5.map((l) => l.jaw_tension)),
       worstAvgNeck:   avg(worst5.map((l) => l.neck_tension)),
     }
-  }
-
-  if (correlationCards.length === 0 && bestWorstCard === null) {
-    return { kind: 'no_patterns' }
   }
 
   const cards: InsightCard[] = [
