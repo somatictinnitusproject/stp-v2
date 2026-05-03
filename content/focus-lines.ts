@@ -41,11 +41,12 @@ export const DAILY_FOCUS_LINES = {
     7: '', 8: '', 9: '', 10: '', 11: '', 12: '',
   },
   5: {
-    // TODO Phase E: populate from Document 8 Phase 5 focus lines.
-    // Count of 9 (G1–G9) is unverified — based on naming convention only.
-    // Confirm actual section count against Document 8 Phase 5 content in Phase E.
-    // If count differs, update both PHASE_SESSION_COUNTS[5] and these keys.
-    1: 'The goal is not that tinnitus never occurs — it is that it stops being a significant part of daily life', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: '', 9: '',
+    // M15d: lines 1–4 populated. Lines 5–9 land in M15e–M15g.
+    1: 'The goal is not that tinnitus never occurs — it is that it stops being a significant part of daily life',
+    2: 'The signal has reduced — now the task is keeping it that way',
+    3: 'Residual tinnitus in a calm nervous system is a different condition from the same sound in an anxious one',
+    4: 'A plateau is information, not a verdict',
+    5: '', 6: '', 7: '', 8: '', 9: '',
   },
   complete: 'Maintain your protocol and trust the progress you have made',
 } as const
