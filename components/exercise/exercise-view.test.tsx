@@ -97,6 +97,14 @@ function makeMod(
   return { triggerFlag, triggerValue, title, content: [] }
 }
 
+function makeModValuesIn(
+  triggerFlag: keyof Phase1AssessmentRow,
+  triggerValuesIn: (boolean | string)[],
+  title = 'Test modifier',
+): ProfileModifier {
+  return { triggerFlag, triggerValuesIn, title, content: [] }
+}
+
 // ── filterQualifyingModifiers tests ───────────────────────────────────────────
 
 describe('filterQualifyingModifiers', () => {
@@ -168,5 +176,43 @@ describe('filterQualifyingModifiers', () => {
       'Should include',
       'Should include — string match',
     ])
+  })
+
+  // ── triggerValuesIn tests ─────────────────────────────────────────────────
+
+  it('triggerValuesIn: includes modifier when field matches first element', () => {
+    const phase1 = makePhase1({ profile_type: 'CERV_DOMINANT' })
+    const mod = makeModValuesIn('profile_type', ['CERV_DOMINANT', 'CERV_PRIMARY_WITH_SECONDARY'])
+    expect(filterQualifyingModifiers([mod], phase1)).toHaveLength(1)
+  })
+
+  it('triggerValuesIn: includes modifier when field matches second element', () => {
+    const phase1 = makePhase1({ profile_type: 'CERV_PRIMARY_WITH_SECONDARY' })
+    const mod = makeModValuesIn('profile_type', ['CERV_DOMINANT', 'CERV_PRIMARY_WITH_SECONDARY'])
+    expect(filterQualifyingModifiers([mod], phase1)).toHaveLength(1)
+  })
+
+  it('triggerValuesIn: omits modifier when field value is not in the list', () => {
+    const phase1 = makePhase1({ profile_type: 'TMJ_DOMINANT' })
+    const mod = makeModValuesIn('profile_type', ['CERV_DOMINANT', 'CERV_PRIMARY_WITH_SECONDARY'])
+    expect(filterQualifyingModifiers([mod], phase1)).toHaveLength(0)
+  })
+
+  it('triggerValuesIn: omits modifier when field is null', () => {
+    const phase1 = makePhase1({ profile_type: null })
+    const mod = makeModValuesIn('profile_type', ['CERV_DOMINANT', 'CERV_PRIMARY_WITH_SECONDARY'])
+    expect(filterQualifyingModifiers([mod], phase1)).toHaveLength(0)
+  })
+
+  it('triggerValuesIn: omits modifier when field is empty string', () => {
+    const phase1 = makePhase1({ profile_type: '' })
+    const mod = makeModValuesIn('profile_type', ['CERV_DOMINANT', 'CERV_PRIMARY_WITH_SECONDARY'])
+    expect(filterQualifyingModifiers([mod], phase1)).toHaveLength(0)
+  })
+
+  it('triggerValuesIn: omits modifier when array is empty', () => {
+    const phase1 = makePhase1({ profile_type: 'TMJ_DOMINANT' })
+    const mod = makeModValuesIn('profile_type', [])
+    expect(filterQualifyingModifiers([mod], phase1)).toHaveLength(0)
   })
 })

@@ -44,7 +44,7 @@ export type ContentBlock =
     }
 
 // ── ProfileModifier ───────────────────────────────────────────────────────────
-// Data-driven personalisation block. Discriminated union supporting three
+// Data-driven personalisation block. Discriminated union supporting four
 // trigger variants:
 //
 //   triggerFlag + triggerValue: strict equality on a single Phase 1 column.
@@ -56,6 +56,15 @@ export type ContentBlock =
 //
 //   triggerAnyTrue: array of Phase 1 columns, any of which strictly === true.
 //     Anticipates F.11 multi-flag OR conditions.
+//
+//   triggerValuesIn: array of values strictly compared against a single Phase 1
+//     column. Modifier qualifies if phase1[triggerFlag] === any element in the
+//     array. Strict equality — null does not qualify, string comparison is
+//     case-sensitive. Used for profile_type family membership where multiple
+//     ProfileType values share the same content (e.g. G.6 jaw warning signs
+//     trigger on TMJ_DOMINANT, TMJ_PRIMARY_STRONG_SECONDARY,
+//     TMJ_PRIMARY_WITH_SECONDARY, plus mixed cervical-primary types and
+//     DUAL_DRIVER per the warning sign visibility rule).
 //
 // Per errata P3-13: five Phase 1 flags referenced in Doc 8 are NOT persisted
 // to phase1_assessment (masseter_tenderness, temporalis_tenderness,
@@ -77,6 +86,12 @@ export type ProfileModifier =
     }
   | {
       triggerAnyTrue: (keyof Phase1AssessmentRow)[]
+      title: string
+      content: ContentBlock[]
+    }
+  | {
+      triggerFlag: keyof Phase1AssessmentRow
+      triggerValuesIn: (boolean | string)[]
       title: string
       content: ContentBlock[]
     }
