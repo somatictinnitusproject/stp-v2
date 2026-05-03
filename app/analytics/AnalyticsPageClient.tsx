@@ -27,6 +27,7 @@ import IndividualMetricGraphs from '@/components/analytics/IndividualMetricGraph
 import PersonalBests from '@/components/analytics/PersonalBests'
 import LoudnessDistribution from '@/components/analytics/LoudnessDistribution'
 import ProgressSincePhase3 from '@/components/analytics/ProgressSincePhase3'
+import CorrelationInsights from '@/components/analytics/CorrelationInsights'
 
 interface ActiveMetrics {
   jaw_tension: boolean
@@ -140,7 +141,10 @@ export default function AnalyticsPageClient({ data }: Props) {
       </div>
 
       <div className="mb-6">
-        {/* correlation insights — Ge */}
+        <CorrelationInsights
+          logs={data.logs}
+          profileType={data.phase1Assessment?.profile_type ?? null}
+        />
       </div>
 
       <div className="mb-6">
