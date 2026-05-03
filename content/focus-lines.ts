@@ -41,12 +41,13 @@ export const DAILY_FOCUS_LINES = {
     7: '', 8: '', 9: '', 10: '', 11: '', 12: '',
   },
   5: {
-    // M15d: lines 1–4 populated. Lines 5–9 land in M15e–M15g.
+    // M15e: lines 1–5 populated. Lines 6–9 land in M15f–M15g.
     1: 'The goal is not that tinnitus never occurs — it is that it stops being a significant part of daily life',
     2: 'The signal has reduced — now the task is keeping it that way',
     3: 'Residual tinnitus in a calm nervous system is a different condition from the same sound in an anxious one',
     4: 'A plateau is information, not a verdict',
-    5: '', 6: '', 7: '', 8: '', 9: '',
+    5: 'Maintenance is not treatment — it is the habit that makes treatment permanent',
+    6: '', 7: '', 8: '', 9: '',
   },
   complete: 'Maintain your protocol and trust the progress you have made',
 } as const

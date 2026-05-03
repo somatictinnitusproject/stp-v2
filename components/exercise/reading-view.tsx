@@ -20,6 +20,7 @@ import { ContentBlock } from './content-block'
 import { ProfileModifierBlock } from './profile-modifier-block'
 import { CompleteButton } from './complete-button'
 import SingleSelectBlock from './single-select-block'
+import ProfileVariantBlock from './profile-variant-block'
 import { filterQualifyingModifiers } from './_helpers'
 import { protocolAssignmentText } from '@/lib/scoring/profile-paragraph/section5-protocol'
 
@@ -139,6 +140,15 @@ export default function ReadingView({
                 selectedValue={selectedValue ?? null}
                 onSelect={onSelectValue ?? (() => {})}
                 locked={reviewMode}
+              />
+            )
+          }
+          if (block.type === 'profile_variant') {
+            return (
+              <ProfileVariantBlock
+                key={idx}
+                block={block}
+                profileType={profileType}
               />
             )
           }

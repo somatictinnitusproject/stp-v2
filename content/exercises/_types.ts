@@ -34,6 +34,14 @@ export type ContentBlock =
         description?: string
       }>
     }
+  | {
+      type: 'profile_variant'
+      variants: {
+        TMJ_DOMINANT: ContentBlock[]
+        CERV_DOMINANT: ContentBlock[]
+        DUAL_DRIVER: ContentBlock[]
+      }
+    }
 
 // ── ProfileModifier ───────────────────────────────────────────────────────────
 // Data-driven personalisation block. Discriminated union supporting three
