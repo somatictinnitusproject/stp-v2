@@ -72,3 +72,39 @@ export const chartConfig = {
   axisFontSize:  12,
   loudnessColor: colors.primary,
 } as const
+
+export const METRIC_COLOURS = {
+  jaw_tension:   colors.metricJaw,
+  neck_tension:  colors.metricNeck,
+  stress:        colors.metricStress,
+  sleep_quality: colors.metricSleep,
+} as const
+
+export const CHART_COLOURS = {
+  loudness:             colors.primary,
+  distribution_earlier: colors.chartEarlier,
+  distribution_recent:  colors.primary,
+  milestone_line:       colors.textMuted,
+  grid_line:            colors.border,
+} as const
+
+export const sharedAxisProps = {
+  tick:     { fontSize: chartConfig.axisFontSize, fill: chartConfig.axisColor, fontFamily: 'Inter' },
+  axisLine: { stroke: colors.border },
+  tickLine: false,
+}
+
+export const sharedTooltipStyle = {
+  backgroundColor: colors.surface,
+  border:          `1px solid ${colors.border}`,
+  borderRadius:    '8px',
+  boxShadow:       shadows.card,
+  fontSize:        '13px',
+  fontFamily:      'Inter',
+}
+
+export const sharedTooltipLabelStyle = {
+  color:        colors.textMuted,
+  fontWeight:   500,
+  marginBottom: '4px',
+}

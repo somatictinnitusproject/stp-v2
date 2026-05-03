@@ -2,13 +2,11 @@
 
 // app/analytics/AnalyticsPageClient.tsx
 // ─────────────────────────────────────────────────────────────────
-// Client wrapper for /analytics. Holds time-window and metric-toggle
-// state, both persisted to localStorage. localStorage reads are
-// deferred to useEffect to avoid SSR hydration mismatch.
+// Client wrapper for /analytics. Holds time-window, metric-toggle,
+// and mobile state, all computed or persisted client-side.
+// localStorage reads deferred to useEffect to avoid SSR mismatch.
 //
-// Gb: streak counter, time window selector, this week vs last week,
-//     milestone legend
-// Gc: main loudness graph, individual metric graphs
+// Gc: main loudness graph, metric toggle row, individual metric graphs
 // Gd: progress since Phase 3, personal bests, loudness distribution
 // Ge: correlation insights
 // Gf: community research insight
@@ -17,11 +15,15 @@
 import { useState, useEffect } from 'react'
 import type { AnalyticsData } from '@/lib/analytics/types'
 import type { TimeWindow } from '@/lib/analytics/timeWindow'
-import { toLocalDateStr } from '@/lib/analytics/timeWindow'
+import { toLocalDateStr, filterByWindow } from '@/lib/analytics/timeWindow'
+import { getMilestones } from '@/lib/analytics/milestones'
 import LoggingStreakCounter from '@/components/analytics/LoggingStreakCounter'
 import TimeWindowSelector from '@/components/analytics/TimeWindowSelector'
-import WeeklySummary from '@/components/analytics/WeeklySummary'
+import MetricToggleRow from '@/components/analytics/MetricToggleRow'
+import MainAnalyticsChart from '@/components/analytics/MainAnalyticsChart'
 import MilestoneLegend from '@/components/analytics/MilestoneLegend'
+import WeeklySummary from '@/components/analytics/WeeklySummary'
+import IndividualMetricGraphs from '@/components/analytics/IndividualMetricGraphs'
 
 interface ActiveMetrics {
   jaw_tension: boolean
@@ -49,6 +51,7 @@ interface Props {
 export default function AnalyticsPageClient({ data }: Props) {
   const [timeWindow, setTimeWindow] = useState<TimeWindow>(DEFAULT_WINDOW)
   const [activeMetrics, setActiveMetrics] = useState<ActiveMetrics>(DEFAULT_METRICS)
+  const [isMobile, setIsMobile] = useState(false)
   const today = toLocalDateStr(new Date())
 
   // Restore persisted state — deferred to avoid SSR hydration mismatch
@@ -82,6 +85,18 @@ export default function AnalyticsPageClient({ data }: Props) {
     localStorage.setItem(LS_METRICS_KEY, JSON.stringify(activeMetrics))
   }, [activeMetrics])
 
+  // Track mobile breakpoint — default false during SSR, corrected on mount
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    setIsMobile(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  const filteredLogs = filterByWindow(data.logs, timeWindow)
+  const milestones = getMilestones(data.frameworkProgress)
+
   return (
     <div>
       <h1 className="text-[28px] md:text-[36px] font-bold leading-[1.2] text-text-heading mb-6">
@@ -96,8 +111,17 @@ export default function AnalyticsPageClient({ data }: Props) {
         <TimeWindowSelector value={timeWindow} onChange={setTimeWindow} />
       </div>
 
+      <div className="mb-4">
+        <MetricToggleRow activeMetrics={activeMetrics} onChange={setActiveMetrics} />
+      </div>
+
       <div className="mb-6">
-        {/* main loudness graph — Gc */}
+        <MainAnalyticsChart
+          logs={filteredLogs}
+          activeMetrics={activeMetrics}
+          milestones={milestones}
+          isMobile={isMobile}
+        />
       </div>
 
       <div className="mb-6">
@@ -125,7 +149,7 @@ export default function AnalyticsPageClient({ data }: Props) {
       </div>
 
       <div className="mb-6">
-        {/* individual metric graphs — Gc */}
+        <IndividualMetricGraphs logs={filteredLogs} isMobile={isMobile} />
       </div>
 
       <div className="mb-6">
