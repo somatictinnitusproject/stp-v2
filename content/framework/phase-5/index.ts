@@ -5,7 +5,8 @@
 // ─────────────────────────────────────────────────────────────────
 
 import type { Phase5ReadingSection } from './types'
+import g1 from './g1-opening'
 
 export type { Phase5ReadingSection } from './types'
 
-export const PHASE_5_READINGS: Phase5ReadingSection[] = []
+export const PHASE_5_READINGS: Phase5ReadingSection[] = [g1]

@@ -18,6 +18,7 @@ import AuthShell from '@/components/shells/AuthShell'
 import { PHASE_NAMES } from '@/content/framework-manifest'
 import { PHASE_5_READINGS } from '@/content/framework/phase-5'
 import type { Phase5OutcomeType } from '@/content/framework/phase-5/types'
+import type { Phase1AssessmentRow } from '@/lib/scoring/types'
 import Phase5ReadingList from './components/Phase5ReadingList'
 
 export default async function Phase5OverviewPage() {
@@ -28,6 +29,12 @@ export default async function Phase5OverviewPage() {
   const { data: progress } = await supabase
     .from('framework_progress')
     .select('phase3_completed_at, exercises_viewed, phase5_outcome_type')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  const { data: phase1 } = await supabase
+    .from('phase1_assessment')
+    .select('*')
     .eq('user_id', user.id)
     .maybeSingle()
 
@@ -55,6 +62,7 @@ export default async function Phase5OverviewPage() {
           <Phase5ReadingList
             readings={readings}
             phase5OutcomeType={(progress?.phase5_outcome_type as Phase5OutcomeType | null) ?? null}
+            phase1={phase1 as Phase1AssessmentRow | null}
           />
         </div>
       </div>

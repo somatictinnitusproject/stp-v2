@@ -37,7 +37,7 @@ interface ReadingRow {
 
 interface Phase5ReadingListProps {
   readings: ReadingRow[]
-  phase1?: Phase1AssessmentRow
+  phase1: Phase1AssessmentRow | null
   phase5OutcomeType: Phase5OutcomeType | null
 }
 
@@ -113,7 +113,7 @@ export default function Phase5ReadingList({
               <div className="px-5 pb-4 bg-surface-raised">
                 <ReadingView
                   section={section}
-                  phase1={phase1!}
+                  phase1={phase1 ?? ({} as Phase1AssessmentRow)}
                   protocolOption={null}
                   reviewMode={isReadEffective}
                   selectedValue={requiresOutcome ? effectiveOutcome : undefined}

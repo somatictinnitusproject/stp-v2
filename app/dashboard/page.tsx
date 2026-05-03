@@ -209,7 +209,7 @@ export default async function DashboardPage() {
     ? '/framework/phase-1/session-1'
     : currentPhase === 3
     ? '/session'
-    : currentPhase === 4
+    : currentPhase === 4 || currentPhase === 5
     ? `/framework/phase-${currentPhase}`
     : `/framework/phase-${currentPhase}/session-${currentSession}`
 

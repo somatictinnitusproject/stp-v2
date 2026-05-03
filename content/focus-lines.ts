@@ -45,7 +45,7 @@ export const DAILY_FOCUS_LINES = {
     // Count of 9 (G1–G9) is unverified — based on naming convention only.
     // Confirm actual section count against Document 8 Phase 5 content in Phase E.
     // If count differs, update both PHASE_SESSION_COUNTS[5] and these keys.
-    1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: '', 9: '',
+    1: 'The goal is not that tinnitus never occurs — it is that it stops being a significant part of daily life', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: '', 9: '',
   },
   complete: 'Maintain your protocol and trust the progress you have made',
 } as const
