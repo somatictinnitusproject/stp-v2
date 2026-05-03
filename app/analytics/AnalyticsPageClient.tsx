@@ -24,6 +24,9 @@ import MainAnalyticsChart from '@/components/analytics/MainAnalyticsChart'
 import MilestoneLegend from '@/components/analytics/MilestoneLegend'
 import WeeklySummary from '@/components/analytics/WeeklySummary'
 import IndividualMetricGraphs from '@/components/analytics/IndividualMetricGraphs'
+import PersonalBests from '@/components/analytics/PersonalBests'
+import LoudnessDistribution from '@/components/analytics/LoudnessDistribution'
+import ProgressSincePhase3 from '@/components/analytics/ProgressSincePhase3'
 
 interface ActiveMetrics {
   jaw_tension: boolean
@@ -129,7 +132,7 @@ export default function AnalyticsPageClient({ data }: Props) {
       </div>
 
       <div className="mb-6">
-        {/* progress since Phase 3 — Gd */}
+        <ProgressSincePhase3 logs={data.logs} frameworkProgress={data.frameworkProgress} />
       </div>
 
       <div className="mb-6">
@@ -141,11 +144,11 @@ export default function AnalyticsPageClient({ data }: Props) {
       </div>
 
       <div className="mb-6">
-        {/* personal bests — Gd */}
+        <PersonalBests logs={data.logs} />
       </div>
 
       <div className="mb-6">
-        {/* loudness distribution — Gd */}
+        <LoudnessDistribution logs={data.logs} isMobile={isMobile} />
       </div>
 
       <div className="mb-6">
