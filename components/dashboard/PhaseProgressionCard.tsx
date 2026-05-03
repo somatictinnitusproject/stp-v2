@@ -38,6 +38,7 @@ function getStatus(
 ): PhaseStatus {
   if (completedAtMap[phase]) return 'completed'
   if (phase === currentPhase) return 'active'
+  if (phase === 5 && completedAtMap[3]) return 'unlocked'
   if (phase === 4 && currentPhase >= 2) return 'unlocked'
   if (phase < currentPhase) return 'completed'
   return 'locked'
@@ -90,8 +91,9 @@ export default function PhaseProgressionCard({
             </div>
           )
 
-          // P3 and P4 only are tappable (M13k). P1, P2, P5 are inert regardless of status.
-          const isTappable = phase === 3 || phase === 4
+          // P3 and P4 always tappable (M13k). P5 tappable when unlocked or active.
+          // P1, P2 always inert. P5 locked/completed renders inert.
+          const isTappable = phase === 3 || phase === 4 || (phase === 5 && (status === 'unlocked' || status === 'active'))
 
           if (!isTappable) {
             return <div key={phase} className="flex-1 flex">{content}</div>
