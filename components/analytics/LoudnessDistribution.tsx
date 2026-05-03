@@ -38,18 +38,39 @@ export default function LoudnessDistribution({ logs, isMobile }: Props) {
         Loudness distribution
       </p>
       <p className="text-[13px] text-text-muted mb-4">
-        How your daily loudness scores have distributed across the scale. Earlier vs recent
-        halves of your logging history.
+        Each loudness score (1 = quiet, 10 = loud) shows how many days you logged at that
+        level. Bars are split into the earlier and recent halves of your logging history —
+        if the recent (darker) bars sit further left than the earlier ones, your distribution
+        is shifting toward quieter days.
       </p>
       <ResponsiveContainer width="100%" height={chartHeight}>
         <BarChart
           data={data}
           barGap={2}
           barCategoryGap={6}
-          margin={{ top: 8, right: 8, bottom: 0, left: -16 }}
+          margin={{ top: 8, right: 8, bottom: 24, left: 8 }}
         >
-          <XAxis dataKey="score" {...sharedAxisProps} />
-          <YAxis allowDecimals={false} {...sharedAxisProps} />
+          <XAxis
+            dataKey="score"
+            {...sharedAxisProps}
+            label={{
+              value: 'Loudness score (1 = quiet, 10 = loud)',
+              position: 'insideBottom',
+              offset: -8,
+              style: { fontSize: 12, fill: '#6B7280', fontFamily: 'Inter' },
+            }}
+          />
+          <YAxis
+            allowDecimals={false}
+            {...sharedAxisProps}
+            label={{
+              value: 'Number of days',
+              angle: -90,
+              position: 'insideLeft',
+              offset: 10,
+              style: { fontSize: 12, fill: '#6B7280', fontFamily: 'Inter', textAnchor: 'middle' },
+            }}
+          />
           <Tooltip
             contentStyle={sharedTooltipStyle}
             labelStyle={sharedTooltipLabelStyle}
