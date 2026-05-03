@@ -19,6 +19,7 @@ import type { ContentBlock as ContentBlockType } from '@/content/exercises/_type
 import { ContentBlock } from './content-block'
 import { ProfileModifierBlock } from './profile-modifier-block'
 import { CompleteButton } from './complete-button'
+import SingleSelectBlock from './single-select-block'
 import { filterQualifyingModifiers } from './_helpers'
 import { protocolAssignmentText } from '@/lib/scoring/profile-paragraph/section5-protocol'
 
@@ -35,6 +36,8 @@ interface ReadingViewProps {
   protocolOption: number | null
   onAcknowledge?: () => Promise<void>
   reviewMode?: boolean
+  selectedValue?: string | null
+  onSelectValue?: (value: string) => void
 }
 
 export default function ReadingView({
@@ -43,6 +46,8 @@ export default function ReadingView({
   protocolOption,
   onAcknowledge,
   reviewMode = false,
+  selectedValue,
+  onSelectValue,
 }: ReadingViewProps) {
   const profileType = phase1.profile_type ?? ''
   const qualifyingModifiers = filterQualifyingModifiers(section.profileModifiers ?? [], phase1)
@@ -125,6 +130,17 @@ export default function ReadingView({
           // Suppress acknowledge_prompt blocks in reviewMode (inline expand on /framework/phase-3)
           if (block.type === 'acknowledge_prompt' && reviewMode) {
             return null
+          }
+          if (block.type === 'single_select') {
+            return (
+              <SingleSelectBlock
+                key={idx}
+                block={block}
+                selectedValue={selectedValue ?? null}
+                onSelect={onSelectValue ?? (() => {})}
+                locked={reviewMode}
+              />
+            )
           }
           return <ContentBlock key={idx} block={block as ContentBlockType} />
         })}

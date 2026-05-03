@@ -17,6 +17,7 @@ import { createClient } from '@/lib/supabase/server'
 import AuthShell from '@/components/shells/AuthShell'
 import { PHASE_NAMES } from '@/content/framework-manifest'
 import { PHASE_5_READINGS } from '@/content/framework/phase-5'
+import type { Phase5OutcomeType } from '@/content/framework/phase-5/types'
 import Phase5ReadingList from './components/Phase5ReadingList'
 
 export default async function Phase5OverviewPage() {
@@ -26,7 +27,7 @@ export default async function Phase5OverviewPage() {
 
   const { data: progress } = await supabase
     .from('framework_progress')
-    .select('phase3_completed_at, exercises_viewed')
+    .select('phase3_completed_at, exercises_viewed, phase5_outcome_type')
     .eq('user_id', user.id)
     .maybeSingle()
 
@@ -51,7 +52,10 @@ export default async function Phase5OverviewPage() {
 
         <div className="bg-surface border border-border rounded-[12px] p-5 mb-6">
           <p className="text-[14px] font-semibold text-text-heading mb-3">Phase 5 reading</p>
-          <Phase5ReadingList readings={readings} />
+          <Phase5ReadingList
+            readings={readings}
+            phase5OutcomeType={(progress?.phase5_outcome_type as Phase5OutcomeType | null) ?? null}
+          />
         </div>
       </div>
     </AuthShell>

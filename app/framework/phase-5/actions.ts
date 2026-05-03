@@ -3,15 +3,16 @@
 // Server actions for Phase 5 overview page:
 //   - acknowledgePhase5Reading: idempotent merge of a Phase 5
 //     reading id into framework_progress.exercises_viewed.
-//
-// Mirrors app/framework/phase-4/actions.ts → acknowledgePhase4Reading
-// exactly. Uses the same exercises_viewed JSONB column — no new DB
-// column or migration required.
+//   - setPhase5OutcomeType: writes the member's Phase 5 outcome
+//     selection to framework_progress.phase5_outcome_type. Validated
+//     against PHASE5_OUTCOME_VALUES before any DB call — belt-and-
+//     braces alongside the DB CHECK constraint.
 // ─────────────────────────────────────────────────────────────────
 
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { PHASE5_OUTCOME_VALUES, type Phase5OutcomeType } from '@/content/framework/phase-5/types'
 
 export async function acknowledgePhase5Reading(readingId: string): Promise<void> {
   const supabase = await createClient()
@@ -47,5 +48,30 @@ export async function acknowledgePhase5Reading(readingId: string): Promise<void>
 
   if (updateError) {
     console.error('[phase-5 actions] exercises_viewed update failed:', updateError.message, 'user:', user.id, 'readingId:', readingId)
+  }
+}
+
+export async function setPhase5OutcomeType(value: Phase5OutcomeType): Promise<void> {
+  // Defensive validation — TS already enforces, but server actions
+  // can be called from anywhere. Belt-and-braces with the DB CHECK constraint.
+  if (!(PHASE5_OUTCOME_VALUES as readonly string[]).includes(value)) {
+    console.error('[phase-5 actions] setPhase5OutcomeType invalid value:', value)
+    return
+  }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+
+  const { error: updateError } = await supabase
+    .from('framework_progress')
+    .update({
+      phase5_outcome_type: value,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('user_id', user.id)
+
+  if (updateError) {
+    console.error('[phase-5 actions] phase5_outcome_type update failed:', updateError.message, 'user:', user.id, 'value:', value)
   }
 }

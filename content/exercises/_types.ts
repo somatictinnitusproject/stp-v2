@@ -24,6 +24,16 @@ export type ContentBlock =
   | { type: 'emphasis'; text: string }
   | { type: 'acknowledge_prompt'; text: string }
   | { type: 'dynamic'; source: 'protocol_assignment' | 'protocol_option' | 'phase4_confirmed_flags' }
+  | {
+      type: 'single_select'
+      source: 'phase5_outcome_type'
+      prompt: string
+      options: Array<{
+        value: string
+        label: string
+        description?: string
+      }>
+    }
 
 // ── ProfileModifier ───────────────────────────────────────────────────────────
 // Data-driven personalisation block. Discriminated union supporting three
