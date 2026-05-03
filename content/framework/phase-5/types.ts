@@ -1,7 +1,7 @@
 // /content/framework/phase-5/types.ts
 // ─────────────────────────────────────────────────────────────────
 // Phase 5 readings extend the base ReadingSection type (defined in
-// phase-3, re-exported through phase-4) with two optional fields:
+// phase-3, re-exported through phase-4) with three optional fields:
 //
 //   noAcknowledge?: true
 //     When set, Phase5ReadingList omits the acknowledge button.
@@ -10,6 +10,14 @@
 //     When set, the acknowledge button is suppressed until the
 //     named value has been selected. Used by G.1 to gate the Done
 //     button on outcome selection.
+//
+//   marksPhaseCompleteFlag?: 'phase5_completed_at'
+//     When set, acknowledging the section fires markPhase5Complete
+//     in addition to the standard exercises_viewed write. Used by
+//     G.8 — the last section before G.9 — to mark Phase 5
+//     completion on framework_progress per Doc 12 §6.7. Generic
+//     enough to extend to other phase completion patterns later
+//     if needed.
 //
 // Phase5OutcomeType and PHASE5_OUTCOME_VALUES define the valid
 // values for phase5_outcome_type on framework_progress. The CHECK
@@ -27,6 +35,7 @@ export type { ReadingSection } from '@/content/framework/phase-4/types'
 export interface Phase5ReadingSection extends ReadingSection {
   noAcknowledge?: true
   acknowledgeRequires?: 'phase5_outcome_type'
+  marksPhaseCompleteFlag?: 'phase5_completed_at'
 }
 
 export const PHASE5_OUTCOME_VALUES = [

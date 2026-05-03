@@ -27,7 +27,7 @@ import {
 } from '@/content/framework/phase-5/types'
 import type { Phase1AssessmentRow } from '@/lib/scoring/types'
 import ReadingView from '@/components/exercise/reading-view'
-import { acknowledgePhase5Reading, setPhase5OutcomeType } from '../actions'
+import { acknowledgePhase5Reading, setPhase5OutcomeType, markPhase5Complete } from '../actions'
 
 interface ReadingRow {
   section: Phase5ReadingSection
@@ -150,6 +150,16 @@ export default function Phase5ReadingList({
                           })
                           try {
                             await acknowledgePhase5Reading(section.id)
+                            if (section.marksPhaseCompleteFlag === 'phase5_completed_at') {
+                              try {
+                                await markPhase5Complete()
+                              } catch (err) {
+                                console.error(
+                                  '[Phase5ReadingList] markPhase5Complete failed:',
+                                  err
+                                )
+                              }
+                            }
                           } catch (err) {
                             console.error(
                               '[Phase5ReadingList] acknowledge failed:',

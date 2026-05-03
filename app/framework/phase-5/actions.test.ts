@@ -23,7 +23,7 @@ vi.mock('@/lib/supabase/server', () => ({
 }))
 
 import { createClient } from '@/lib/supabase/server'
-import { setPhase5OutcomeType } from './actions'
+import { setPhase5OutcomeType, markPhase5Complete } from './actions'
 
 // ── Mock Supabase client ──────────────────────────────────────────
 
@@ -101,6 +101,42 @@ describe('setPhase5OutcomeType', () => {
       'user-123',
       'value:',
       'full_resolution'
+    )
+    consoleSpy.mockRestore()
+  })
+})
+
+// ── markPhase5Complete tests ──────────────────────────────────────
+
+describe('markPhase5Complete', () => {
+  it('success path → calls update with phase5_completed_at and updated_at, user_id filter applied', async () => {
+    await markPhase5Complete()
+    expect(mockFrom).toHaveBeenCalledWith('framework_progress')
+    expect(mockUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        phase5_completed_at: expect.any(String),
+        updated_at: expect.any(String),
+      })
+    )
+    expect(mockEq).toHaveBeenCalledWith('user_id', 'user-123')
+  })
+
+  it('anonymous user → does NOT call update', async () => {
+    mockGetUser.mockResolvedValue({ data: { user: null } })
+    await markPhase5Complete()
+    expect(mockFrom).not.toHaveBeenCalled()
+    expect(mockUpdate).not.toHaveBeenCalled()
+  })
+
+  it('DB error → logs error, does not throw', async () => {
+    mockEq.mockResolvedValue({ error: { message: 'write failed' } })
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    await expect(markPhase5Complete()).resolves.toBeUndefined()
+    expect(consoleSpy).toHaveBeenCalledWith(
+      '[phase-5 actions] phase5_completed_at update failed:',
+      'write failed',
+      'user:',
+      'user-123'
     )
     consoleSpy.mockRestore()
   })

@@ -7,6 +7,9 @@
 //     selection to framework_progress.phase5_outcome_type. Validated
 //     against PHASE5_OUTCOME_VALUES before any DB call — belt-and-
 //     braces alongside the DB CHECK constraint.
+//   - markPhase5Complete: writes phase5_completed_at = NOW() to
+//     framework_progress. Called by Phase5ReadingList when G.8 is
+//     acknowledged (marksPhaseCompleteFlag === 'phase5_completed_at').
 // ─────────────────────────────────────────────────────────────────
 
 'use server'
@@ -73,5 +76,23 @@ export async function setPhase5OutcomeType(value: Phase5OutcomeType): Promise<vo
 
   if (updateError) {
     console.error('[phase-5 actions] phase5_outcome_type update failed:', updateError.message, 'user:', user.id, 'value:', value)
+  }
+}
+
+export async function markPhase5Complete(): Promise<void> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+
+  const { error: updateError } = await supabase
+    .from('framework_progress')
+    .update({
+      phase5_completed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('user_id', user.id)
+
+  if (updateError) {
+    console.error('[phase-5 actions] phase5_completed_at update failed:', updateError.message, 'user:', user.id)
   }
 }
