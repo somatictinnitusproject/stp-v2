@@ -10,9 +10,12 @@ import {
   isCommunitySpaceSlug,
   getCommunitySpace,
 } from '@/content/community-spaces'
+import { getSpacePosts } from '@/lib/community/queries'
 import CommunityLockedState from '../_components/CommunityLockedState'
 import UnknownSpaceMessage from '../_components/UnknownSpaceMessage'
 import CharterGate from '@/components/community/CharterGate'
+import PostList from '../_components/PostList'
+import NewPostButton from '../_components/NewPostButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -64,11 +67,14 @@ export default async function SpaceFeedPage({ params }: PageProps) {
 
   const space = getCommunitySpace(rawSlug)
 
-  const { data: userRow } = await supabase
-    .from('users')
-    .select('community_charter_acknowledged_at')
-    .eq('id', user.id)
-    .maybeSingle()
+  const [{ data: userRow }, postsPage] = await Promise.all([
+    supabase
+      .from('users')
+      .select('community_charter_acknowledged_at')
+      .eq('id', user.id)
+      .maybeSingle(),
+    getSpacePosts(supabase, rawSlug, 0, 20),
+  ])
 
   const acknowledged =
     userRow?.community_charter_acknowledged_at !== null &&
@@ -84,18 +90,20 @@ export default async function SpaceFeedPage({ params }: PageProps) {
           >
             ← Community
           </Link>
-          <h1 className="text-[28px] font-semibold leading-tight text-text-heading mb-2">
-            {space.name}
-          </h1>
-          <p className="text-[15px] text-text-muted mb-8">
+          <div className="flex items-start justify-between gap-4 mb-2">
+            <h1 className="text-[28px] font-semibold leading-tight text-text-heading">
+              {space.name}
+            </h1>
+            <NewPostButton spaceSlug={rawSlug} />
+          </div>
+          <p className="text-[15px] text-text-muted mb-6">
             {space.description}
           </p>
-          <div className="bg-surface border border-border rounded-lg p-6 text-center">
-            <p className="text-[14px] text-text-muted">
-              Posts in this space appear here. The feed lands in the next
-              build phase.
-            </p>
-          </div>
+          <PostList
+            spaceSlug={rawSlug}
+            initialPosts={postsPage.posts}
+            initialHasMore={postsPage.hasMore}
+          />
         </div>
       </CharterGate>
     </AuthShell>

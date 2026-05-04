@@ -109,3 +109,104 @@ export async function getSpaceMetadata(
     }
   })
 }
+
+// Single post row used by space feed pages and post list cards.
+// Contains everything PostCard needs to render without further
+// fetches — author username + admin flag joined in, reply count
+// computed via a separate query (see getSpacePosts).
+export interface SpacePost {
+  id: string
+  space: CommunitySpaceSlug
+  title: string
+  body: string
+  is_pinned: boolean
+  created_at: string
+  author_username: string | null
+  author_is_admin: boolean
+  reply_count: number
+}
+
+// Result shape for getSpacePosts — posts plus a flag indicating
+// whether more pages exist beyond what was returned.
+export interface SpacePostsPage {
+  posts: SpacePost[]
+  hasMore: boolean
+}
+
+// Fetch a paginated page of non-deleted posts in a single space.
+//
+// Ordering: pinned posts first (is_pinned DESC), then by
+// created_at DESC. Reply counts come from a second query
+// (community_replies grouped by post_id) — simpler than a
+// LATERAL JOIN, the volume difference is irrelevant at launch.
+//
+// Pagination: 20 posts per page by default. Returns hasMore=TRUE
+// if any post exists beyond the requested window.
+export async function getSpacePosts(
+  supabase: SupabaseClient,
+  space: CommunitySpaceSlug,
+  page: number = 0,
+  pageSize: number = 20,
+): Promise<SpacePostsPage> {
+  const from = page * pageSize
+  // Fetch one extra row to detect hasMore without a count query.
+  const to = from + pageSize
+
+  const { data: postRows, error: postsError } = await supabase
+    .from('community_posts')
+    .select(
+      `
+        id,
+        space,
+        title,
+        body,
+        is_pinned,
+        created_at,
+        users:user_id ( username, is_admin )
+      `,
+    )
+    .eq('is_deleted', false)
+    .eq('space', space)
+    .order('is_pinned', { ascending: false })
+    .order('created_at', { ascending: false })
+    .range(from, to)
+
+  if (postsError) throw postsError
+  if (!postRows || postRows.length === 0) {
+    return { posts: [], hasMore: false }
+  }
+
+  // Slice off the look-ahead row and detect hasMore.
+  const hasMore = postRows.length > pageSize
+  const visibleRows = hasMore ? postRows.slice(0, pageSize) : postRows
+
+  // Reply counts in one query for the visible posts only.
+  const visibleIds = visibleRows.map((r: any) => r.id)
+  const { data: replyRows, error: repliesError } = await supabase
+    .from('community_replies')
+    .select('post_id')
+    .eq('is_deleted', false)
+    .in('post_id', visibleIds)
+
+  if (repliesError) throw repliesError
+
+  const replyCounts = new Map<string, number>()
+  for (const row of replyRows ?? []) {
+    const id = (row as any).post_id as string
+    replyCounts.set(id, (replyCounts.get(id) ?? 0) + 1)
+  }
+
+  const posts: SpacePost[] = visibleRows.map((row: any) => ({
+    id: row.id,
+    space: row.space as CommunitySpaceSlug,
+    title: row.title,
+    body: row.body,
+    is_pinned: row.is_pinned === true,
+    created_at: row.created_at,
+    author_username: row.users?.username ?? null,
+    author_is_admin: row.users?.is_admin === true,
+    reply_count: replyCounts.get(row.id) ?? 0,
+  }))
+
+  return { posts, hasMore }
+}
