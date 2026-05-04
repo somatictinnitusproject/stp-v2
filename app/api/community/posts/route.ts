@@ -57,3 +57,82 @@ export async function GET(request: Request) {
   const result = await getSpacePosts(supabase, space, page, 20)
   return NextResponse.json(result)
 }
+
+const MAX_TITLE_LENGTH = 200
+const MAX_POST_BODY_LENGTH = 5000
+
+// POST /api/community/posts
+//
+// Body: { space: CommunitySpaceSlug, title: string, body: string }
+// Auth + access + community gates. Validates title and body
+// length against the same bounds enforced by the DB CHECK
+// constraints. Returns the new post's id and space so the
+// client can redirect to /community/[space]/[id].
+
+export async function POST(request: Request) {
+  let payload: { space?: string; title?: string; body?: string }
+  try {
+    payload = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'invalid_json' }, { status: 400 })
+  }
+
+  const space = typeof payload.space === 'string' ? payload.space : null
+  const title =
+    typeof payload.title === 'string' ? payload.title.trim() : ''
+  const body =
+    typeof payload.body === 'string' ? payload.body.trim() : ''
+
+  if (!space || !isCommunitySpaceSlug(space)) {
+    return NextResponse.json({ error: 'invalid_space' }, { status: 400 })
+  }
+  if (title.length < 1 || title.length > MAX_TITLE_LENGTH) {
+    return NextResponse.json({ error: 'invalid_title' }, { status: 400 })
+  }
+  if (body.length < 1 || body.length > MAX_POST_BODY_LENGTH) {
+    return NextResponse.json({ error: 'invalid_body' }, { status: 400 })
+  }
+
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+  }
+
+  const { data: membership } = await supabase
+    .from('memberships')
+    .select('status, is_founding_member')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (!membership || !canAccessPlatform(membership)) {
+    return NextResponse.json({ error: 'forbidden' }, { status: 403 })
+  }
+
+  const { data: frameworkProgress } = await supabase
+    .from('framework_progress')
+    .select('phase1_completed_at')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (!canAccessCommunity(membership, frameworkProgress)) {
+    return NextResponse.json({ error: 'forbidden' }, { status: 403 })
+  }
+
+  const { data: inserted, error: insertError } = await supabase
+    .from('community_posts')
+    .insert({ user_id: user.id, space, title, body })
+    .select('id, space')
+    .single()
+
+  if (insertError || !inserted) {
+    return NextResponse.json({ error: 'insert_failed' }, { status: 500 })
+  }
+
+  return NextResponse.json({
+    post: { id: (inserted as any).id, space: (inserted as any).space },
+  })
+}
