@@ -261,7 +261,6 @@ export async function getPostWithReplies(
         body,
         is_pinned,
         created_at,
-        edited_at,
         user_id,
         users:user_id ( username, is_admin )
       `,
