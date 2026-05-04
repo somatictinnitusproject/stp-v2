@@ -4,6 +4,9 @@ import {
   getSpaceMetadata,
   getSpacePosts,
   getPostWithReplies,
+  getUserProfile,
+  getUserPosts,
+  getUserReplies,
 } from '../queries'
 import { COMMUNITY_SPACES } from '@/content/community-spaces'
 
@@ -30,6 +33,10 @@ function buildMockSupabase(
         return builder
       },
       eq(col: string, val: unknown) {
+        calls.eq.push([col, val])
+        return builder
+      },
+      ilike(col: string, val: unknown) {
         calls.eq.push([col, val])
         return builder
       },
@@ -597,5 +604,189 @@ describe('getPostWithReplies', () => {
     expect(result!.author_is_admin).toBe(true)
     expect(result!.author_username).toBe('oliver')
     expect(result!.author_user_id).toBe('u-ol')
+  })
+})
+
+describe('getUserProfile', () => {
+  it('returns null when no row found', async () => {
+    const { supabase } = buildMockSupabase({ users: [] })
+    const result = await getUserProfile(supabase, 'nobody')
+    expect(result).toBeNull()
+  })
+
+  it('maps username, bio, is_admin, created_at correctly', async () => {
+    const row = {
+      id: 'u1',
+      username: 'alice',
+      bio: 'Hello world',
+      is_admin: false,
+      created_at: '2026-01-01T00:00:00Z',
+    }
+    const { supabase } = buildMockSupabase({ users: [row] })
+    const result = await getUserProfile(supabase, 'alice')
+    expect(result).toEqual({
+      id: 'u1',
+      username: 'alice',
+      bio: 'Hello world',
+      is_admin: false,
+      created_at: '2026-01-01T00:00:00Z',
+    })
+  })
+
+  it('handles missing bio (returns null)', async () => {
+    const row = {
+      id: 'u2',
+      username: 'bob',
+      bio: null,
+      is_admin: false,
+      created_at: '2026-02-01T00:00:00Z',
+    }
+    const { supabase } = buildMockSupabase({ users: [row] })
+    const result = await getUserProfile(supabase, 'bob')
+    expect(result!.bio).toBeNull()
+  })
+
+  it('uses ilike for case-insensitive username lookup', async () => {
+    const row = {
+      id: 'u3',
+      username: 'oliver',
+      bio: null,
+      is_admin: true,
+      created_at: '2026-01-01T00:00:00Z',
+    }
+    const { supabase, calls } = buildMockSupabase({ users: [row] })
+    await getUserProfile(supabase, 'Oliver')
+    expect(calls.eq).toContainEqual(['username', 'Oliver'])
+  })
+})
+
+describe('getUserPosts', () => {
+  it('filters by user_id and is_deleted=false', async () => {
+    const { supabase, calls } = buildMockSupabase({
+      community_posts: [],
+      community_replies: [],
+    })
+    await getUserPosts(supabase, 'u1', 0, 20)
+    expect(calls.eq).toContainEqual(['is_deleted', false])
+    expect(calls.eq).toContainEqual(['user_id', 'u1'])
+  })
+
+  it('applies pinned-first then created_at DESC ordering', async () => {
+    const { supabase, calls } = buildMockSupabase({
+      community_posts: [],
+      community_replies: [],
+    })
+    await getUserPosts(supabase, 'u1', 0, 20)
+    expect(calls.order).toContainEqual(['is_pinned', { ascending: false }])
+    expect(calls.order).toContainEqual(['created_at', { ascending: false }])
+  })
+
+  it('returns empty page when user has no posts', async () => {
+    const { supabase } = buildMockSupabase({
+      community_posts: [],
+      community_replies: [],
+    })
+    const result = await getUserPosts(supabase, 'u-nobody', 0, 20)
+    expect(result.posts).toHaveLength(0)
+    expect(result.hasMore).toBe(false)
+  })
+
+  it('attaches reply counts to posts', async () => {
+    const postRow = {
+      id: 'p1',
+      space: 'discussion',
+      title: 'My post',
+      body: 'body',
+      is_pinned: false,
+      created_at: '2026-05-01T10:00:00Z',
+      users: { username: 'alice', is_admin: false },
+    }
+    const replyRows = [
+      { post_id: 'p1' },
+      { post_id: 'p1' },
+    ]
+    const { supabase } = buildMockSupabase({
+      community_posts: [postRow],
+      community_replies: replyRows,
+    })
+    const result = await getUserPosts(supabase, 'u1', 0, 20)
+    expect(result.posts[0].reply_count).toBe(2)
+  })
+
+  it('detects hasMore when response exceeds pageSize', async () => {
+    const rows = Array.from({ length: 3 }, (_, i) => ({
+      id: `p${i}`,
+      space: 'discussion',
+      title: `Post ${i}`,
+      body: 'b',
+      is_pinned: false,
+      created_at: '2026-05-01T10:00:00Z',
+      users: { username: 'alice', is_admin: false },
+    }))
+    const { supabase } = buildMockSupabase({
+      community_posts: rows,
+      community_replies: [],
+    })
+    const result = await getUserPosts(supabase, 'u1', 0, 2)
+    expect(result.hasMore).toBe(true)
+    expect(result.posts).toHaveLength(2)
+  })
+})
+
+describe('getUserReplies', () => {
+  it('filters by user_id and is_deleted=false', async () => {
+    const { supabase, calls } = buildMockSupabase({ community_replies: [] })
+    await getUserReplies(supabase, 'u1', 0, 20)
+    expect(calls.eq).toContainEqual(['is_deleted', false])
+    expect(calls.eq).toContainEqual(['user_id', 'u1'])
+  })
+
+  it('orders by created_at DESC', async () => {
+    const { supabase, calls } = buildMockSupabase({ community_replies: [] })
+    await getUserReplies(supabase, 'u1', 0, 20)
+    expect(calls.order).toContainEqual(['created_at', { ascending: false }])
+  })
+
+  it('maps post space and title from inner join', async () => {
+    const rows = [
+      {
+        id: 'r1',
+        body: 'Great post!',
+        created_at: '2026-05-02T08:00:00Z',
+        post_id: 'p1',
+        community_posts: { space: 'progress-wins', title: 'My win', is_deleted: false },
+      },
+    ]
+    const { supabase } = buildMockSupabase({ community_replies: rows })
+    const result = await getUserReplies(supabase, 'u1', 0, 20)
+    expect(result.replies[0]).toEqual({
+      id: 'r1',
+      body: 'Great post!',
+      created_at: '2026-05-02T08:00:00Z',
+      post_id: 'p1',
+      post_space: 'progress-wins',
+      post_title: 'My win',
+    })
+  })
+
+  it('detects hasMore when response exceeds pageSize', async () => {
+    const rows = Array.from({ length: 3 }, (_, i) => ({
+      id: `r${i}`,
+      body: `reply ${i}`,
+      created_at: '2026-05-01T10:00:00Z',
+      post_id: 'p1',
+      community_posts: { space: 'discussion', title: 'A post', is_deleted: false },
+    }))
+    const { supabase } = buildMockSupabase({ community_replies: rows })
+    const result = await getUserReplies(supabase, 'u1', 0, 2)
+    expect(result.hasMore).toBe(true)
+    expect(result.replies).toHaveLength(2)
+  })
+
+  it('returns empty page when user has no replies', async () => {
+    const { supabase } = buildMockSupabase({ community_replies: [] })
+    const result = await getUserReplies(supabase, 'u-nobody', 0, 20)
+    expect(result.replies).toHaveLength(0)
+    expect(result.hasMore).toBe(false)
   })
 })

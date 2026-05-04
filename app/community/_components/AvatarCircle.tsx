@@ -5,7 +5,7 @@ import {
 
 interface Props {
   username: string | null | undefined
-  size?: 'sm' | 'md'
+  size?: 'sm' | 'md' | 'lg'
 }
 
 // Small reusable avatar circle. Initials on a deterministic
@@ -14,6 +14,8 @@ export default function AvatarCircle({ username, size = 'md' }: Props) {
   const sizeClasses =
     size === 'sm'
       ? 'w-7 h-7 text-[11px]'
+      : size === 'lg'
+      ? 'w-14 h-14 text-[18px]'
       : 'w-9 h-9 text-[13px]'
 
   return (
