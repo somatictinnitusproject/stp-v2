@@ -71,7 +71,7 @@ export default async function SinglePostPage({ params }: PageProps) {
   const [{ data: userRow }, post] = await Promise.all([
     supabase
       .from('users')
-      .select('community_charter_acknowledged_at')
+      .select('community_charter_acknowledged_at, is_admin')
       .eq('id', user.id)
       .maybeSingle(),
     getPostWithReplies(supabase, postId, rawSlug),
@@ -80,6 +80,8 @@ export default async function SinglePostPage({ params }: PageProps) {
   const acknowledged =
     userRow?.community_charter_acknowledged_at !== null &&
     userRow?.community_charter_acknowledged_at !== undefined
+
+  const currentUserIsAdmin = userRow?.is_admin === true
 
   if (!post) {
     return (
@@ -102,9 +104,18 @@ export default async function SinglePostPage({ params }: PageProps) {
             ← {space.name}
           </Link>
 
-          <PostDetail post={post} />
+          <PostDetail
+            post={post}
+            currentUserId={user.id}
+            currentUserIsAdmin={currentUserIsAdmin}
+          />
 
-          <ReplyThread postId={post.id} initialReplies={post.replies} />
+          <ReplyThread
+            postId={post.id}
+            initialReplies={post.replies}
+            currentUserId={user.id}
+            currentUserIsAdmin={currentUserIsAdmin}
+          />
         </div>
       </CharterGate>
     </AuthShell>
