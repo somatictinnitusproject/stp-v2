@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import {
   canAccessPlatform,
   canAccessCommunity,
@@ -206,27 +207,19 @@ export async function DELETE(request: Request) {
   }
 
   const isOwner = (postRow as any).user_id === user.id
-  console.log('[DELETE /api/community/posts debug]', {
-    userId: user.id,
-    postUserId: (postRow as any).user_id,
-    isOwner,
-    isAdmin,
-    postId: id,
-  })
   if (!isOwner && !isAdmin) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 })
   }
 
-  const { error: deleteError } = await supabase
+  // Switch to service-role for the actual UPDATE — bypasses RLS.
+  // Ownership and access were already enforced above.
+  const serviceClient = createServiceClient()
+  const { error: deleteError } = await serviceClient
     .from('community_posts')
     .update({ is_deleted: true, updated_at: new Date().toISOString() })
     .eq('id', id)
 
   if (deleteError) {
-    console.error('[DELETE /api/community/posts] update error', {
-      code: deleteError.code,
-      message: deleteError.message,
-    })
     return NextResponse.json({ error: 'delete_failed' }, { status: 500 })
   }
 

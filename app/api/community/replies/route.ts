@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import {
   canAccessPlatform,
   canAccessCommunity,
@@ -173,7 +174,10 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 })
   }
 
-  const { error: deleteError } = await supabase
+  // Switch to service-role for the actual UPDATE — bypasses RLS.
+  // Ownership and access were already enforced above.
+  const serviceClient = createServiceClient()
+  const { error: deleteError } = await serviceClient
     .from('community_replies')
     .update({ is_deleted: true, updated_at: new Date().toISOString() })
     .eq('id', id)
