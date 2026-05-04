@@ -11,3 +11,18 @@ export function isFoundingMember(membership: {
 }): boolean {
   return membership.is_founding_member === true
 }
+
+// Community gate: full platform access AND Phase 1 completed.
+// Phase 1 completion is signalled by phase1_completed_at being a
+// non-null timestamp on framework_progress.
+//
+// Returns false if either condition fails. Used by every
+// community route's page-level access check.
+export function canAccessCommunity(
+  membership: { is_founding_member: boolean; status: string },
+  frameworkProgress: { phase1_completed_at: string | null } | null,
+): boolean {
+  if (!canAccessPlatform(membership)) return false
+  if (frameworkProgress === null) return false
+  return frameworkProgress.phase1_completed_at !== null
+}
