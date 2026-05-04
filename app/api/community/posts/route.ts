@@ -216,19 +216,7 @@ export async function DELETE(request: Request) {
     .eq('id', id)
 
   if (deleteError) {
-    console.error('[community/posts DELETE] update failed', deleteError)
-    return NextResponse.json(
-      {
-        error: 'delete_failed',
-        debug: {
-          code: deleteError.code,
-          message: deleteError.message,
-          details: deleteError.details,
-          hint: deleteError.hint,
-        },
-      },
-      { status: 500 },
-    )
+    return NextResponse.json({ error: 'delete_failed' }, { status: 500 })
   }
 
   return NextResponse.json({ ok: true })
