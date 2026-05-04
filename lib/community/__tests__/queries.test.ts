@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { getRecentActivity, getSpaceMetadata, getSpacePosts } from '../queries'
+import {
+  getRecentActivity,
+  getSpaceMetadata,
+  getSpacePosts,
+  getPostWithReplies,
+} from '../queries'
 import { COMMUNITY_SPACES } from '@/content/community-spaces'
 
 // Build a mock supabase client whose .from(...) chain captures
@@ -43,6 +48,20 @@ function buildMockSupabase(
       range(from: number, to: number) {
         calls.range = [from, to]
         return builder
+      },
+      single() {
+        const rows = tableResponses[table] ?? []
+        return Promise.resolve({
+          data: rows[0] ?? null,
+          error: rows[0] ? null : null,
+        })
+      },
+      maybeSingle() {
+        const rows = tableResponses[table] ?? []
+        return Promise.resolve({
+          data: rows[0] ?? null,
+          error: null,
+        })
       },
       then(resolve: (value: { data: any; error: null }) => void) {
         resolve({ data: tableResponses[table] ?? [], error: null })
@@ -364,5 +383,219 @@ describe('getSpacePosts', () => {
     const result = await getSpacePosts(supabase, 'discussion', 0, 20)
     expect(result.posts[0].author_username).toBeNull()
     expect(result.posts[0].author_is_admin).toBe(false)
+  })
+})
+
+describe('getPostWithReplies', () => {
+  it('returns null when post does not exist', async () => {
+    const { supabase } = buildMockSupabase({
+      community_posts: [],
+      community_replies: [],
+    })
+    const result = await getPostWithReplies(
+      supabase,
+      'missing-id',
+      'discussion',
+    )
+    expect(result).toBeNull()
+  })
+
+  it('queries community_posts filtered by id and is_deleted=false', async () => {
+    const { supabase, calls } = buildMockSupabase({
+      community_posts: [],
+      community_replies: [],
+    })
+    await getPostWithReplies(supabase, 'p1', 'discussion')
+
+    expect(calls.from).toContain('community_posts')
+    expect(calls.eq).toContainEqual(['id', 'p1'])
+    expect(calls.eq).toContainEqual(['is_deleted', false])
+  })
+
+  it('returns null when post belongs to a different space', async () => {
+    const postRow = {
+      id: 'p1',
+      space: 'progress-wins',
+      title: 'Wrong space',
+      body: 'b',
+      is_pinned: false,
+      created_at: '2026-05-01T10:00:00Z',
+      user_id: 'u1',
+      users: { username: 'alice', is_admin: false },
+    }
+    const { supabase } = buildMockSupabase({
+      community_posts: [postRow],
+      community_replies: [],
+    })
+    const result = await getPostWithReplies(
+      supabase,
+      'p1',
+      'discussion',
+    )
+    expect(result).toBeNull()
+  })
+
+  it('returns the post with empty replies array when no replies', async () => {
+    const postRow = {
+      id: 'p1',
+      space: 'discussion',
+      title: 'Lonely',
+      body: 'b',
+      is_pinned: false,
+      created_at: '2026-05-01T10:00:00Z',
+      user_id: 'u1',
+      users: { username: 'alice', is_admin: false },
+    }
+    const { supabase } = buildMockSupabase({
+      community_posts: [postRow],
+      community_replies: [],
+    })
+    const result = await getPostWithReplies(
+      supabase,
+      'p1',
+      'discussion',
+    )
+    expect(result).not.toBeNull()
+    expect(result!.id).toBe('p1')
+    expect(result!.replies).toEqual([])
+  })
+
+  it('joins replies with author info and orders chronologically', async () => {
+    const postRow = {
+      id: 'p1',
+      space: 'discussion',
+      title: 'A post',
+      body: 'b',
+      is_pinned: false,
+      created_at: '2026-05-01T10:00:00Z',
+      user_id: 'u1',
+      users: { username: 'alice', is_admin: false },
+    }
+    // Mock returns replies in whatever order — production code
+    // relies on .order('created_at', ascending: true) to enforce
+    // it. Here we're just checking the mapping. Calls to
+    // .order are asserted in the next test.
+    const replyRows = [
+      {
+        id: 'r1',
+        body: 'first',
+        created_at: '2026-05-02T08:00:00Z',
+        user_id: 'u1',
+        users: { username: 'alice', is_admin: false },
+      },
+      {
+        id: 'r2',
+        body: 'oliver weighs in',
+        created_at: '2026-05-02T09:00:00Z',
+        user_id: 'u-ol',
+        users: { username: 'oliver', is_admin: true },
+      },
+    ]
+    const { supabase } = buildMockSupabase({
+      community_posts: [postRow],
+      community_replies: replyRows,
+    })
+    const result = await getPostWithReplies(
+      supabase,
+      'p1',
+      'discussion',
+    )
+
+    expect(result!.replies).toHaveLength(2)
+    expect(result!.replies[0]).toEqual({
+      id: 'r1',
+      body: 'first',
+      created_at: '2026-05-02T08:00:00Z',
+      author_username: 'alice',
+      author_is_admin: false,
+      author_user_id: 'u1',
+    })
+    expect(result!.replies[1].author_is_admin).toBe(true)
+    expect(result!.replies[1].author_username).toBe('oliver')
+  })
+
+  it('queries replies with is_deleted=false filter and ASC ordering', async () => {
+    const postRow = {
+      id: 'p1',
+      space: 'discussion',
+      title: 'A post',
+      body: 'b',
+      is_pinned: false,
+      created_at: '2026-05-01T10:00:00Z',
+      user_id: 'u1',
+      users: { username: 'alice', is_admin: false },
+    }
+    const { supabase, calls } = buildMockSupabase({
+      community_posts: [postRow],
+      community_replies: [],
+    })
+    await getPostWithReplies(supabase, 'p1', 'discussion')
+
+    expect(calls.from).toContain('community_replies')
+    expect(calls.eq).toContainEqual(['post_id', 'p1'])
+    expect(calls.eq).toContainEqual(['is_deleted', false])
+    expect(calls.order).toContainEqual([
+      'created_at',
+      { ascending: true },
+    ])
+  })
+
+  it('handles missing user join on a reply', async () => {
+    const postRow = {
+      id: 'p1',
+      space: 'discussion',
+      title: 'A post',
+      body: 'b',
+      is_pinned: false,
+      created_at: '2026-05-01T10:00:00Z',
+      user_id: 'u1',
+      users: { username: 'alice', is_admin: false },
+    }
+    const replyRows = [
+      {
+        id: 'r1',
+        body: 'orphan',
+        created_at: '2026-05-02T08:00:00Z',
+        user_id: 'u-missing',
+        users: null,
+      },
+    ]
+    const { supabase } = buildMockSupabase({
+      community_posts: [postRow],
+      community_replies: replyRows,
+    })
+    const result = await getPostWithReplies(
+      supabase,
+      'p1',
+      'discussion',
+    )
+    expect(result!.replies[0].author_username).toBeNull()
+    expect(result!.replies[0].author_is_admin).toBe(false)
+  })
+
+  it('maps post fields including admin flag and pinned', async () => {
+    const postRow = {
+      id: 'p1',
+      space: 'discussion',
+      title: 'Pinned by Oliver',
+      body: 'body text',
+      is_pinned: true,
+      created_at: '2026-05-01T10:00:00Z',
+      user_id: 'u-ol',
+      users: { username: 'oliver', is_admin: true },
+    }
+    const { supabase } = buildMockSupabase({
+      community_posts: [postRow],
+      community_replies: [],
+    })
+    const result = await getPostWithReplies(
+      supabase,
+      'p1',
+      'discussion',
+    )
+    expect(result!.is_pinned).toBe(true)
+    expect(result!.author_is_admin).toBe(true)
+    expect(result!.author_username).toBe('oliver')
+    expect(result!.author_user_id).toBe('u-ol')
   })
 })

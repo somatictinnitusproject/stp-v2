@@ -210,3 +210,105 @@ export async function getSpacePosts(
 
   return { posts, hasMore }
 }
+
+// Single reply row used inside PostWithReplies. Joins author
+// username + admin flag for inline rendering.
+export interface PostReply {
+  id: string
+  body: string
+  created_at: string
+  author_username: string | null
+  author_is_admin: boolean
+  author_user_id: string
+}
+
+// Full post detail plus its non-deleted replies, ordered
+// chronologically. Returned by getPostWithReplies.
+export interface PostWithReplies {
+  id: string
+  space: CommunitySpaceSlug
+  title: string
+  body: string
+  is_pinned: boolean
+  created_at: string
+  author_username: string | null
+  author_is_admin: boolean
+  author_user_id: string
+  replies: PostReply[]
+}
+
+// Fetch a single post by id along with its non-deleted replies.
+//
+// Returns null when:
+//   - post does not exist
+//   - post is_deleted = TRUE
+//   - post.space does not match expectedSpace (URL tampering)
+//
+// Replies are ordered created_at ASC — chronological thread
+// per Doc 12 §11.6.
+export async function getPostWithReplies(
+  supabase: SupabaseClient,
+  postId: string,
+  expectedSpace: CommunitySpaceSlug,
+): Promise<PostWithReplies | null> {
+  const { data: postRow, error: postError } = await supabase
+    .from('community_posts')
+    .select(
+      `
+        id,
+        space,
+        title,
+        body,
+        is_pinned,
+        created_at,
+        user_id,
+        users:user_id ( username, is_admin )
+      `,
+    )
+    .eq('id', postId)
+    .eq('is_deleted', false)
+    .maybeSingle()
+
+  if (postError) throw postError
+  if (!postRow) return null
+  if ((postRow as any).space !== expectedSpace) return null
+
+  const { data: replyRows, error: repliesError } = await supabase
+    .from('community_replies')
+    .select(
+      `
+        id,
+        body,
+        created_at,
+        user_id,
+        users:user_id ( username, is_admin )
+      `,
+    )
+    .eq('post_id', postId)
+    .eq('is_deleted', false)
+    .order('created_at', { ascending: true })
+
+  if (repliesError) throw repliesError
+
+  const replies: PostReply[] = (replyRows ?? []).map((row: any) => ({
+    id: row.id,
+    body: row.body,
+    created_at: row.created_at,
+    author_username: row.users?.username ?? null,
+    author_is_admin: row.users?.is_admin === true,
+    author_user_id: row.user_id,
+  }))
+
+  return {
+    id: (postRow as any).id,
+    space: (postRow as any).space as CommunitySpaceSlug,
+    title: (postRow as any).title,
+    body: (postRow as any).body,
+    is_pinned: (postRow as any).is_pinned === true,
+    created_at: (postRow as any).created_at,
+    author_username: (postRow as any).users?.username ?? null,
+    author_is_admin: (postRow as any).users?.is_admin === true,
+    author_user_id: (postRow as any).user_id,
+    replies,
+  }
+}
