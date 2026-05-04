@@ -6,6 +6,7 @@ import type { PostReply } from '@/lib/community/queries'
 import { formatTimeAgo } from '@/lib/community/format-time-ago'
 import AvatarCircle from './AvatarCircle'
 import FounderBadge from './FounderBadge'
+import ReplyMenu from './ReplyMenu'
 import DeleteConfirmModal from '@/components/community/DeleteConfirmModal'
 
 interface Props {
@@ -49,7 +50,7 @@ export default function ReplyCard({
       <article className={`${cardClasses} border rounded-xl p-4`}>
         <div className="flex items-start gap-3 mb-2">
           <AvatarCircle username={reply.author_username} size="sm" />
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-text-muted">
+          <div className="flex-1 min-w-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-text-muted">
             {profileHref ? (
               <Link
                 href={profileHref}
@@ -64,23 +65,17 @@ export default function ReplyCard({
             <span aria-hidden="true">·</span>
             <span>{formatTimeAgo(reply.created_at)}</span>
           </div>
+          <div className="flex-shrink-0">
+            <ReplyMenu
+              canDelete={canDelete}
+              onDeleteClick={() => setShowDeleteModal(true)}
+            />
+          </div>
         </div>
 
         <div className="text-[14px] text-text-body leading-relaxed whitespace-pre-line ml-[44px]">
           {reply.body}
         </div>
-
-        {canDelete && (
-          <div className="flex items-center gap-3 mt-3 ml-[44px]">
-            <button
-              type="button"
-              onClick={() => setShowDeleteModal(true)}
-              className="text-[12px] font-medium text-text-muted hover:text-error transition-colors"
-            >
-              Delete
-            </button>
-          </div>
-        )}
       </article>
 
       {showDeleteModal && (

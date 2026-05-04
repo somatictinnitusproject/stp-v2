@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { RecentActivityItem } from '@/lib/community/queries'
 import { formatTimeAgo } from '@/lib/community/format-time-ago'
 import { getCommunitySpace } from '@/content/community-spaces'
+import FounderBadge from './FounderBadge'
 
 interface Props {
   items: RecentActivityItem[]
@@ -58,11 +59,7 @@ export default function RecentActivityList({ items }: Props) {
                       ? `@${item.author_username}`
                       : 'unknown'}
                   </span>
-                  {item.author_is_admin && (
-                    <span className="bg-text-heading text-white text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded">
-                      Founder
-                    </span>
-                  )}
+                  {item.author_is_admin && <FounderBadge />}
                   <span>·</span>
                   <span>{formatTimeAgo(item.created_at)}</span>
                 </div>

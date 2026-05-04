@@ -79,7 +79,7 @@ export default function UserMenu({ username }: { username: string }) {
         {dropdownOpen && (
           <div className="absolute right-0 top-full mt-2 w-[180px] bg-surface border border-border rounded-lg shadow-dropdown z-modal overflow-hidden">
             <Link
-              href="/profile"
+              href={`/profile/${username}`}
               onClick={() => setDropdownOpen(false)}
               className="flex items-center h-10 px-4 text-[13px] text-text-body hover:bg-surface-raised transition-colors"
             >
@@ -138,7 +138,7 @@ export default function UserMenu({ username }: { username: string }) {
                 <div className="w-8 h-1 rounded-full bg-border" />
               </div>
               <Link
-                href="/profile"
+                href={`/profile/${username}`}
                 onClick={closeSheet}
                 className="flex items-center h-12 px-6 text-[15px] text-text-body hover:bg-surface-raised transition-colors"
               >

@@ -138,6 +138,86 @@ export async function POST(request: Request) {
   })
 }
 
+// PATCH /api/community/posts
+//
+// Body: { id: string, is_pinned: boolean }
+// Admin-only. Toggles the pinned state of any post.
+// Mutation runs through service-role; ownership is not
+// required (this is a moderation action).
+
+export async function PATCH(request: Request) {
+  let payload: { id?: string; is_pinned?: boolean }
+  try {
+    payload = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'invalid_json' }, { status: 400 })
+  }
+
+  const id = typeof payload.id === 'string' ? payload.id : null
+  const isPinned =
+    typeof payload.is_pinned === 'boolean' ? payload.is_pinned : null
+
+  if (!id) {
+    return NextResponse.json({ error: 'missing_id' }, { status: 400 })
+  }
+  if (isPinned === null) {
+    return NextResponse.json({ error: 'missing_is_pinned' }, { status: 400 })
+  }
+
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+  }
+
+  const { data: membership } = await supabase
+    .from('memberships')
+    .select('status, is_founding_member')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (!membership || !canAccessPlatform(membership)) {
+    return NextResponse.json({ error: 'forbidden' }, { status: 403 })
+  }
+
+  const { data: frameworkProgress } = await supabase
+    .from('framework_progress')
+    .select('phase1_completed_at')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (!canAccessCommunity(membership, frameworkProgress)) {
+    return NextResponse.json({ error: 'forbidden' }, { status: 403 })
+  }
+
+  // Admin only.
+  const { data: userRow } = await supabase
+    .from('users')
+    .select('is_admin')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  if (!(userRow as any)?.is_admin) {
+    return NextResponse.json({ error: 'forbidden' }, { status: 403 })
+  }
+
+  // Service-role for the UPDATE.
+  const serviceClient = createServiceClient()
+  const { error: updateError } = await serviceClient
+    .from('community_posts')
+    .update({ is_pinned: isPinned })
+    .eq('id', id)
+
+  if (updateError) {
+    return NextResponse.json({ error: 'update_failed' }, { status: 500 })
+  }
+
+  return NextResponse.json({ ok: true })
+}
+
 // DELETE /api/community/posts
 //
 // Body: { id }
