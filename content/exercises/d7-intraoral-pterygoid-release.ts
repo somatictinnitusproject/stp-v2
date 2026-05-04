@@ -18,6 +18,8 @@ const d7IntraoralPterygoidRelease: Exercise = {
   sectionRef: 'D.7',
   name: 'Intraoral Pterygoid Release',
   category: 'jaw-release',
+  bodyRegion: 'jaw',
+  libraryDurationLabel: '60 sec per position',
   estimatedMinutes: 2,
   focusLine: "The tissue you can't reach any other way",
 

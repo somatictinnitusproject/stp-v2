@@ -17,6 +17,8 @@ const d10TmjDistraction: Exercise = {
   sectionRef: 'D.10',
   name: 'TMJ Distraction',
   category: 'jaw-release',
+  bodyRegion: 'jaw',
+  libraryDurationLabel: '30 sec per position',
   estimatedMinutes: 2,
   focusLine: 'Decompress the joint the tension has been loading',
 

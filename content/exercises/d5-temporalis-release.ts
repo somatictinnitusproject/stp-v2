@@ -16,6 +16,8 @@ const d5TemporalisRelease: Exercise = {
   sectionRef: 'D.5',
   name: 'Temporalis Release',
   category: 'jaw-release',
+  bodyRegion: 'jaw',
+  libraryDurationLabel: '90 sec per position',
   estimatedMinutes: 5,
   focusLine: 'Release the full jaw closing system, not just the masseter',
 

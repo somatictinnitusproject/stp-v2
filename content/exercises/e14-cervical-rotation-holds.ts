@@ -20,6 +20,8 @@ const e14CervicalRotationHolds: Exercise = {
   sectionRef: 'E.14',
   name: 'Cervical Rotation Holds',
   category: 'resistance-training',
+  bodyRegion: 'cervical',
+  libraryDurationLabel: '10 sec hold × 5 reps',
   estimatedMinutes: 4,
   focusLine: 'Retrain control at the ranges where the dysfunction lives',
 

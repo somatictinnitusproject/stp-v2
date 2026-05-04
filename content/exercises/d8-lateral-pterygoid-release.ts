@@ -19,6 +19,8 @@ const d8LateralPterygoidRelease: Exercise = {
   sectionRef: 'D.8',
   name: 'Lateral Pterygoid Release',
   category: 'jaw-release',
+  bodyRegion: 'jaw',
+  libraryDurationLabel: '90 sec per position',
   estimatedMinutes: 3,
   focusLine: 'Target the muscle that drives the drift',
 

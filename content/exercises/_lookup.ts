@@ -40,12 +40,19 @@ function stub(
   category: Exercise['category'],
   estimatedMinutes: number,
 ): Exercise {
+  // Derive bodyRegion from category — stubs are TMJ or cervical, never general.
+  const bodyRegion: Exercise['bodyRegion'] =
+    category === 'jaw-release' ? 'jaw'
+    : category === 'cervical-release' ? 'cervical'
+    : 'jaw'  // resistance-training stubs default to jaw — overridden if needed
   return {
     kind: 'exercise',
     id,
     sectionRef,
     name,
     category,
+    bodyRegion,
+    libraryDurationLabel: `~${estimatedMinutes} min`,
     estimatedMinutes,
     focusLine: `${name} — apply slow, controlled pressure.`,
     fullContent: [
@@ -108,4 +115,71 @@ export function getExerciseById(id: string): Exercise {
   const exercise = EXERCISE_MAP.get(id)
   if (!exercise) throw new Error(`Unknown exercise ID: "${id}"`)
   return exercise
+}
+
+/**
+ * Returns every exercise in the library, in registry order. Used by
+ * /exercise-library home page to render the full grid.
+ */
+export function getAllLibraryExercises(): Exercise[] {
+  return Array.from(EXERCISE_MAP.values())
+}
+
+/**
+ * Returns every exercise belonging to a category route slug. Used by
+ * category route pages (/exercise-library/[category]).
+ *
+ * Returns empty array if the slug doesn't match any known category —
+ * the calling page is responsible for rendering the inline 404 / coming-
+ * soon state.
+ */
+export function getExercisesByCategory(slug: string): Exercise[] {
+  return Array.from(EXERCISE_MAP.values()).filter(
+    (exercise) => exercise.category === slug,
+  )
+}
+
+/**
+ * Maps a category slug to its display name (used on category page
+ * headings and breadcrumbs).
+ */
+export function getCategoryDisplayName(slug: string): string | null {
+  switch (slug) {
+    case 'jaw-release': return 'Jaw Release'
+    case 'cervical-release': return 'Cervical Release'
+    case 'resistance-training': return 'Resistance Training'
+    case 'postural': return 'Postural'
+    case 'nervous-system': return 'Nervous System'
+    case 'breathing': return 'Breathing'
+    default: return null
+  }
+}
+
+/**
+ * Maps an exercise to its home-page filter pill label. Per ERRATA F1
+ * and Doc 12 §7.5, the filter labels are display-only and differ from
+ * the route slugs.
+ *
+ * 'general' bodyRegion exercises return null — they show under "All"
+ * only, no body-region pill.
+ */
+export function getFilterLabel(
+  exercise: Exercise,
+): 'Jaw and TMJ' | 'Cervical' | null {
+  if (exercise.bodyRegion === 'jaw') return 'Jaw and TMJ'
+  if (exercise.bodyRegion === 'cervical') return 'Cervical'
+  return null
+}
+
+/**
+ * Returns up to n exercises related to the given one — same category,
+ * excluding the exercise itself. Used by individual exercise page
+ * "Related exercises" row per Doc 12 §7.7.
+ *
+ * Order: registry order. No additional ranking applied.
+ */
+export function getRelatedExercises(exercise: Exercise, n: number): Exercise[] {
+  return Array.from(EXERCISE_MAP.values())
+    .filter((other) => other.id !== exercise.id && other.category === exercise.category)
+    .slice(0, n)
 }

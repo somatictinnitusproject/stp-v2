@@ -32,6 +32,8 @@ const e13DeepCervicalFlexorTraining: Exercise = {
   sectionRef: 'E.13',
   name: 'Deep Cervical Flexor Training',
   category: 'resistance-training',
+  bodyRegion: 'cervical',
+  libraryDurationLabel: '10 reps × 3 sets',
   estimatedMinutes: 4,
   focusLine: 'Activate the muscles that should have been doing this work all along',
 

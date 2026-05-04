@@ -20,6 +20,8 @@ const e15CervicalProprioception: Exercise = {
   sectionRef: 'E.15',
   name: 'Cervical Proprioception Retraining',
   category: 'resistance-training',
+  bodyRegion: 'cervical',
+  libraryDurationLabel: '8–10 reps each',
   estimatedMinutes: 3,
   focusLine: 'Recalibrate the position sense that chronic tension has disrupted',
 

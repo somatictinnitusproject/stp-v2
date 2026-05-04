@@ -18,6 +18,8 @@ const e7LevatorScapulaeStretching: Exercise = {
   sectionRef: 'E.7',
   name: 'Levator Scapulae Stretching',
   category: 'cervical-release',
+  bodyRegion: 'cervical',
+  libraryDurationLabel: '60 sec per side',
   estimatedMinutes: 2,
   focusLine: 'Release the muscle connecting your shoulder to your upper cervical spine',
 

@@ -32,6 +32,8 @@ const e11ChinTuckRotation: Exercise = {
   sectionRef: 'E.11',
   name: 'Controlled Chin-Tuck-Rotation',
   category: 'cervical-release',
+  bodyRegion: 'cervical',
+  libraryDurationLabel: '8–10 reps',
   estimatedMinutes: 2,
   focusLine: 'Mobilise the joints closest to the source',
 

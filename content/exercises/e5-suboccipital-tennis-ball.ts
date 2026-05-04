@@ -26,6 +26,8 @@ const e5SuboccipitalTennisBall: Exercise = {
   sectionRef: 'E.5',
   name: 'Suboccipital Tennis Ball Release',
   category: 'cervical-release',
+  bodyRegion: 'cervical',
+  libraryDurationLabel: '10 minutes',
   estimatedMinutes: 10,
   focusLine: 'The tension at the base of your skull is the signal — this is how you reduce it',
 

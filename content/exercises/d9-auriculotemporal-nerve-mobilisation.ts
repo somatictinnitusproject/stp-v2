@@ -13,6 +13,8 @@ const d9AuriculotemporalNerveMob: Exercise = {
   sectionRef: 'D.9',
   name: 'Auriculotemporal Nerve Mobilisation',
   category: 'jaw-release',
+  bodyRegion: 'jaw',
+  libraryDurationLabel: '60 sec per side',
   estimatedMinutes: 3,
   focusLine: 'Reduce the sensitivity of the pathway, not just the tension around it',
 

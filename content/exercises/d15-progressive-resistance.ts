@@ -21,6 +21,8 @@ const d15ProgressiveResistance: Exercise = {
   sectionRef: 'D.15',
   name: 'Progressive Resistance Exercises',
   category: 'resistance-training',
+  bodyRegion: 'jaw',
+  libraryDurationLabel: '8–10 reps each',
   estimatedMinutes: 3,
   focusLine: 'Load the pattern you have retrained',
 

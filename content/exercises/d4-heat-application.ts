@@ -25,6 +25,8 @@ const d4HeatApplication: Exercise = {
   sectionRef: 'D.4',
   name: 'Heat Application',
   category: 'jaw-release',
+  bodyRegion: 'general',
+  libraryDurationLabel: '10 minutes',
   estimatedMinutes: 10,
   focusLine: 'Prepare the tissue before you work it',
 

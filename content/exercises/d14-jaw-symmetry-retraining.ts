@@ -22,6 +22,8 @@ const d14JawSymmetryRetraining: Exercise = {
   sectionRef: 'D.14',
   name: 'Jaw Symmetry Retraining',
   category: 'resistance-training',
+  bodyRegion: 'jaw',
+  libraryDurationLabel: '5 minutes',
   estimatedMinutes: 3,
   focusLine: 'Retrain the pattern before you load it',
 

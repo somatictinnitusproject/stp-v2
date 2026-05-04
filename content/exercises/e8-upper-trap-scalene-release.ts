@@ -28,6 +28,8 @@ const e8UpperTrapScaleneRelease: Exercise = {
   sectionRef: 'E.8',
   name: 'Upper Trapezius and Scalene Release',
   category: 'cervical-release',
+  bodyRegion: 'cervical',
+  libraryDurationLabel: '60–90 sec per side',
   estimatedMinutes: 4,
   focusLine: 'Release the muscles compressing your cervical spine from above and below',
 

@@ -20,6 +20,8 @@ const d6MasseterRelease: Exercise = {
   sectionRef: 'D.6',
   name: 'Masseter Release',
   category: 'jaw-release',
+  bodyRegion: 'jaw',
+  libraryDurationLabel: '90 sec per position',
   estimatedMinutes: 5,
   focusLine: 'Hold steady — sustained pressure produces release',
 

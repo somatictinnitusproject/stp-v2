@@ -20,6 +20,8 @@ function makeExercise(id: string): Exercise {
     sectionRef: 'D.1',
     name: id,
     category: 'jaw-release',
+    bodyRegion: 'jaw',
+    libraryDurationLabel: '5 min',
     estimatedMinutes: 5,
     focusLine: 'Test focus',
     fullContent: [{ type: 'p', text: 'Test content' }],

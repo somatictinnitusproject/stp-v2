@@ -145,6 +145,28 @@ export interface Exercise {
   commonMistakes: ContentBlock[] | null
   contraindications: ContentBlock[] | null
 
+  // ── Library metadata — per Phase F (ERRATA F1, Doc 12 §7) ───────────────
+  // bodyRegion drives the home-page filter pill label. category drives the
+  // route slug. Together they uniquely place an exercise in the library:
+  //   { category: 'jaw-release', bodyRegion: 'jaw' }       → 'Jaw and TMJ' pill
+  //   { category: 'cervical-release', bodyRegion: 'cervical' } → 'Cervical' pill
+  //   { category: 'resistance-training', bodyRegion: 'jaw' }   → 'Jaw and TMJ' pill
+  //   { category: 'resistance-training', bodyRegion: 'cervical' } → 'Cervical' pill
+  //
+  // 'general' applies to exercises that work for any protocol (e.g. D4
+  // heat application). 'general' exercises appear under no filter pill
+  // (they show under 'All' only).
+  bodyRegion: 'jaw' | 'cervical' | 'general'
+
+  // Free-form short string shown on library exercise cards under the
+  // category tag. Examples:
+  //   '90 sec per position'
+  //   '10 minutes'
+  //   '8–10 reps each side'
+  // Distinct from estimatedMinutes (a number used for session
+  // time-remaining math) — this string is for human display only.
+  libraryDurationLabel: string
+
   // ── Personalisation ──────────────────────────────────────────────────────
   // Silent-omission policy per errata P3-13. Array may be empty ([]).
   profileModifiers: ProfileModifier[]
