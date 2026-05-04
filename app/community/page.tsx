@@ -12,6 +12,7 @@ import {
 import RecentActivityList from './_components/RecentActivityList'
 import SpacesList from './_components/SpacesList'
 import CommunityLockedState from './_components/CommunityLockedState'
+import CharterGate from '@/components/community/CharterGate'
 
 export const dynamic = 'force-dynamic'
 
@@ -39,8 +40,6 @@ export default async function CommunityHomePage() {
     .eq('user_id', user.id)
     .maybeSingle()
 
-  // Phase 1 not complete: render the locked-state body inside
-  // AuthShell. Member stays on /community and sees why.
   if (!canAccessCommunity(membership, frameworkProgress)) {
     return (
       <AuthShell>
@@ -49,20 +48,32 @@ export default async function CommunityHomePage() {
     )
   }
 
-  const [recentActivity, spaceMetadata] = await Promise.all([
+  // Fetch charter ack timestamp + community data in parallel.
+  const [userRow, recentActivity, spaceMetadata] = await Promise.all([
+    supabase
+      .from('users')
+      .select('community_charter_acknowledged_at')
+      .eq('id', user.id)
+      .maybeSingle(),
     getRecentActivity(supabase, 4),
     getSpaceMetadata(supabase),
   ])
 
+  const acknowledged =
+    userRow.data?.community_charter_acknowledged_at !== null &&
+    userRow.data?.community_charter_acknowledged_at !== undefined
+
   return (
     <AuthShell>
-      <div className="max-w-[760px] mx-auto py-6">
-        <h1 className="text-[28px] font-semibold leading-tight text-text-heading mb-6">
-          Community
-        </h1>
-        <RecentActivityList items={recentActivity} />
-        <SpacesList metadata={spaceMetadata} />
-      </div>
+      <CharterGate initiallyAcknowledged={acknowledged}>
+        <div className="max-w-[760px] mx-auto py-6">
+          <h1 className="text-[28px] font-semibold leading-tight text-text-heading mb-6">
+            Community
+          </h1>
+          <RecentActivityList items={recentActivity} />
+          <SpacesList metadata={spaceMetadata} />
+        </div>
+      </CharterGate>
     </AuthShell>
   )
 }
