@@ -15,7 +15,6 @@ import d5TemporalisRelease from './d5-temporalis-release'
 import d6MasseterRelease from './d6-masseter-release'
 import d7IntraoralPterygoidRelease from './d7-intraoral-pterygoid-release'
 import d8LateralPterygoidRelease from './d8-lateral-pterygoid-release'
-import d9AuriculotemporalNerveMob from './d9-auriculotemporal-nerve-mobilisation'
 import d10TmjDistraction from './d10-tmj-distraction'
 import d14JawSymmetryRetraining from './d14-jaw-symmetry-retraining'
 import d15ProgressiveResistance from './d15-progressive-resistance'
@@ -82,7 +81,6 @@ const EXERCISE_MAP = new Map<string, Exercise>([
   [d6MasseterRelease.id, d6MasseterRelease],
   [d7IntraoralPterygoidRelease.id, d7IntraoralPterygoidRelease],
   [d8LateralPterygoidRelease.id, d8LateralPterygoidRelease],
-  [d9AuriculotemporalNerveMob.id, d9AuriculotemporalNerveMob],
   [d10TmjDistraction.id, d10TmjDistraction],
 
   // ── TMJ resistance (3) — content in M13p ───────────────────────────────────
@@ -90,14 +88,11 @@ const EXERCISE_MAP = new Map<string, Exercise>([
   [d15ProgressiveResistance.id, d15ProgressiveResistance],
   [d17CondylarRepositioning.id, d17CondylarRepositioning],
 
-  // ── Cervical release (6) — content in M13s + M13t ──────────────────────────
-  // TODO library-wiring: E9 stub remains for future library page (§1.14 — moved to library, structured protocol exit)
+  // ── Cervical release (5) — content in M13s + M13t ──────────────────────────
   [e5SuboccipitalTennisBall.id, e5SuboccipitalTennisBall],
   [e6ScmStretching.id, e6ScmStretching],
   [e7LevatorScapulaeStretching.id, e7LevatorScapulaeStretching],
   [e8UpperTrapScaleneRelease.id, e8UpperTrapScaleneRelease],
-  ['E9_suboccipital_specific_stretching',
-    stub('E9_suboccipital_specific_stretching', 'E.9', 'Suboccipital Specific Stretching', 'cervical-release', 3)],
   [e11ChinTuckRotation.id, e11ChinTuckRotation],
 
   // ── Cervical retraining (3) — content in M13v ──────────────────────────────
