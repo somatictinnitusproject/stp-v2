@@ -11,10 +11,10 @@ export default async function TopNav() {
   if (user) {
     const { data } = await supabase
       .from('users')
-      .select('display_name')
+      .select('username')
       .eq('id', user.id)
       .maybeSingle()
-    username = data?.display_name ?? ''
+    username = (data as any)?.username ?? ''
   }
 
   return (
