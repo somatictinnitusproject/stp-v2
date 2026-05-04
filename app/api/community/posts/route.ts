@@ -206,6 +206,13 @@ export async function DELETE(request: Request) {
   }
 
   const isOwner = (postRow as any).user_id === user.id
+  console.log('[DELETE /api/community/posts debug]', {
+    userId: user.id,
+    postUserId: (postRow as any).user_id,
+    isOwner,
+    isAdmin,
+    postId: id,
+  })
   if (!isOwner && !isAdmin) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 })
   }
@@ -216,6 +223,10 @@ export async function DELETE(request: Request) {
     .eq('id', id)
 
   if (deleteError) {
+    console.error('[DELETE /api/community/posts] update error', {
+      code: deleteError.code,
+      message: deleteError.message,
+    })
     return NextResponse.json({ error: 'delete_failed' }, { status: 500 })
   }
 
