@@ -506,7 +506,6 @@ describe('getPostWithReplies', () => {
       id: 'r1',
       body: 'first',
       created_at: '2026-05-02T08:00:00Z',
-      edited_at: null,
       author_username: 'alice',
       author_is_admin: false,
       author_user_id: 'u1',

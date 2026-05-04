@@ -121,7 +121,6 @@ export interface SpacePost {
   body: string
   is_pinned: boolean
   created_at: string
-  edited_at: string | null
   author_username: string | null
   author_is_admin: boolean
   reply_count: number
@@ -163,7 +162,6 @@ export async function getSpacePosts(
         body,
         is_pinned,
         created_at,
-        edited_at,
         users:user_id ( username, is_admin )
       `,
     )
@@ -205,7 +203,6 @@ export async function getSpacePosts(
     body: row.body,
     is_pinned: row.is_pinned === true,
     created_at: row.created_at,
-    edited_at: row.edited_at ?? null,
     author_username: row.users?.username ?? null,
     author_is_admin: row.users?.is_admin === true,
     reply_count: replyCounts.get(row.id) ?? 0,
@@ -220,7 +217,6 @@ export interface PostReply {
   id: string
   body: string
   created_at: string
-  edited_at: string | null
   author_username: string | null
   author_is_admin: boolean
   author_user_id: string
@@ -235,7 +231,6 @@ export interface PostWithReplies {
   body: string
   is_pinned: boolean
   created_at: string
-  edited_at: string | null
   author_username: string | null
   author_is_admin: boolean
   author_user_id: string
@@ -286,7 +281,6 @@ export async function getPostWithReplies(
         id,
         body,
         created_at,
-        edited_at,
         user_id,
         users:user_id ( username, is_admin )
       `,
@@ -301,7 +295,6 @@ export async function getPostWithReplies(
     id: row.id,
     body: row.body,
     created_at: row.created_at,
-    edited_at: row.edited_at ?? null,
     author_username: row.users?.username ?? null,
     author_is_admin: row.users?.is_admin === true,
     author_user_id: row.user_id,
@@ -314,7 +307,6 @@ export async function getPostWithReplies(
     body: (postRow as any).body,
     is_pinned: (postRow as any).is_pinned === true,
     created_at: (postRow as any).created_at,
-    edited_at: (postRow as any).edited_at ?? null,
     author_username: (postRow as any).users?.username ?? null,
     author_is_admin: (postRow as any).users?.is_admin === true,
     author_user_id: (postRow as any).user_id,

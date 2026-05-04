@@ -24,12 +24,6 @@ export default function ReplyThread({
     setReplies((prev) => [...prev, reply])
   }
 
-  function handleReplyEdited(updated: PostReply) {
-    setReplies((prev) =>
-      prev.map((r) => (r.id === updated.id ? updated : r)),
-    )
-  }
-
   function handleReplyDeleted(replyId: string) {
     setReplies((prev) => prev.filter((r) => r.id !== replyId))
   }
@@ -49,7 +43,6 @@ export default function ReplyThread({
                 reply={reply}
                 currentUserId={currentUserId}
                 currentUserIsAdmin={currentUserIsAdmin}
-                onEdited={handleReplyEdited}
                 onDeleted={handleReplyDeleted}
               />
             </li>
