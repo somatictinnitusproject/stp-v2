@@ -218,7 +218,7 @@ export default function Session3ModuleTwoClient({ content }: { content: B3Module
                 <p key={i} className="text-body text-text-body">{para}</p>
               ))}
             </div>
-            <VideoSlot videoId={q[0].videoId} />
+            <VideoSlot videoId={q[0].videoId} compact />
             <div className="bg-surface-raised rounded-[8px] p-4 mb-5">
               <p className="text-body-sm text-text-muted">{q[0].mechanism}</p>
             </div>
@@ -243,7 +243,7 @@ export default function Session3ModuleTwoClient({ content }: { content: B3Module
                 <p key={i} className="text-body text-text-body">{para}</p>
               ))}
             </div>
-            <VideoSlot videoId={q[1].videoId} />
+            <VideoSlot videoId={q[1].videoId} compact />
             <div className="bg-surface-raised rounded-[8px] p-4 mb-5">
               <p className="text-body-sm text-text-muted">{q[1].mechanism}</p>
             </div>
@@ -286,7 +286,7 @@ export default function Session3ModuleTwoClient({ content }: { content: B3Module
                 <p key={i} className="text-body text-text-body">{para}</p>
               ))}
             </div>
-            <VideoSlot videoId={q[2].videoId} />
+            <VideoSlot videoId={q[2].videoId} compact />
             <div className="bg-surface-raised rounded-[8px] p-4 mb-5">
               <p className="text-body-sm text-text-muted">{q[2].mechanism}</p>
             </div>
@@ -314,7 +314,7 @@ export default function Session3ModuleTwoClient({ content }: { content: B3Module
                 <p key={i} className="text-body text-text-body">{para}</p>
               ))}
             </div>
-            <VideoSlot videoId={q[3].videoId} />
+            <VideoSlot videoId={q[3].videoId} compact />
             <div className="bg-surface-raised rounded-[8px] p-4 mb-5">
               <p className="text-body-sm text-text-muted">{q[3].mechanism}</p>
             </div>
@@ -378,7 +378,7 @@ export default function Session3ModuleTwoClient({ content }: { content: B3Module
                 <p key={i} className="text-body text-text-body">{para}</p>
               ))}
             </div>
-            <VideoSlot videoId={q[4].videoId} />
+            <VideoSlot videoId={q[4].videoId} compact />
             <div className="bg-surface-raised rounded-[8px] p-4 mb-5">
               <p className="text-body-sm text-text-muted">{q[4].mechanism}</p>
             </div>
@@ -421,7 +421,7 @@ export default function Session3ModuleTwoClient({ content }: { content: B3Module
                 <p key={i} className="text-body text-text-body">{para}</p>
               ))}
             </div>
-            <VideoSlot videoId={q[5].videoId} />
+            <VideoSlot videoId={q[5].videoId} compact />
             <div className="bg-surface-raised rounded-[8px] p-4 mb-5">
               <p className="text-body-sm text-text-muted">{q[5].mechanism}</p>
             </div>
@@ -464,7 +464,7 @@ export default function Session3ModuleTwoClient({ content }: { content: B3Module
                 <p key={i} className="text-body text-text-body">{para}</p>
               ))}
             </div>
-            <VideoSlot videoId={q[6].videoId} />
+            <VideoSlot videoId={q[6].videoId} compact />
             <div className="bg-surface-raised rounded-[8px] p-4 mb-5">
               <p className="text-body-sm text-text-muted">{q[6].mechanism}</p>
             </div>
@@ -507,7 +507,7 @@ export default function Session3ModuleTwoClient({ content }: { content: B3Module
                 <p key={i} className="text-body text-text-body">{para}</p>
               ))}
             </div>
-            <VideoSlot videoId={q[7].videoId} />
+            <VideoSlot videoId={q[7].videoId} compact />
             <div className="bg-surface-raised rounded-[8px] p-4 mb-5">
               <p className="text-body-sm text-text-muted">{q[7].mechanism}</p>
             </div>
