@@ -178,3 +178,21 @@ export function getRelatedExercises(exercise: Exercise, n: number): Exercise[] {
     .filter((other) => other.id !== exercise.id && other.category === exercise.category)
     .slice(0, n)
 }
+
+/**
+ * Resolves a URL slug back to its Exercise object. Slugs are derived from
+ * IDs via id.toLowerCase().replace(/_/g, '-') at card-render time. This
+ * function performs the reverse lookup by iterating the registry —
+ * acceptable performance at 16 exercises.
+ *
+ * Returns null for unknown slugs — the calling page is responsible for
+ * rendering the inline 404 state.
+ */
+export function getExerciseBySlug(slug: string): Exercise | null {
+  for (const exercise of EXERCISE_MAP.values()) {
+    if (exercise.id.toLowerCase().replace(/_/g, '-') === slug) {
+      return exercise
+    }
+  }
+  return null
+}

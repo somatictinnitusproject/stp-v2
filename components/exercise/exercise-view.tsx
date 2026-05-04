@@ -13,11 +13,12 @@
 
 import type { Exercise } from '@/content/exercises/_types'
 import type { Phase1AssessmentRow } from '@/lib/scoring/types'
-import { ContentBlock, ContentBlockList } from './content-block'
+import { ContentBlockList } from './content-block'
 import { ProfileModifierBlock } from './profile-modifier-block'
 import { ExpandToggle } from './expand-toggle'
 import { CompleteButton } from './complete-button'
 import { filterQualifyingModifiers } from './_helpers'
+import VideoSlot from '@/components/ui/VideoSlot'
 
 // Re-exported so existing test imports (./exercise-view) continue to work.
 export { filterQualifyingModifiers } from './_helpers'
@@ -26,7 +27,10 @@ interface ExerciseViewProps {
   exercise: Exercise
   phase1: Phase1AssessmentRow
   firstView: boolean          // derived from exercises_viewed[exercise.id] in parent
-  onComplete: () => Promise<void>  // Server Action wired by M13g
+  // Server Action for marking complete. When omitted, no Complete /
+  // Continue / Skip button is rendered — used by /exercise-library
+  // pages where the exercise view is read-only.
+  onComplete?: () => Promise<void>
 }
 
 export default function ExerciseView({
@@ -38,7 +42,8 @@ export default function ExerciseView({
   const qualifyingModifiers = filterQualifyingModifiers(exercise.profileModifiers, phase1)
 
   // Complete affordance — optional exercises get Continue + Skip (same handler, same API path).
-  const completeAffordance = exercise.optional ? (
+  // When onComplete is not provided (library context), no affordance renders.
+  const completeAffordance = !onComplete ? null : exercise.optional ? (
     <div className="flex flex-col gap-3">
       <button
         type="button"
@@ -59,11 +64,16 @@ export default function ExerciseView({
     <CompleteButton onComplete={onComplete} />
   )
 
-  // Video placeholder — shown when videoId is available
-  const videoPlaceholder = exercise.videoId !== null && (
-    <div className="rounded-lg bg-surface-raised border border-border p-4 text-center text-body-sm text-text-muted">
-      Video: {exercise.videoId}
-    </div>
+  // Video — renders Cloudflare Stream iframe when videoId is set on the
+  // exercise object, else falls back to videoKey lookup against video-config,
+  // else renders the "Video coming soon" placeholder.
+  const videoKey = exercise.id.toLowerCase()
+  const videoPlaceholder = (
+    <VideoSlot
+      videoId={exercise.videoId}
+      videoKey={videoKey}
+      label={exercise.name}
+    />
   )
 
   // Focus line block — always rendered above fullContent
