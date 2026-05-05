@@ -593,6 +593,38 @@ STP_PreLaunch_Changes.md. Implementation differs from original spec:
 
 ---
 
+### F4. ONBOARDING STEP 3 REDESIGNED — SHIPPED 2026-05-05
+
+Onboarding Step 3 redesigned 2026-05-05. Replaces the broken
+"Take the assessment" button that pointed to the non-existent V2
+/test route (https://stp-v2-eight.vercel.app/test).
+
+Step 3 now forks on whether a ?result= URL param is present:
+
+- No param (Case B): member sees both sections simultaneously —
+  "Take the assessment" (links to https://somatictinnitusproject.com/test,
+  same tab) and "Already taken the test" (three radio options).
+  Continue button is disabled until a radio is selected.
+
+- Param present (Case A): fork hidden, only the radio section shown with
+  the param result pre-selected. Subtitle reads "We carried your result
+  from the test — confirm this is correct". Member can change the
+  selection before continuing.
+
+?result= URL param pre-fill (a → A, b → B, c → C, case-insensitive)
+behaviour is preserved unchanged from the original design.
+
+Classification is written to phase1_assessment.classification via upsert
+at app/api/onboarding/save-classification. If a phase1_assessment row
+exists, only classification and updated_at are updated (created_at is
+not overwritten). If no row exists, one is inserted with other columns
+NULL — remaining columns are populated by Phase 1 modules.
+
+Radio labels (exact): "A — Likely somatic", "B — Possibly somatic",
+"C — Unlikely somatic".
+
+---
+
 ## PHASE G — Analytics
 
 ### G1. CORRELATION THRESHOLD — 14 LOGS, NOT 28 DAYS
