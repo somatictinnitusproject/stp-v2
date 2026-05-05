@@ -19,6 +19,7 @@ import { ExpandToggle } from './expand-toggle'
 import { CompleteButton } from './complete-button'
 import { filterQualifyingModifiers } from './_helpers'
 import VideoSlot from '@/components/ui/VideoSlot'
+import { VideoExpandToggle } from './video-expand-toggle'
 
 // Re-exported so existing test imports (./exercise-view) continue to work.
 export { filterQualifyingModifiers } from './_helpers'
@@ -146,8 +147,12 @@ export default function ExerciseView({
       {/* Condensed summary — technique recap authored per exercise */}
       <ContentBlockList blocks={exercise.condensedSummary} />
 
-      {/* 4. Video placeholder */}
-      {videoPlaceholder}
+      {/* 4. Video — collapsed behind expand link in condensed view */}
+      <VideoExpandToggle
+        videoId={exercise.videoId}
+        videoKey={videoKey}
+        label={exercise.name}
+      />
 
       {/* 5. Complete affordance */}
       {completeAffordance}

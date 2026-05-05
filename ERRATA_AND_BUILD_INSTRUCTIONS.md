@@ -543,6 +543,33 @@ Assessment filter as a client-side filter on the `/exercise-library` home page, 
 
 ---
 
+### F2. CONDENSED VIEW VIDEO — COLLAPSED BY DEFAULT ON /SESSION
+
+**Doc 12 §6.5 says:** "Demonstration video (embedded)" in the condensed view structure.
+**Doc 13 §5.8 same implication.**
+
+**Correct behaviour for /session:** The demonstration video in condensed view is NOT
+embedded by default. It is collapsed behind a "Watch demonstration ▸" expand link
+(13px, 500 weight, primary teal). Tapping expands the VideoSlot inline (max-height +
+opacity transition, 250ms). Collapses on next page load — not persisted.
+
+**Rationale:** Members repeat the same exercises daily for 12 weeks. Auto-loading the
+video iframe on every session visit creates unnecessary loading and visual noise for
+exercises they have already watched. The expand link gives access without the cost.
+
+**Scope:** /session condensed view ONLY. The following contexts continue to embed video
+directly as the default:
+- Full-view (first visit to an exercise in /session) — unchanged
+- /exercise-library/[category]/[slug] — unchanged
+- Phase 1 assessment module videos — unchanged
+
+**Implementation:** `VideoExpandToggle` client component in
+`components/exercise/video-expand-toggle.tsx`. Used in the condensed branch of
+`ExerciseView`. No prop gating needed — the library always passes `firstView={true}` and
+never reaches the condensed branch. Implemented 2026-05-05.
+
+---
+
 ## PHASE G — Analytics
 
 ### G1. CORRELATION THRESHOLD — 14 LOGS, NOT 28 DAYS
