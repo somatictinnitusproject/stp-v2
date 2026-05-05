@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { syncSignupToEmailOctopus, sendWelcomeEmail } from '@/lib/emailoctopus/client'
 
 export async function POST() {
   const cookieStore = await cookies()
@@ -25,6 +26,7 @@ export async function POST() {
     return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
   }
 
+  // Mark onboarding complete
   const { error } = await supabase
     .from('users')
     .update({ onboarding_completed: true, onboarding_step: 5 })
@@ -33,6 +35,30 @@ export async function POST() {
   if (error) {
     return NextResponse.json({ error: 'Could not save.' }, { status: 500 })
   }
+
+  // Fetch user details for EmailOctopus — fire-and-forget, never blocks response
+  const [{ data: userData }, { data: membership }] = await Promise.all([
+    supabase.from('users').select('display_name').eq('id', user.id).single(),
+    supabase
+      .from('memberships')
+      .select('is_founding_member, is_free_for_life')
+      .eq('user_id', user.id)
+      .single(),
+  ])
+
+  const email = user.email ?? ''
+  const username = userData?.display_name ?? ''
+
+  // EO sync and welcome email are independent; run together, never awaited for response
+  void Promise.all([
+    syncSignupToEmailOctopus({
+      email,
+      username,
+      is_founding_member: membership?.is_founding_member ?? false,
+      is_free_for_life: membership?.is_free_for_life ?? false,
+    }),
+    sendWelcomeEmail({ email, username }),
+  ])
 
   return NextResponse.json({ success: true })
 }

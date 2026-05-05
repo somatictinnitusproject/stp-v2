@@ -10,12 +10,15 @@
 //   - markPhase5Complete: writes phase5_completed_at = NOW() to
 //     framework_progress. Called by Phase5ReadingList when G.8 is
 //     acknowledged (marksPhaseCompleteFlag === 'phase5_completed_at').
+//     Triggers completion email fire-and-forget via next/server after().
 // ─────────────────────────────────────────────────────────────────
 
 'use server'
 
+import { after } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { PHASE5_OUTCOME_VALUES, type Phase5OutcomeType } from '@/content/framework/phase-5/types'
+import { sendPhase5CompletionEmail } from '@/lib/emailoctopus/client'
 
 export async function acknowledgePhase5Reading(readingId: string): Promise<void> {
   const supabase = await createClient()
@@ -94,5 +97,22 @@ export async function markPhase5Complete(): Promise<void> {
 
   if (updateError) {
     console.error('[phase-5 actions] phase5_completed_at update failed:', updateError.message, 'user:', user.id)
+    return
   }
+
+  // Fetch display_name for email personalisation — runs before after() to avoid
+  // cookie store unavailability post-response.
+  const { data: userData } = await supabase
+    .from('users')
+    .select('display_name')
+    .eq('id', user.id)
+    .single()
+
+  const email = user.email ?? ''
+  const username = userData?.display_name ?? ''
+
+  // Fire-and-forget completion email — deferred until after response via next/server after()
+  after(async () => {
+    await sendPhase5CompletionEmail({ email, username })
+  })
 }

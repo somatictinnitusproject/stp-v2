@@ -90,7 +90,7 @@ export async function proxy(request: NextRequest) {
   // Fetch membership
   const { data: membership } = await supabase
     .from('memberships')
-    .select('status, is_founding_member')
+    .select('status, is_founding_member, is_free_for_life')
     .eq('user_id', user.id)
     .single()
 
@@ -99,8 +99,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/onboarding', request.url))
   }
 
-  // 7. Cancelled and not a founding member — redirect to /subscription
-  if (membership.status === 'cancelled' && !membership.is_founding_member) {
+  // 7. Cancelled and not a founding member or free-for-life — redirect to /subscription
+  if (membership.status === 'cancelled' && !membership.is_founding_member && !membership.is_free_for_life) {
     return NextResponse.redirect(new URL('/subscription', request.url))
   }
 

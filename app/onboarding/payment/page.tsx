@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
+import { createServiceClient } from '@/lib/supabase/service'
 import OnboardingShell from '@/components/shells/OnboardingShell'
 import PaymentContinueButton from '@/components/onboarding/PaymentContinueButton'
 
@@ -25,17 +26,34 @@ export default async function OnboardingPaymentPage() {
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) redirect('/login')
 
-  // Founding members never see this screen — they have lifetime access with no payment
   const { data: membership } = await supabase
     .from('memberships')
-    .select('is_founding_member')
+    .select('is_founding_member, is_free_for_life')
     .eq('user_id', user.id)
     .single()
 
+  // Branch 1: founding members have lifetime access — skip payment
   if (membership?.is_founding_member === true) {
     redirect('/onboarding/welcome')
   }
 
+  // Branch 2: Stripe not enabled at launch — flag as free-for-life and skip payment
+  if (process.env.STRIPE_ENABLED !== 'true') {
+    const service = createServiceClient()
+    await Promise.all([
+      service
+        .from('memberships')
+        .update({ is_free_for_life: true, status: 'active', plan_type: 'free_pre_stripe' })
+        .eq('user_id', user.id),
+      supabase
+        .from('users')
+        .update({ onboarding_step: 4 })
+        .eq('id', user.id),
+    ])
+    redirect('/onboarding/welcome')
+  }
+
+  // Branch 3: Stripe enabled — render payment form
   return (
     <OnboardingShell>
       <div className="max-w-[560px] mx-auto">

@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
 
   const { data: membership } = await supabase
     .from('memberships')
-    .select('status, is_founding_member')
+    .select('status, is_founding_member, is_free_for_life')
     .eq('user_id', user.id)
     .maybeSingle()
 

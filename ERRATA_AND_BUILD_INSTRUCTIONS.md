@@ -653,6 +653,57 @@ Add this correction explicitly to the Phase H handoff prompt.
 
 ---
 
+### H2. EMAILOCTOPUS INTEGRATION — SHIPPED 2026-05-05
+
+EmailOctopus integration shipped 2026-05-05. Implementation differs from
+Doc 14 §3 spec:
+
+- Three automated emails only: welcome (on onboarding completion), Phase 5
+  completion, and deferred 6-month TFI follow-up. Subscription confirmation,
+  payment failed, subscription cancelled, phase completion (1–4), and 30-day
+  re-engagement emails dropped or deferred.
+- Transactional send mechanism: EmailOctopus 1.6 has no direct
+  "send to one contact" API. Sends use tag-based automation triggers.
+  EMAILOCTOPUS_WELCOME_TEMPLATE_ID and EMAILOCTOPUS_COMPLETION_TEMPLATE_ID
+  env vars hold trigger tag names, not UUID template IDs. Configure matching
+  automations in the EO dashboard (trigger on tag add, remove tag after send).
+- Tag-based segmentation: v2_member, founding_member, pre_stripe_member,
+  paid_member (paid_member is future — unused while STRIPE_ENABLED=false).
+- Send fail-open: any EmailOctopus error is logged but never blocks member
+  action. Welcome email fires from /api/onboarding/complete (fire-and-forget).
+  Phase 5 completion email fires via next/server after() from the
+  markPhase5Complete server action.
+- Client code lives in lib/emailoctopus/client.ts — server-side only, never
+  imported from client components.
+
+---
+
+### H3. FREE-FOR-LIFE ACCESS TIER — SHIPPED 2026-05-05
+
+Free-for-life access tier shipped 2026-05-05. New is_free_for_life BOOLEAN
+column on memberships (NOT NULL DEFAULT FALSE). Migration backfills
+existing founding members to is_free_for_life = TRUE.
+
+- Pre-Stripe-launch joiners: when STRIPE_ENABLED env var is not 'true',
+  the /onboarding/payment page (Branch 2) flags the member as
+  is_free_for_life = TRUE, status = 'active', plan_type = 'free_pre_stripe'
+  via the service client and redirects to /onboarding/welcome. No payment
+  is collected.
+- Founding member badge: only is_founding_member = TRUE shows a badge in
+  member-facing UI. Free-for-life non-founders see no badge.
+- Access check: canAccessPlatform() now checks is_free_for_life alongside
+  is_founding_member. All membership selects updated to include
+  is_free_for_life. proxy.ts updated to allow cancelled free-for-life
+  members through.
+- When Stripe ships post-launch (STRIPE_ENABLED=true), new signups go
+  through the paid flow. Existing free-for-life members stay free forever —
+  do not migrate them to paid.
+- plan_type 'free_pre_stripe': if a CHECK constraint exists on plan_type,
+  add this value to the allowed list. See migration
+  20260505000002_free_for_life.sql for the ALTER statement template.
+
+---
+
 ## PHASE K — Testing & Launch
 
 ### K1. FOUNDING MEMBER SEEDING SCRIPT IS ALREADY WRITTEN

@@ -8,25 +8,31 @@ import {
 describe('canAccessPlatform', () => {
   it('allows founding members regardless of status', () => {
     expect(
-      canAccessPlatform({ is_founding_member: true, status: 'cancelled' }),
+      canAccessPlatform({ is_founding_member: true, is_free_for_life: false, status: 'cancelled' }),
+    ).toBe(true)
+  })
+
+  it('allows free-for-life members regardless of status', () => {
+    expect(
+      canAccessPlatform({ is_founding_member: false, is_free_for_life: true, status: 'cancelled' }),
     ).toBe(true)
   })
 
   it('allows active non-founding members', () => {
     expect(
-      canAccessPlatform({ is_founding_member: false, status: 'active' }),
+      canAccessPlatform({ is_founding_member: false, is_free_for_life: false, status: 'active' }),
     ).toBe(true)
   })
 
   it('allows past_due non-founding members', () => {
     expect(
-      canAccessPlatform({ is_founding_member: false, status: 'past_due' }),
+      canAccessPlatform({ is_founding_member: false, is_free_for_life: false, status: 'past_due' }),
     ).toBe(true)
   })
 
-  it('blocks cancelled non-founding members', () => {
+  it('blocks cancelled non-founding non-free members', () => {
     expect(
-      canAccessPlatform({ is_founding_member: false, status: 'cancelled' }),
+      canAccessPlatform({ is_founding_member: false, is_free_for_life: false, status: 'cancelled' }),
     ).toBe(false)
   })
 })
@@ -42,10 +48,11 @@ describe('isFoundingMember', () => {
 })
 
 describe('canAccessCommunity', () => {
-  const fmActive = { is_founding_member: true, status: 'active' }
-  const fmCancelled = { is_founding_member: true, status: 'cancelled' }
-  const paidActive = { is_founding_member: false, status: 'active' }
-  const paidCancelled = { is_founding_member: false, status: 'cancelled' }
+  const fmActive = { is_founding_member: true, is_free_for_life: true, status: 'active' }
+  const fmCancelled = { is_founding_member: true, is_free_for_life: true, status: 'cancelled' }
+  const paidActive = { is_founding_member: false, is_free_for_life: false, status: 'active' }
+  const paidCancelled = { is_founding_member: false, is_free_for_life: false, status: 'cancelled' }
+  const fflCancelled = { is_founding_member: false, is_free_for_life: true, status: 'cancelled' }
 
   const phase1Done = { phase1_completed_at: '2026-04-01T12:00:00Z' }
   const phase1NotDone = { phase1_completed_at: null }
@@ -72,6 +79,10 @@ describe('canAccessCommunity', () => {
 
   it('blocks paid cancelled member regardless of phase 1', () => {
     expect(canAccessCommunity(paidCancelled, phase1Done)).toBe(false)
+  })
+
+  it('allows free-for-life cancelled member with phase 1 complete', () => {
+    expect(canAccessCommunity(fflCancelled, phase1Done)).toBe(true)
   })
 
   it('blocks when frameworkProgress is null', () => {
