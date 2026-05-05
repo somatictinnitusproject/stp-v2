@@ -19,6 +19,8 @@ const PUSH_OPT_IN_KEY = 'tracker.push_opt_in_dismissed'
 
 type SliderKey = 'tinnitus_score' | 'jaw_tension' | 'neck_tension' | 'stress_level' | 'sleep_quality'
 
+type TfiCapturePoint = 'intake' | 'completion'
+
 type TrackerClientProps = {
   today: string
   state: 1 | 2
@@ -31,6 +33,8 @@ type TrackerClientProps = {
   daysSinceCreation: number
   hasEligibleRetroactiveDays: boolean
   streak: { current: number; longest: number }
+  activeTfiCapturePoint: TfiCapturePoint | null
+  showTfiSuccess: boolean
 }
 
 const SLIDER_DEFAULTS: Record<SliderKey, number> = {
@@ -50,6 +54,7 @@ const SLIDER_CONFIG: { key: SliderKey; label: string; description: string }[] = 
 export default function TrackerClient({
   today, state, todayLog, isEditable, priorLogCount,
   recentLogDates, showYesterdayLink, showWeeklyNudge, daysSinceCreation, hasEligibleRetroactiveDays, streak,
+  activeTfiCapturePoint, showTfiSuccess,
 }: TrackerClientProps) {
   const router = useRouter()
 
@@ -67,6 +72,8 @@ export default function TrackerClient({
   const [showEditMode, setShowEditMode] = useState(false)
   const [retroactiveDate, setRetroactiveDate] = useState<string | null>(null)
   const [showDayPicker, setShowDayPicker] = useState(false)
+  const [tfiCardVisible, setTfiCardVisible] = useState(activeTfiCapturePoint !== null)
+  const [tfiCardFading, setTfiCardFading] = useState(false)
 
   // Read localStorage on mount — guarded for SSR
   useEffect(() => {
@@ -175,6 +182,20 @@ export default function TrackerClient({
     setShowConfirmModal(false)
   }
 
+  async function handleTfiDismiss() {
+    if (!activeTfiCapturePoint) return
+    setTfiCardFading(true)
+    // Fire-and-forget — UI fades immediately; DB update is background.
+    fetch('/api/tfi/dismiss', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ capture_point: activeTfiCapturePoint }),
+    }).catch(() => {
+      // Silent failure — dismissal is best-effort.
+    })
+    setTimeout(() => setTfiCardVisible(false), 200)
+  }
+
   // Retroactive form pre-empts both State 1 and State 2
   if (retroactiveDate) {
     return (
@@ -202,6 +223,16 @@ export default function TrackerClient({
     }
     return (
       <>
+        <div className="max-w-[680px] mx-auto pt-8">
+          {showTfiSuccess && <TfiSuccessToast />}
+          {tfiCardVisible && activeTfiCapturePoint && (
+            <TfiCard
+              capturePoint={activeTfiCapturePoint}
+              fading={tfiCardFading}
+              onDismiss={handleTfiDismiss}
+            />
+          )}
+        </div>
         <LoggedTodayView
           todayLog={todayLog}
           isEditable={isEditable}
@@ -223,6 +254,14 @@ export default function TrackerClient({
 
   return (
     <div className="max-w-[680px] mx-auto pt-8 pb-16">
+      {showTfiSuccess && <TfiSuccessToast />}
+      {tfiCardVisible && activeTfiCapturePoint && (
+        <TfiCard
+          capturePoint={activeTfiCapturePoint}
+          fading={tfiCardFading}
+          onDismiss={handleTfiDismiss}
+        />
+      )}
       <h1 className="text-[28px] font-bold text-text-heading leading-tight mb-1">
         How are you today?
       </h1>
@@ -351,6 +390,88 @@ export default function TrackerClient({
         onConfirm={handleConfirmSubmit}
         onCancel={handleCancelSubmit}
       />
+    </div>
+  )
+}
+
+// ── TFI card ─────────────────────────────────────────────────────────────────
+
+const TFI_CARD_BODY: Record<'intake' | 'completion', string> = {
+  intake:
+    "We track outcomes using the Tinnitus Functional Index — a validated 25-item questionnaire used widely in tinnitus research. Your baseline response now will help us measure how the framework is working for you over time.",
+  completion:
+    "You've finished the framework. Taking the TFI now gives us a clean before-and-after comparison — your data directly contributes to the research evidence supporting somatic tinnitus rehabilitation.",
+}
+
+function TfiCard({
+  capturePoint,
+  fading,
+  onDismiss,
+}: {
+  capturePoint: 'intake' | 'completion'
+  fading: boolean
+  onDismiss: () => void
+}) {
+  const router = useRouter()
+  return (
+    <div
+      className="mb-6 rounded-r-xl"
+      style={{
+        borderLeft: '3px solid #4A9B8E',
+        background: '#EEF7F5',
+        borderRadius: '0 12px 12px 0',
+        opacity: fading ? 0 : 1,
+        transition: 'opacity 200ms ease-in-out',
+      }}
+    >
+      <div className="p-4">
+        {/* Badge + dismiss row */}
+        <div className="flex items-start justify-between mb-2">
+          <span className="text-[11px] font-medium uppercase tracking-wider text-primary">
+            Optional — Research
+          </span>
+          <button
+            type="button"
+            onClick={onDismiss}
+            aria-label="Dismiss"
+            className="text-text-muted hover:text-text-heading transition-colors ml-2 flex-shrink-0"
+          >
+            <CloseIcon size={18} />
+          </button>
+        </div>
+
+        {/* Heading */}
+        <h2 className="text-[17px] font-semibold text-text-heading mb-2">
+          Help future members
+        </h2>
+
+        {/* Body */}
+        <p className="text-[15px] text-text-body mb-2">{TFI_CARD_BODY[capturePoint]}</p>
+        <p className="text-[13px] text-text-muted mb-4">
+          Takes around 5 minutes. Optional and anonymised.
+        </p>
+
+        {/* CTA */}
+        <button
+          type="button"
+          onClick={() => router.push(`/tfi?capture_point=${capturePoint}`)}
+          className="inline-flex items-center justify-center h-10 px-5 rounded-lg bg-primary hover:bg-primary-hover text-white text-[14px] font-medium transition-colors"
+        >
+          Take the questionnaire
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ── TFI success toast ─────────────────────────────────────────────────────────
+
+function TfiSuccessToast() {
+  return (
+    <div className="mb-4 rounded-lg bg-[#EEF7F5] border border-[#4A9B8E] px-4 py-3">
+      <p className="text-[14px] text-primary font-medium">
+        Thank you — your responses have been recorded.
+      </p>
     </div>
   )
 }

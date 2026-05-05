@@ -570,6 +570,29 @@ never reaches the condensed branch. Implemented 2026-05-05.
 
 ---
 
+### F3. TFI INFRASTRUCTURE — SHIPPED 2026-05-05
+
+TFI infrastructure shipped 2026-05-05. Replaces deferred §5.1 of
+STP_PreLaunch_Changes.md. Implementation differs from original spec:
+
+- Three capture points: intake, Phase 5 completion, and 6-month
+  post-completion follow-up. The original spec's Phase 3 entry and
+  Phase 5 entry (G.9) captures are dropped per founder decision —
+  these intermediate points add limited research value over the
+  cleaner before/after/durability structure.
+- Intake and Phase 5 completion captures: live at launch via
+  /tracker card and /tfi page.
+- Six-month follow-up: capture_point value 'follow_up_6m' exists
+  in schema, but the email trigger and UI flow are deferred to a
+  post-launch build (must ship before first cohort hits 6 months
+  post-Phase 5, which is realistically 9+ months from launch).
+- Intake capture trigger: phase1_assessment.created_at set, not
+  "during Phase 1 onboarding" as originally specced.
+- Member-initiated optional via /tracker card, dismissible per
+  capture point.
+
+---
+
 ## PHASE G — Analytics
 
 ### G1. CORRELATION THRESHOLD — 14 LOGS, NOT 28 DAYS

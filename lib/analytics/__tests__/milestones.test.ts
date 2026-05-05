@@ -24,6 +24,7 @@ function makeProgress(overrides: Partial<FrameworkProgressRow> = {}): FrameworkP
     session_in_progress: null,
     nudges_dismissed: {},
     phase4_exercises_added: [],
+    tfi_dismissals: {},
     ...overrides,
   }
 }

@@ -124,6 +124,11 @@ export interface FrameworkProgressRow {
   // Array of Phase 4 exercise IDs the member has opted into for daily /session.
   // Default [] — no Phase 4 exercises appear in /session unless explicitly added.
   phase4_exercises_added: string[]
+
+  // TFI dismissal timestamps — keyed by capture_point.
+  // Empty object {} means nothing dismissed. When a capture point is dismissed,
+  // its key is set to an ISO timestamp string.
+  tfi_dismissals: Record<string, string>
 }
 
 // Only the columns read by scoring logic — keeps server action queries minimal.

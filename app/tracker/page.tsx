@@ -9,7 +9,16 @@ import { fetchTrackerData } from '@/lib/tracker/queries'
 import { isEditable } from '@/lib/tracker/edit-window'
 import TrackerClient from './TrackerClient'
 
-export default async function TrackerPage() {
+type TfiCapturePoint = 'intake' | 'completion'
+
+interface PageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export default async function TrackerPage({ searchParams }: PageProps) {
+  const { tfi_success: rawTfiSuccess } = await searchParams
+  const showTfiSuccess = rawTfiSuccess === '1'
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -25,9 +34,10 @@ export default async function TrackerPage() {
   // Compute today once — passed to fetchTrackerData to avoid drift between queries
   const today = new Date().toISOString().split('T')[0]
 
-  const [trackerData, streak] = await Promise.all([
+  const [trackerData, streak, tfiState] = await Promise.all([
     fetchTrackerData(user.id, supabase, today),
     getCurrentStreak(user.id, supabase),
+    fetchTfiState(user.id, supabase),
   ])
 
   const {
@@ -61,7 +71,69 @@ export default async function TrackerPage() {
         daysSinceCreation={daysSinceCreation}
         hasEligibleRetroactiveDays={hasEligibleRetroactiveDays}
         streak={streak}
+        activeTfiCapturePoint={tfiState}
+        showTfiSuccess={showTfiSuccess}
       />
     </AuthShell>
   )
+}
+
+/**
+ * Determines which TFI capture point (if any) should be shown on /tracker.
+ * Checks intake first, then completion. Returns null if neither applies.
+ *
+ * Logic:
+ *   intake  — phase1_assessment.created_at set AND no intake response AND not dismissed
+ *   completion — phase5_completed_at set AND no completion response AND not dismissed
+ */
+async function fetchTfiState(
+  userId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
+): Promise<TfiCapturePoint | null> {
+  const [
+    { data: phase1 },
+    { data: framework },
+    { data: responses },
+  ] = await Promise.all([
+    supabase
+      .from('phase1_assessment')
+      .select('created_at')
+      .eq('user_id', userId)
+      .maybeSingle(),
+    supabase
+      .from('framework_progress')
+      .select('phase5_completed_at, tfi_dismissals')
+      .eq('user_id', userId)
+      .maybeSingle(),
+    supabase
+      .from('tfi_responses')
+      .select('capture_point')
+      .eq('user_id', userId),
+  ])
+
+  const submittedPoints = new Set<string>(
+    (responses ?? []).map((r: { capture_point: string }) => r.capture_point),
+  )
+  const dismissals = (framework?.tfi_dismissals ?? {}) as Record<string, string>
+
+  // Intake: phase1 completed, not yet submitted, not dismissed.
+  if (
+    phase1?.created_at &&
+    !submittedPoints.has('intake') &&
+    !dismissals['intake']
+  ) {
+    return 'intake'
+  }
+
+  // Completion: phase5 completed, not yet submitted, not dismissed.
+  if (
+    framework?.phase5_completed_at &&
+    !submittedPoints.has('completion') &&
+    !dismissals['completion']
+  ) {
+    return 'completion'
+  }
+
+  return null
 }
