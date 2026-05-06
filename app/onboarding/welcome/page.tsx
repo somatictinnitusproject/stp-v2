@@ -26,17 +26,13 @@ export default async function OnboardingWelcomePage() {
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) redirect('/login')
 
-  const { data: userData } = await supabase
-    .from('users')
-    .select('display_name')
-    .eq('id', user.id)
-    .single()
-
-  const { data: membership } = await supabase
-    .from('memberships')
-    .select('is_founding_member')
-    .eq('user_id', user.id)
-    .single()
+  const [{ data: userData }, { data: membership }] = await Promise.all([
+    supabase.from('users').select('display_name').eq('id', user.id).single(),
+    supabase.from('memberships').select('is_founding_member').eq('user_id', user.id).single(),
+    // Mark onboarding complete so middleware allows through to all member routes.
+    // Both buttons on this page (dashboard + programme) work without a separate API call.
+    supabase.from('users').update({ onboarding_completed: true }).eq('id', user.id),
+  ])
 
   const displayName = userData?.display_name ?? 'there'
   const isFoundingMember = membership?.is_founding_member === true
