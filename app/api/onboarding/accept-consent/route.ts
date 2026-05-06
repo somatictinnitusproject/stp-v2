@@ -41,6 +41,12 @@ export async function POST(request: Request) {
     supabase.from('users').update({ onboarding_step: 3 }).eq('id', user.id),
   ])
 
+  if (consentResult.error) {
+    console.error('[accept-consent] consents upsert failed:', consentResult.error.code, consentResult.error.message, 'hint:', consentResult.error.hint, 'user:', user.id)
+  }
+  if (userResult.error) {
+    console.error('[accept-consent] users step update failed:', userResult.error.code, userResult.error.message, 'user:', user.id)
+  }
   if (consentResult.error || userResult.error) {
     return NextResponse.json({ error: 'Could not save.' }, { status: 500 })
   }
