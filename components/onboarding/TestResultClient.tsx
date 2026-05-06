@@ -70,7 +70,7 @@ export default function TestResultClient({ preselected }: Props) {
               you. Complete it and you&apos;ll be returned here automatically.
             </p>
             <a
-              href="https://somatictinnitusproject.com/test"
+              href="https://www.somatictinnitusproject.com/noise-exposure"
               className="block w-full bg-primary text-white font-medium text-[15px] py-3 rounded-lg hover:bg-primary-hover active:bg-primary-active transition-colors duration-150 text-center"
             >
               Take the assessment →
