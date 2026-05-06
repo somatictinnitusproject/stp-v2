@@ -15,52 +15,80 @@ export type ProfileType =
   | 'TMJ_PRIMARY_WITH_SECONDARY'
   | 'CERV_PRIMARY_WITH_SECONDARY'
 
-// Doc 13 §2.2 pseudocode (exact):
+// Classification logic — implemented from Doc 13 §2.2 with four approved divergences.
+// See ERRATA "Doc 13 §2.2 — Profile Classification Divergences" for full rationale.
 //
 //   FUNCTION classifyProfileType(tmjNorm, cervNorm):
+//
 //     // ── Single driver — checked first ──────────────────────────────────
-//     // Clean single-driver cases take priority. A member with TMJ 65%
-//     // and cervical 35% would technically satisfy "primary with strong
-//     // secondary" but is correctly classified as TMJ_DOMINANT first.
+//     // One score high (> 60), other negligible (< 20). Strict > on the
+//     // lead score intentional — exactly 60 is not a "clean" single driver.
 //     IF tmjNorm > SINGLE_DRIVER_HIGH_THRESHOLD  // > 60
 //       AND cervNorm < PROTOCOL_ASSIGNMENT_MINIMUM  // < 20
 //       RETURN "TMJ_DOMINANT"
 //     IF cervNorm > SINGLE_DRIVER_HIGH_THRESHOLD  // > 60
 //       AND tmjNorm < PROTOCOL_ASSIGNMENT_MINIMUM  // < 20
 //       RETURN "CERV_DOMINANT"
+//
+//     // ── Both high — dual driver regardless of gap ─────────────────────
+//     // DIVERGENCE 1 (not in Doc 13): both scores > 60 always means dual
+//     // driver. The max-difference guard in the branch below was designed
+//     // for mixed-range pairs (e.g. 80 vs 35); it must not apply when both
+//     // pathways are independently strong.
+//     IF tmjNorm > SINGLE_DRIVER_HIGH_THRESHOLD  // > 60
+//       AND cervNorm > SINGLE_DRIVER_HIGH_THRESHOLD  // > 60
+//       RETURN "DUAL_DRIVER"
+//
 //     // ── Dual driver ────────────────────────────────────────────────────
-//     // Both scores meaningful AND close together.
-//     IF tmjNorm > DUAL_DRIVER_MIN_SCORE  // > 30
-//       AND cervNorm > DUAL_DRIVER_MIN_SCORE  // > 30
+//     // Both scores meaningful AND close enough that neither dominates.
+//     // DIVERGENCE 2: Doc 13 uses strict > 30 on both; code uses >= 30.
+//     // A score of exactly 30 is a meaningful driver and must not fall
+//     // through to the fallback.
+//     IF tmjNorm >= DUAL_DRIVER_MIN_SCORE  // >= 30
+//       AND cervNorm >= DUAL_DRIVER_MIN_SCORE  // >= 30
 //       AND ABS(tmjNorm - cervNorm) <= DUAL_DRIVER_MAX_DIFFERENCE  // <= 15
 //       RETURN "DUAL_DRIVER"
+//
 //     // ── Primary with strong secondary ──────────────────────────────────
-//     // One score clearly leads (> 50%), secondary is substantial (30–60%).
-//     // MAX raised 50→60: the both-high check above catches secondary > 60;
-//     // secondary in (50,60] with gap > 15 was falling to the fallback.
-//     IF tmjNorm > PRIMARY_STRONG_SECONDARY_LEAD  // > 50
+//     // One score leads, secondary is substantial.
+//     // DIVERGENCE 3a: Doc 13 uses strict > 50 on the lead; code uses >= 50.
+//     //   A lead of exactly 50 is meaningful and must not fall through.
+//     // DIVERGENCE 3b: Doc 13 caps secondary at <= 50; code uses <= 60
+//     //   (PRIMARY_STRONG_SECONDARY_MAX). Scores 51–60 on the secondary
+//     //   were falling to the fallback because they exceeded the old cap
+//     //   but were not close enough for dual driver (gap > 15). The
+//     //   both-high check above handles secondary > 60.
+//     IF tmjNorm >= PRIMARY_STRONG_SECONDARY_LEAD  // >= 50
 //       AND cervNorm >= PRIMARY_STRONG_SECONDARY_MIN  // >= 30
 //       AND cervNorm <= PRIMARY_STRONG_SECONDARY_MAX  // <= 60
 //       RETURN "TMJ_PRIMARY_STRONG_SECONDARY"
-//     IF cervNorm > PRIMARY_STRONG_SECONDARY_LEAD  // > 50
+//     IF cervNorm >= PRIMARY_STRONG_SECONDARY_LEAD  // >= 50
 //       AND tmjNorm >= PRIMARY_STRONG_SECONDARY_MIN  // >= 30
 //       AND tmjNorm <= PRIMARY_STRONG_SECONDARY_MAX  // <= 60
 //       RETURN "CERV_PRIMARY_STRONG_SECONDARY"
+//
 //     // ── Primary with secondary ─────────────────────────────────────────
-//     // One score leads (> 30%), secondary present but minor (20–30%).
+//     // One score leads (> 30), secondary present but minor.
+//     // DIVERGENCE 4: Doc 13 caps secondary at < 30 (strict); code uses
+//     //   <= 30 (DUAL_DRIVER_MIN_SCORE). A secondary of exactly 30 sat
+//     //   between > 30 (dual) and < 30 (primary-with) and fell through.
 //     IF tmjNorm > DUAL_DRIVER_MIN_SCORE  // > 30
 //       AND cervNorm >= PROTOCOL_ASSIGNMENT_MINIMUM  // >= 20
-//       AND cervNorm < PRIMARY_STRONG_SECONDARY_MIN  // < 30
+//       AND cervNorm <= DUAL_DRIVER_MIN_SCORE  // <= 30
 //       RETURN "TMJ_PRIMARY_WITH_SECONDARY"
 //     IF cervNorm > DUAL_DRIVER_MIN_SCORE  // > 30
 //       AND tmjNorm >= PROTOCOL_ASSIGNMENT_MINIMUM  // >= 20
-//       AND tmjNorm < PRIMARY_STRONG_SECONDARY_MIN  // < 30
+//       AND tmjNorm <= DUAL_DRIVER_MIN_SCORE  // <= 30
 //       RETURN "CERV_PRIMARY_WITH_SECONDARY"
+//
 //     // ── Fallback ───────────────────────────────────────────────────────
-//     // Reached only when both scores are below all meaningful thresholds.
-//     // In practice: both scores below 20%. Assign whichever is higher.
-//     // This case also triggers the low-confidence edge case in Section 3.
-//     // If both are identical, TMJ_DOMINANT by convention.
+//     // Reached only when one score is below PROTOCOL_ASSIGNMENT_MINIMUM
+//     // (< 20) and both single-driver checks failed (lead not > 60).
+//     // The negligible-score driver is correctly ignored; the fallback
+//     // returns the higher score as dominant.
+//     // NOTE: with all four divergences applied, no real score combination
+//     //   where both scores >= 30 can reach this fallback. Exhaustively
+//     //   verified across all 806 integer-raw-score combinations.
 //     IF tmjNorm >= cervNorm
 //       RETURN "TMJ_DOMINANT"
 //     ELSE

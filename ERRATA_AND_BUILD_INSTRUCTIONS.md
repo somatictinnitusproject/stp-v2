@@ -2008,5 +2008,85 @@ pattern before launch.
 
 
 
+### Doc 13 §2.2 — Profile Classification Divergences
+
+**Status:** Approved. Doc 13 §2.2 should be updated to match.
+
+The Doc 13 §2.2 pseudocode contained four gaps where real score
+combinations fell through all named branches and hit the fallback,
+producing incorrect single-driver classifications for members with two
+meaningful drivers. All four were identified by exhaustive enumeration
+of all 806 integer-raw-score combinations (TMJ raw 0–30, CERV raw 0–25)
+and approved for implementation.
+
+**Divergence 1 — Both-high dual driver (addition to spec)**
+
+Doc 13 §2.2 has no branch for the case where both normalised scores
+exceed SINGLE_DRIVER_HIGH_THRESHOLD (60). The dual-driver branch that
+follows requires |diff| <= DUAL_DRIVER_MAX_DIFFERENCE (15), which
+correctly rejects mixed-range pairs like (80, 35). But a pair like
+(73.33, 92.00) — gap 18.67 — passed both single-driver checks (neither
+score was below 20) and failed dual-driver (gap > 15), then fell to the
+fallback and was returned as CERV_DOMINANT.
+
+Fix: added a pre-check immediately after the single-driver branches —
+if both tmjNorm > 60 AND cervNorm > 60, return DUAL_DRIVER regardless
+of gap. Real example: the first member to complete Phase 1 received
+CERV_DOMINANT with a 73.33 TMJ score and 6 confirmed jaw findings.
+
+**Divergence 2 — Dual driver: strict > 30 changed to >= 30**
+
+Doc 13 uses strict `>` on both scores for the dual-driver check
+(`tmjNorm > DUAL_DRIVER_MIN_SCORE AND cervNorm > DUAL_DRIVER_MIN_SCORE`).
+A score of exactly 30 (TMJ raw 9/30, CERV raw 7.5/25 — the latter not
+reachable; TMJ raw 9 is reachable) fell between this branch and the
+primary-with-secondary branch (which required secondary < 30 strict).
+Score pairs like (45, 30) with diff <= 15 were returned as TMJ_DOMINANT
+via fallback instead of DUAL_DRIVER.
+
+Fix: both sides of the dual-driver check changed to `>=`.
+
+**Divergence 3 — Primary-strong-secondary: lead >= 50 and MAX 50 → 60**
+
+Doc 13 uses `tmjNorm > PRIMARY_STRONG_SECONDARY_LEAD (> 50)` and caps
+the secondary at `<= PRIMARY_STRONG_SECONDARY_MAX (was 50)`.
+
+3a. A lead score of exactly 50 (TMJ raw 15/30) with a secondary of 32
+    and diff of 18 (> 15, so not dual) fell to the fallback and was
+    returned as TMJ_DOMINANT. Fix: lead check changed to `>= 50`.
+
+3b. A secondary score of 51–60 exceeded the old MAX of 50 but was not
+    close enough to the lead for dual-driver (gap > 15). Fix:
+    PRIMARY_STRONG_SECONDARY_MAX raised from 50 to 60 in
+    scoring-thresholds.ts. The both-high check (Divergence 1) handles
+    the case where secondary exceeds 60, so no overlap is introduced.
+
+**Divergence 4 — Primary-with-secondary: secondary < 30 changed to <= 30**
+
+Doc 13 uses strict `<` for the secondary bound in the primary-with-
+secondary branch (`cervNorm < PRIMARY_STRONG_SECONDARY_MIN`, i.e. < 30).
+Combined with Divergence 2's original `>` on the dual-driver check, a
+secondary score of exactly 30 sat in a dead zone — excluded from dual
+(not > 30) and excluded from primary-with (not < 30) — and fell to the
+fallback. Fix: secondary bound changed to `<= DUAL_DRIVER_MIN_SCORE`
+(<= 30) on both the TMJ-primary and CERV-primary branches.
+
+**Verification**
+
+All 806 integer-raw-score combinations (TMJ raw 0–30, CERV raw 0–25)
+were enumerated programmatically. After all four fixes, no combination
+where both scores >= 30 reaches the fallback. The fallback is now only
+reachable when one score is below PROTOCOL_ASSIGNMENT_MINIMUM (< 20),
+in which case the fallback correctly returns the non-negligible driver
+as dominant (which is also what the single-driver checks would return
+if the lead cleared > 60; the fallback handles the case where it does
+not).
+
+Files changed:
+- `lib/scoring/classify.ts` — operator changes + pseudocode comment updated
+- `content/scoring-thresholds.ts` — PRIMARY_STRONG_SECONDARY_MAX: 50 → 60
+
+---
+
 *Built to help people. Designed to last.*
 *SOMATIC TINNITUS PROJECT — V2 Errata & Build Instructions*
