@@ -37,20 +37,19 @@ export async function generateAndSaveProfile(
 
   // Step 1 — Load inputs
 
-  const { data: assessments, error: assessmentError } = await supabase
+  // maybeSingle() — phase1_assessment has UNIQUE(user_id) so at most one row exists.
+  // No completed_at filter: re-running on an already-completed row is safe and
+  // is the correct rescue path when a previous attempt partially succeeded.
+  const { data: assessment, error: assessmentError } = await supabase
     .from('phase1_assessment')
     .select('*')
     .eq('user_id', userId)
-    .is('completed_at', null)
+    .maybeSingle()
 
   if (assessmentError) throw assessmentError
-  if (!assessments || assessments.length === 0) {
-    throw new Error('No in-progress Phase 1 assessment found for user')
+  if (!assessment) {
+    throw new Error('No Phase 1 assessment found for user')
   }
-  if (assessments.length > 1) {
-    throw new Error('Multiple in-progress Phase 1 assessments — data integrity issue')
-  }
-  const assessment = assessments[0]
 
   const { data: user, error: userError } = await supabase
     .from('users')
