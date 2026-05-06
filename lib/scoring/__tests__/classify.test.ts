@@ -41,22 +41,20 @@ describe('classifyProfileType — ERRATA E1 core cases', () => {
 
 describe('classifyProfileType — boundary tests', () => {
 
-  // Fallback-via-strict-boundary — catch >= vs > bugs at the 30-line
-  it('tmj=45, cerv=30 → TMJ_DOMINANT via fallback (cerv 30 fails DUAL > 30, fails PwS < 30)', () => {
-    // cerv=30: not >30 (DUAL fails), not <30 (PwS upper fails), not >=30 and <30 simultaneously.
-    // All branches miss; fallback: 45 >= 30 → TMJ_DOMINANT.
-    expect(classifyProfileType(45, 30)).toBe('TMJ_DOMINANT')
+  // Boundary at DUAL_DRIVER_MIN_SCORE (30) — inclusive >= fixes
+  it('tmj=45, cerv=30 → DUAL_DRIVER (cerv=30 now >=30 inclusive, diff=15 <=15)', () => {
+    expect(classifyProfileType(45, 30)).toBe('DUAL_DRIVER')
   })
-  it('tmj=46, cerv=30 → TMJ_DOMINANT via fallback', () => {
-    expect(classifyProfileType(46, 30)).toBe('TMJ_DOMINANT')
+  it('tmj=46, cerv=30 → TMJ_PRIMARY_WITH_SECONDARY (diff=16>15 fails dual; cerv<=30 hits primary-with)', () => {
+    expect(classifyProfileType(46, 30)).toBe('TMJ_PRIMARY_WITH_SECONDARY')
   })
-  it('tmj=46, cerv=31 → DUAL_DRIVER (both strictly > 30, diff 15 <= 15)', () => {
+  it('tmj=46, cerv=31 → DUAL_DRIVER (both >=30, diff=15 <=15)', () => {
     expect(classifyProfileType(46, 31)).toBe('DUAL_DRIVER')
   })
-  it('tmj=31, cerv=30 → TMJ_DOMINANT via fallback (cerv=30 fails DUAL >30 and PwS <30)', () => {
-    expect(classifyProfileType(31, 30)).toBe('TMJ_DOMINANT')
+  it('tmj=31, cerv=30 → DUAL_DRIVER (both >=30, diff=1 <=15)', () => {
+    expect(classifyProfileType(31, 30)).toBe('DUAL_DRIVER')
   })
-  it('tmj=31, cerv=29 → TMJ_PRIMARY_WITH_SECONDARY (tmj>30, cerv>=20, cerv<30)', () => {
+  it('tmj=31, cerv=29 → TMJ_PRIMARY_WITH_SECONDARY (tmj>30, cerv>=20, cerv<=30)', () => {
     expect(classifyProfileType(31, 29)).toBe('TMJ_PRIMARY_WITH_SECONDARY')
   })
 
@@ -89,6 +87,27 @@ describe('classifyProfileType — boundary tests', () => {
   // Decimal edge case — sub-integer inputs from 2dp normalisation
   it('tmj=0.5, cerv=0.3 → TMJ_DOMINANT via fallback (sub-threshold inputs)', () => {
     expect(classifyProfileType(0.5, 0.3)).toBe('TMJ_DOMINANT')
+  })
+})
+
+// ── Strong secondary in (50,60] gap (regression: MAX=50 let these fall to fallback) ─
+
+describe('classifyProfileType — secondary in (50,60] with gap > 15', () => {
+  it('tmj=80, cerv=52 → TMJ_PRIMARY_STRONG_SECONDARY (cerv=52 > MAX old 50, was fallback)', () => {
+    expect(classifyProfileType(80, 52)).toBe('TMJ_PRIMARY_STRONG_SECONDARY')
+  })
+  it('tmj=80, cerv=56 → TMJ_PRIMARY_STRONG_SECONDARY', () => {
+    expect(classifyProfileType(80, 56)).toBe('TMJ_PRIMARY_STRONG_SECONDARY')
+  })
+  it('tmj=80, cerv=60 → TMJ_PRIMARY_STRONG_SECONDARY (cerv=60 at new MAX, not strictly > 60 for both-high)', () => {
+    expect(classifyProfileType(80, 60)).toBe('TMJ_PRIMARY_STRONG_SECONDARY')
+  })
+  it('tmj=52, cerv=80 → CERV_PRIMARY_STRONG_SECONDARY (symmetric)', () => {
+    expect(classifyProfileType(52, 80)).toBe('CERV_PRIMARY_STRONG_SECONDARY')
+  })
+  // Confirm dual-driver still fires when diff <= 15 (regular dual branch, before PRIMARY_STRONG)
+  it('tmj=70, cerv=56 → DUAL_DRIVER (diff=14 <= 15, regular dual fires before PRIMARY_STRONG)', () => {
+    expect(classifyProfileType(70, 56)).toBe('DUAL_DRIVER')
   })
 })
 

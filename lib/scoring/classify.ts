@@ -35,14 +35,16 @@ export type ProfileType =
 //       AND ABS(tmjNorm - cervNorm) <= DUAL_DRIVER_MAX_DIFFERENCE  // <= 15
 //       RETURN "DUAL_DRIVER"
 //     // ── Primary with strong secondary ──────────────────────────────────
-//     // One score clearly leads (> 50%), secondary is substantial (30–50%).
+//     // One score clearly leads (> 50%), secondary is substantial (30–60%).
+//     // MAX raised 50→60: the both-high check above catches secondary > 60;
+//     // secondary in (50,60] with gap > 15 was falling to the fallback.
 //     IF tmjNorm > PRIMARY_STRONG_SECONDARY_LEAD  // > 50
 //       AND cervNorm >= PRIMARY_STRONG_SECONDARY_MIN  // >= 30
-//       AND cervNorm <= PRIMARY_STRONG_SECONDARY_MAX  // <= 50
+//       AND cervNorm <= PRIMARY_STRONG_SECONDARY_MAX  // <= 60
 //       RETURN "TMJ_PRIMARY_STRONG_SECONDARY"
 //     IF cervNorm > PRIMARY_STRONG_SECONDARY_LEAD  // > 50
 //       AND tmjNorm >= PRIMARY_STRONG_SECONDARY_MIN  // >= 30
-//       AND tmjNorm <= PRIMARY_STRONG_SECONDARY_MAX  // <= 50
+//       AND tmjNorm <= PRIMARY_STRONG_SECONDARY_MAX  // <= 60
 //       RETURN "CERV_PRIMARY_STRONG_SECONDARY"
 //     // ── Primary with secondary ─────────────────────────────────────────
 //     // One score leads (> 30%), secondary present but minor (20–30%).
@@ -86,39 +88,45 @@ export function classifyProfileType(tmjNorm: number, cervNorm: number): ProfileT
   if (tmjNorm > SINGLE_DRIVER_HIGH_THRESHOLD && cervNorm > SINGLE_DRIVER_HIGH_THRESHOLD)
     return 'DUAL_DRIVER'
 
-  // Dual driver — both meaningful AND scores close enough that neither dominates
+  // Dual driver — both meaningful AND scores close enough that neither dominates.
+  // >= inclusive: a score exactly at DUAL_DRIVER_MIN_SCORE is meaningful and must
+  // not fall through to the fallback.
   if (
-    tmjNorm > DUAL_DRIVER_MIN_SCORE &&
-    cervNorm > DUAL_DRIVER_MIN_SCORE &&
+    tmjNorm >= DUAL_DRIVER_MIN_SCORE &&
+    cervNorm >= DUAL_DRIVER_MIN_SCORE &&
     Math.abs(tmjNorm - cervNorm) <= DUAL_DRIVER_MAX_DIFFERENCE
   )
     return 'DUAL_DRIVER'
 
-  // Primary with strong secondary
+  // Primary with strong secondary.
+  // >= inclusive on lead: a score exactly at PRIMARY_STRONG_SECONDARY_LEAD is a
+  // meaningful lead and must not fall through to the fallback.
   if (
-    tmjNorm > PRIMARY_STRONG_SECONDARY_LEAD &&
+    tmjNorm >= PRIMARY_STRONG_SECONDARY_LEAD &&
     cervNorm >= PRIMARY_STRONG_SECONDARY_MIN &&
     cervNorm <= PRIMARY_STRONG_SECONDARY_MAX
   )
     return 'TMJ_PRIMARY_STRONG_SECONDARY'
   if (
-    cervNorm > PRIMARY_STRONG_SECONDARY_LEAD &&
+    cervNorm >= PRIMARY_STRONG_SECONDARY_LEAD &&
     tmjNorm >= PRIMARY_STRONG_SECONDARY_MIN &&
     tmjNorm <= PRIMARY_STRONG_SECONDARY_MAX
   )
     return 'CERV_PRIMARY_STRONG_SECONDARY'
 
-  // Primary with secondary
+  // Primary with secondary.
+  // Secondary bound uses <= DUAL_DRIVER_MIN_SCORE (not < PRIMARY_STRONG_SECONDARY_MIN)
+  // so a secondary score exactly at 30 is caught here rather than falling through.
   if (
     tmjNorm > DUAL_DRIVER_MIN_SCORE &&
     cervNorm >= PROTOCOL_ASSIGNMENT_MINIMUM &&
-    cervNorm < PRIMARY_STRONG_SECONDARY_MIN
+    cervNorm <= DUAL_DRIVER_MIN_SCORE
   )
     return 'TMJ_PRIMARY_WITH_SECONDARY'
   if (
     cervNorm > DUAL_DRIVER_MIN_SCORE &&
     tmjNorm >= PROTOCOL_ASSIGNMENT_MINIMUM &&
-    tmjNorm < PRIMARY_STRONG_SECONDARY_MIN
+    tmjNorm <= DUAL_DRIVER_MIN_SCORE
   )
     return 'CERV_PRIMARY_WITH_SECONDARY'
 

@@ -42,9 +42,12 @@ export const SCORING_THRESHOLDS = {
   // Secondary score lower bound for "strong secondary" designation
   PRIMARY_STRONG_SECONDARY_MIN: 30,
 
-  // Secondary score upper bound for "strong secondary" designation
-  // (above this, scores are close enough for dual driver consideration)
-  PRIMARY_STRONG_SECONDARY_MAX: 50,
+  // Secondary score upper bound for "strong secondary" designation.
+  // Must equal SINGLE_DRIVER_HIGH_THRESHOLD: the both-high dual check in
+  // classify.ts catches secondary > 60, so this value fills the (50, 60] gap
+  // for cases where one score leads strongly and the secondary is high but not
+  // above the single-driver threshold.
+  PRIMARY_STRONG_SECONDARY_MAX: 60,
 
   // ── Low Confidence Edge Case ──────────────────────────────────────────────
   // Intake test symptom_score at or above this value triggers the
