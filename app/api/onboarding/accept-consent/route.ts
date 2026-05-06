@@ -28,12 +28,16 @@ export async function POST(request: Request) {
   }
 
   const [consentResult, userResult] = await Promise.all([
-    supabase.from('consents').insert({
-      user_id: user.id,
-      health_data_consent: true,
-      research_consent: researchConsent === true,
-      consented_at: new Date().toISOString(),
-    }),
+    // Upsert so retries and re-runs of onboarding don't 500 on the UNIQUE(user_id) constraint.
+    supabase.from('consents').upsert(
+      {
+        user_id: user.id,
+        health_data_consent: true,
+        research_consent: researchConsent === true,
+        consented_at: new Date().toISOString(),
+      },
+      { onConflict: 'user_id', ignoreDuplicates: false },
+    ),
     supabase.from('users').update({ onboarding_step: 3 }).eq('id', user.id),
   ])
 
