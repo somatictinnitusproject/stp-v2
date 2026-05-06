@@ -92,6 +92,23 @@ describe('classifyProfileType — boundary tests', () => {
   })
 })
 
+// ── Both-high dual driver (regression: gap > 15 was falling to fallback) ──────
+
+describe('classifyProfileType — both scores above SINGLE_DRIVER_HIGH_THRESHOLD', () => {
+  it('tmj=73.33, cerv=92 → DUAL_DRIVER (real signup case, was wrongly CERV_DOMINANT)', () => {
+    expect(classifyProfileType(73.33, 92)).toBe('DUAL_DRIVER')
+  })
+  it('tmj=70, cerv=85 → DUAL_DRIVER (both > 60, gap 15 — both-high branch fires)', () => {
+    expect(classifyProfileType(70, 85)).toBe('DUAL_DRIVER')
+  })
+  it('tmj=65, cerv=90 → DUAL_DRIVER (both > 60, gap 25)', () => {
+    expect(classifyProfileType(65, 90)).toBe('DUAL_DRIVER')
+  })
+  it('tmj=80, cerv=35 → TMJ_PRIMARY_STRONG_SECONDARY (only tmj > 60; both-high does not fire)', () => {
+    expect(classifyProfileType(80, 35)).toBe('TMJ_PRIMARY_STRONG_SECONDARY')
+  })
+})
+
 // ── Fallback tests ────────────────────────────────────────────────────────────
 
 describe('classifyProfileType — fallback cases', () => {

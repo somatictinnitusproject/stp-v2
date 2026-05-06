@@ -81,7 +81,12 @@ export function classifyProfileType(tmjNorm: number, cervNorm: number): ProfileT
   if (cervNorm > SINGLE_DRIVER_HIGH_THRESHOLD && tmjNorm < PROTOCOL_ASSIGNMENT_MINIMUM)
     return 'CERV_DOMINANT'
 
-  // Dual driver
+  // Both scores above the single-driver threshold — both pathways strongly active.
+  // The max-difference guard below is for mixed-range pairs; it must not apply here.
+  if (tmjNorm > SINGLE_DRIVER_HIGH_THRESHOLD && cervNorm > SINGLE_DRIVER_HIGH_THRESHOLD)
+    return 'DUAL_DRIVER'
+
+  // Dual driver — both meaningful AND scores close enough that neither dominates
   if (
     tmjNorm > DUAL_DRIVER_MIN_SCORE &&
     cervNorm > DUAL_DRIVER_MIN_SCORE &&
