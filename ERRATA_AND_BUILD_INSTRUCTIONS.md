@@ -2082,6 +2082,11 @@ as dominant (which is also what the single-driver checks would return
 if the lead cleared > 60; the fallback handles the case where it does
 not).
 
+**Validation**
+
+14-case pass/fail script: `npx tsx scripts/validate-classification.ts`
+Result: 14/14 PASS (2026-05-06)
+
 Files changed:
 - `lib/scoring/classify.ts` — operator changes + pseudocode comment updated
 - `content/scoring-thresholds.ts` — PRIMARY_STRONG_SECONDARY_MAX: 50 → 60

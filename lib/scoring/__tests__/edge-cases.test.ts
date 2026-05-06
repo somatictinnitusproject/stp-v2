@@ -6,6 +6,7 @@ import {
   classifyAsymmetryPattern,
   runAllEdgeCaseChecks,
 } from '../edge-cases'
+import { classifyProfileType } from '../classify'
 import type { Phase1AssessmentRow, UserIntakeRow } from '../types'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -341,5 +342,27 @@ describe('runAllEdgeCaseChecks', () => {
     expect(flags.strongSingleFindings.cerv).toHaveLength(0)
     expect(flags.contralateralPattern).toBe(false)
     expect(flags.asymmetryPattern).toBe('NO_ASYMMETRY')
+  })
+})
+
+// ── Low-confidence + profile type together (§3.1 fires independently of §2.2) ─
+//
+// classifyProfileType and checkLowConfidenceEdgeCase are separate functions
+// called sequentially in generateAndSaveProfile. Both must fire correctly
+// for low-confidence members: the profile type is assigned by the classification
+// tree (fallback → TMJ_DOMINANT for a tie), and the low-confidence flag is
+// returned independently by §3.1.
+
+describe('low-confidence edge case co-fires with profile classification', () => {
+  it('(15, 15, symptom_score=3): profile=TMJ_DOMINANT, flag=LOW_CONFIDENCE_LOW_ALL', () => {
+    const u = blankUser(); u.symptom_score = 3
+    expect(classifyProfileType(15, 15)).toBe('TMJ_DOMINANT')
+    expect(checkLowConfidenceEdgeCase(15, 15, u)).toBe('LOW_CONFIDENCE_LOW_ALL')
+  })
+
+  it('(15, 15, symptom_score=7): profile=TMJ_DOMINANT, flag=LOW_CONFIDENCE_SYMPTOM_DOMINANT', () => {
+    const u = blankUser(); u.symptom_score = 7
+    expect(classifyProfileType(15, 15)).toBe('TMJ_DOMINANT')
+    expect(checkLowConfidenceEdgeCase(15, 15, u)).toBe('LOW_CONFIDENCE_SYMPTOM_DOMINANT')
   })
 })
