@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 /**
  * app/tfi/page.tsx
  *
- * /tfi?capture_point=intake|completion
+ * /tfi?capture_point=intake|phase5_completion
  *
  * Server component. Validates auth, membership, and capture-point
  * eligibility before rendering TfiClient.
@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic'
  *   - follow_up_6m → /tracker (deferred to post-launch)
  *   - Member already has a tfi_responses row for this capture_point → /tracker
  *   - intake: phase1_assessment.created_at IS NULL → /tracker
- *   - completion: framework_progress.phase5_completed_at IS NULL → /tracker
+ *   - phase5_completion: current_phase ≠ 5 OR intake TFI not submitted → /tracker
  */
 
 import { redirect } from 'next/navigation'
@@ -22,9 +22,9 @@ import AuthShell from '@/components/shells/AuthShell'
 import { canAccessPlatform } from '@/lib/auth/access'
 import TfiClient from './TfiClient'
 
-type CapturePoint = 'intake' | 'completion'
+type CapturePoint = 'intake' | 'phase5_completion'
 
-const VALID_CAPTURE_POINTS: readonly CapturePoint[] = ['intake', 'completion']
+const VALID_CAPTURE_POINTS: readonly CapturePoint[] = ['intake', 'phase5_completion']
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -67,27 +67,32 @@ export default async function TfiPage({ searchParams }: PageProps) {
 
   if (existingResponse) redirect('/tracker')
 
-  // Fetch eligibility data.
-  const [{ data: phase1 }, { data: framework }] = await Promise.all([
-    supabase
+  // Eligibility checks per capture point.
+  if (capture === 'intake') {
+    const { data: phase1 } = await supabase
       .from('phase1_assessment')
       .select('created_at')
       .eq('user_id', user.id)
-      .maybeSingle(),
-    supabase
-      .from('framework_progress')
-      .select('phase5_completed_at')
-      .eq('user_id', user.id)
-      .maybeSingle(),
-  ])
-
-  // Eligibility checks per capture point.
-  if (capture === 'intake') {
+      .maybeSingle()
     if (!phase1?.created_at) redirect('/tracker')
   }
 
-  if (capture === 'completion') {
-    if (!framework?.phase5_completed_at) redirect('/tracker')
+  if (capture === 'phase5_completion') {
+    // Requires: current_phase = 5 AND intake TFI submitted (paired data requirement).
+    const [{ data: framework }, { data: intakeRow }] = await Promise.all([
+      supabase
+        .from('framework_progress')
+        .select('current_phase')
+        .eq('user_id', user.id)
+        .maybeSingle(),
+      supabase
+        .from('tfi_responses')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('capture_point', 'intake')
+        .maybeSingle(),
+    ])
+    if (framework?.current_phase !== 5 || !intakeRow) redirect('/tracker')
   }
 
   return (

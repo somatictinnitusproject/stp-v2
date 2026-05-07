@@ -9,7 +9,7 @@ import { fetchTrackerData } from '@/lib/tracker/queries'
 import { isEditable } from '@/lib/tracker/edit-window'
 import TrackerClient from './TrackerClient'
 
-type TfiCapturePoint = 'intake' | 'completion'
+type TfiCapturePoint = 'intake' | 'phase5_completion'
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -80,11 +80,13 @@ export default async function TrackerPage({ searchParams }: PageProps) {
 
 /**
  * Determines which TFI capture point (if any) should be shown on /tracker.
- * Checks intake first, then completion. Returns null if neither applies.
+ * Checks intake first, then phase5_completion. Returns null if neither applies.
  *
  * Logic:
- *   intake  — phase1_assessment.created_at set AND no intake response AND not dismissed
- *   completion — phase5_completed_at set AND no completion response AND not dismissed
+ *   intake          — phase1_assessment.created_at set AND no intake response AND not dismissed
+ *   phase5_completion — current_phase = 5 AND intake was submitted AND no phase5_completion
+ *                       response AND not dismissed. Intake requirement: paired data only —
+ *                       endpoint TFI without a baseline has no research value.
  */
 async function fetchTfiState(
   userId: string,
@@ -103,7 +105,7 @@ async function fetchTfiState(
       .maybeSingle(),
     supabase
       .from('framework_progress')
-      .select('phase5_completed_at, tfi_dismissals')
+      .select('current_phase, tfi_dismissals')
       .eq('user_id', userId)
       .maybeSingle(),
     supabase
@@ -126,13 +128,15 @@ async function fetchTfiState(
     return 'intake'
   }
 
-  // Completion: phase5 completed, not yet submitted, not dismissed.
+  // Phase 5 completion: member is in Phase 5, intake was submitted (paired data requirement),
+  // phase5_completion not yet submitted, not dismissed.
   if (
-    framework?.phase5_completed_at &&
-    !submittedPoints.has('completion') &&
-    !dismissals['completion']
+    framework?.current_phase === 5 &&
+    submittedPoints.has('intake') &&
+    !submittedPoints.has('phase5_completion') &&
+    !dismissals['phase5_completion']
   ) {
-    return 'completion'
+    return 'phase5_completion'
   }
 
   return null

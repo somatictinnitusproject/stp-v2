@@ -8,7 +8,8 @@
 // Authority: errata P3-2 (exercise IDs match Doc 8 letters), P3-5 (TMJ resistance
 // = 4 daily, not 3), P3-12 (low-confidence runtime computation), P3-14 (protocol
 // assignment columns on phase1_assessment), P3-15 (Phase 4 explicit opt-in),
-// P3-16 (resistance appends both drivers uniformly across all protocol options).
+// P3-16 (resistance appends both drivers uniformly across all protocol options),
+// P3-21 (_WITH_SECONDARY profiles on Option 3 get reduced secondary resistance lists).
 // Doc 13 §5.4 is superseded by these errata sections wherever they conflict.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -127,6 +128,24 @@ export function buildCervRetainingList(): string[] {
   ]
 }
 
+/** Reduced cervical retraining for TMJ_PRIMARY_WITH_SECONDARY on Option 3 resistance phase.
+ *  Secondary driver gets 2 of 3 retraining exercises. Else returns empty (not used). */
+export function buildReducedCervRetainingList(profileType: string): string[] {
+  if (profileType === 'TMJ_PRIMARY_WITH_SECONDARY') {
+    return ['E13_deep_cervical_flexor_training', 'E14_cervical_rotation_holds']
+  }
+  return []
+}
+
+/** Reduced TMJ resistance for CERV_PRIMARY_WITH_SECONDARY on Option 3 resistance phase.
+ *  Secondary driver gets 2 base exercises; D.17 is excluded from the reduced list. */
+export function buildReducedTmjResistanceList(profileType: string): string[] {
+  if (profileType === 'CERV_PRIMARY_WITH_SECONDARY') {
+    return ['D14_jaw_symmetry_retraining', 'D15_progressive_resistance']
+  }
+  return []
+}
+
 // ── Low-confidence runtime detection per errata P3-12 ────────────────────────
 
 /**
@@ -154,8 +173,9 @@ export function isLowConfidence(phase1: Phase1AssessmentRow): boolean {
  * phase4_first_accessed as Doc 13 §5.4 instructs).
  *
  * Resistance phase appends both drivers' lists uniformly across protocol
- * options 1, 2, 3 per errata P3-16 — only the protocol_assigned booleans
- * gate which lists append. Sequential members do NOT pick up the other
+ * options 1, 2, 3 per errata P3-16 — except that Option 3 _WITH_SECONDARY
+ * profiles receive a reduced secondary resistance list per P3-21.
+ * Sequential (Option 1) single-driver members do NOT pick up the other
  * driver's release work at resistance.
  */
 export function buildSessionExerciseList(
@@ -208,13 +228,19 @@ export function buildSessionExerciseList(
       }
     }
 
-    // ── Resistance-phase append — uniform across all options per P3-16 ────────
+    // ── Resistance-phase append per P3-21 ────────────────────────────────────
+    // Option 3 _WITH_SECONDARY profiles: full primary + reduced secondary.
+    // All others (incl. _STRONG_SECONDARY, DUAL_DRIVER): full both per P3-16.
     if (resistanceStart !== null) {
-      if (cervAssigned) {
-        exercises = [...exercises, ...buildCervRetainingList()]
-      }
-      if (tmjAssigned) {
+      if (protocolOption === 3 && profileType === 'TMJ_PRIMARY_WITH_SECONDARY') {
         exercises = [...exercises, ...buildTmjResistanceList(phase1)]
+        exercises = [...exercises, ...buildReducedCervRetainingList(profileType)]
+      } else if (protocolOption === 3 && profileType === 'CERV_PRIMARY_WITH_SECONDARY') {
+        exercises = [...exercises, ...buildCervRetainingList()]
+        exercises = [...exercises, ...buildReducedTmjResistanceList(profileType)]
+      } else {
+        if (cervAssigned) exercises = [...exercises, ...buildCervRetainingList()]
+        if (tmjAssigned) exercises = [...exercises, ...buildTmjResistanceList(phase1)]
       }
     }
 

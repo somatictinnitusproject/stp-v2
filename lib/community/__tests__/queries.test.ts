@@ -193,7 +193,7 @@ describe('getSpaceMetadata', () => {
     expect(disc.post_count).toBe(1)
     expect(disc.last_active_at).toBe('2026-04-15T10:00:00Z')
 
-    const intro = result.find((s) => s.slug === 'introduce-yourself')!
+    const intro = result.find((s) => s.slug === 'your-journey')!
     expect(intro.post_count).toBe(0)
     expect(intro.last_active_at).toBeNull()
   })

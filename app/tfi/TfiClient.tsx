@@ -17,7 +17,7 @@ import { TFI_ITEMS } from '@/lib/tfi/items'
 import { calculateTfiScores } from '@/lib/tfi/scoring'
 import type { TfiResponses } from '@/lib/tfi/scoring'
 
-type CapturePoint = 'intake' | 'completion'
+type CapturePoint = 'intake' | 'phase5_completion'
 
 interface Props {
   capturePoint: CapturePoint
@@ -25,7 +25,7 @@ interface Props {
 
 const CONTEXT_LINES: Record<CapturePoint, string> = {
   intake: 'This is your starting baseline.',
-  completion: 'This is your post-framework follow-up.',
+  phase5_completion: 'This is your post-framework follow-up.',
 }
 
 // Percentage scale labels for items 1 and 3.

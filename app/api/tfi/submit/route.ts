@@ -15,8 +15,8 @@ import { canAccessPlatform } from '@/lib/auth/access'
 import { calculateTfiScores } from '@/lib/tfi/scoring'
 import type { TfiResponses, TfiScores } from '@/lib/tfi/scoring'
 
-type CapturePoint = 'intake' | 'completion' | 'follow_up_6m'
-const VALID_CAPTURE_POINTS: readonly CapturePoint[] = ['intake', 'completion', 'follow_up_6m']
+type CapturePoint = 'intake' | 'phase5_completion' | 'follow_up_6m'
+const VALID_CAPTURE_POINTS: readonly CapturePoint[] = ['intake', 'phase5_completion', 'follow_up_6m']
 
 interface SubmitBody {
   capture_point: CapturePoint
@@ -88,24 +88,32 @@ export async function POST(req: NextRequest) {
   }
 
   // Eligibility re-check server-side.
-  if (capture_point === 'intake' || capture_point === 'completion') {
-    const [{ data: phase1 }, { data: framework }] = await Promise.all([
-      supabase
-        .from('phase1_assessment')
-        .select('created_at')
-        .eq('user_id', user.id)
-        .maybeSingle(),
-      supabase
-        .from('framework_progress')
-        .select('phase5_completed_at')
-        .eq('user_id', user.id)
-        .maybeSingle(),
-    ])
-
-    if (capture_point === 'intake' && !phase1?.created_at) {
+  if (capture_point === 'intake') {
+    const { data: phase1 } = await supabase
+      .from('phase1_assessment')
+      .select('created_at')
+      .eq('user_id', user.id)
+      .maybeSingle()
+    if (!phase1?.created_at) {
       return NextResponse.json({ error: 'not_eligible' }, { status: 403 })
     }
-    if (capture_point === 'completion' && !framework?.phase5_completed_at) {
+  }
+  if (capture_point === 'phase5_completion') {
+    // Requires: current_phase = 5 AND intake TFI already submitted (paired data requirement).
+    const [{ data: framework }, { data: intakeRow }] = await Promise.all([
+      supabase
+        .from('framework_progress')
+        .select('current_phase')
+        .eq('user_id', user.id)
+        .maybeSingle(),
+      supabase
+        .from('tfi_responses')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('capture_point', 'intake')
+        .maybeSingle(),
+    ])
+    if (framework?.current_phase !== 5 || !intakeRow) {
       return NextResponse.json({ error: 'not_eligible' }, { status: 403 })
     }
   }

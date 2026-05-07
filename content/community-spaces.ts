@@ -8,7 +8,7 @@
 
 export type CommunitySpaceSlug =
   | 'progress-wins'
-  | 'introduce-yourself'
+  | 'your-journey'
   | 'questions-oliver'
   | 'discussion'
   | 'research-resources'
@@ -28,9 +28,9 @@ export const COMMUNITY_SPACES: readonly CommunitySpace[] = [
     position: 1,
   },
   {
-    slug: 'introduce-yourself',
-    name: 'Introduce Yourself',
-    description: 'New here? Tell us about yourself and your journey.',
+    slug: 'your-journey',
+    name: 'Your Journey',
+    description: 'Where you are in the process. Setbacks, plateaus, mixed updates, doubts. New here? Introduce yourself in a post.',
     position: 2,
   },
   {

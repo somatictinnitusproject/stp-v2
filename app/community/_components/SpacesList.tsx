@@ -14,7 +14,7 @@ interface Props {
 
 // Map non-Progress-Wins space slugs to their lucide icon.
 const SPACE_ICONS: Record<Exclude<CommunitySpaceSlug, 'progress-wins'>, LucideIcon> = {
-  'introduce-yourself': Hand,
+  'your-journey': Hand,
   'questions-oliver': MessageCircleQuestion,
   'discussion': MessagesSquare,
   'research-resources': BookOpen,

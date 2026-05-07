@@ -2005,8 +2005,109 @@ pattern before launch.
 
 ---
 
+### P3-21. RESISTANCE PHASE — REDUCED SECONDARY LISTS FOR _WITH_SECONDARY PROFILES ON OPTION 3
+
+**Supersedes:** P3-16 for Option 3 `_WITH_SECONDARY` profiles only. P3-16 still governs all
+other profile types and all other protocol options.
+
+**Problem:** `TMJ_PRIMARY_WITH_SECONDARY` and `CERV_PRIMARY_WITH_SECONDARY` members on Option 3
+(Prioritised Parallel) were receiving the full resistance list for their secondary driver,
+which is disproportionate given that the secondary protocol has reduced emphasis during release.
+
+**Decision:** For Option 3 `_WITH_SECONDARY` profiles in the resistance phase:
+- `TMJ_PRIMARY_WITH_SECONDARY` → full TMJ resistance + **reduced** cervical retraining (E13, E14 only — E15 excluded)
+- `CERV_PRIMARY_WITH_SECONDARY` → full cervical retraining + **reduced** TMJ resistance (D14, D15 only — D17 excluded even if gating flags are set)
+
+`_STRONG_SECONDARY`, `DUAL_DRIVER`, and single-driver profiles continue to receive full lists per P3-16.
+
+**New builder functions in `lib/session/build-session.ts`:**
+
+```typescript
+export function buildReducedCervRetainingList(profileType: string): string[] {
+  if (profileType === 'TMJ_PRIMARY_WITH_SECONDARY') {
+    return ['E13_deep_cervical_flexor_training', 'E14_cervical_rotation_holds']
+  }
+  return []
+}
+
+export function buildReducedTmjResistanceList(profileType: string): string[] {
+  if (profileType === 'CERV_PRIMARY_WITH_SECONDARY') {
+    return ['D14_jaw_symmetry_retraining', 'D15_progressive_resistance']
+  }
+  return []
+}
+```
+
+**Updated resistance branch in `buildSessionExerciseList`:**
+
+```typescript
+if (resistanceStart !== null) {
+  if (protocolOption === 3 && profileType === 'TMJ_PRIMARY_WITH_SECONDARY') {
+    exercises = [...exercises, ...buildTmjResistanceList(phase1)]
+    exercises = [...exercises, ...buildReducedCervRetainingList(profileType)]
+  } else if (protocolOption === 3 && profileType === 'CERV_PRIMARY_WITH_SECONDARY') {
+    exercises = [...exercises, ...buildCervRetainingList()]
+    exercises = [...exercises, ...buildReducedTmjResistanceList(profileType)]
+  } else {
+    if (cervAssigned) exercises = [...exercises, ...buildCervRetainingList()]
+    if (tmjAssigned) exercises = [...exercises, ...buildTmjResistanceList(phase1)]
+  }
+}
+```
+
+**Session count impact:**
+- C8 (TMJ_PRIMARY_WITH_SECONDARY + Option 3 + resistance + D.17): 13 IDs → 12 IDs
+- C20 (CERV_PRIMARY_WITH_SECONDARY + Option 3 + resistance): 12 IDs
+- All other existing test cases: unchanged
+
+---
 
 
+
+
+### P3-22. TFI PHASE 5 CAPTURE — REVISED TRIGGER, PLACEMENT, AND COMPLETION FLOW (2026-05-07)
+
+**Supersedes:** Doc 13 §5.1 and Doc 12 wherever they describe TFI Phase 5 trigger conditions
+or Phase 5 completion gating.
+
+**Changes from original design:**
+
+1. **Capture point renamed:** `'completion'` → `'phase5_completion'` in `tfi_responses.capture_point`,
+   `framework_progress.tfi_dismissals` keys, all API routes, and all client types.
+   If any `capture_point = 'completion'` rows exist in production, run:
+   ```sql
+   UPDATE tfi_responses SET capture_point = 'phase5_completion' WHERE capture_point = 'completion';
+   ```
+
+2. **New trigger condition for Phase 5 TFI card** (replaces `phase5_completed_at IS NOT NULL`):
+   - `current_phase = 5`
+   - AND no `tfi_responses` row with `capture_point = 'phase5_completion'`
+   - AND no `'phase5_completion'` key in `tfi_dismissals`
+   - AND there EXISTS a `tfi_responses` row with `capture_point = 'intake'`
+
+   The fourth condition is mandatory. An endpoint TFI without an intake baseline has no
+   research value for before/after analysis. Members who dismissed intake are excluded.
+
+3. **New display surface:** TFI Phase 5 card now appears at the top of `/framework/phase-5`
+   (in addition to `/tracker`) from the moment the member enters Phase 5. One dismissal
+   on either surface sets `tfi_dismissals['phase5_completion']` and removes the card
+   from both surfaces.
+
+4. **Phase 5 completion is now self-attested:** An "I've finished the framework" button
+   at the bottom of `/framework/phase-5` calls `markPhase5Complete()` directly. Members
+   do not need to acknowledge every reading to mark completion. The existing G.8 path
+   (`marksPhaseCompleteFlag`) still works and is now idempotent (won't double-fire email).
+
+5. **Shared TFI card component:** `components/tfi/TfiCaptureCard.tsx` is the single source
+   for TFI card rendering on both /tracker and /framework/phase-5. Updated copy:
+   - Intake heading: "Tinnitus Functional Index" (was "Help future members")
+   - Dismiss: "Skip for now" text button (was X icon)
+
+6. **`markPhase5Complete` is now idempotent and throws on DB error:**
+   Checks `phase5_completed_at` before writing — no-op if already set. Throws so
+   `Phase5CompleteButton` can surface the failure to the member.
+
+---
 
 ### Doc 13 §2.2 — Profile Classification Divergences
 
@@ -2090,6 +2191,31 @@ Result: 14/14 PASS (2026-05-06)
 Files changed:
 - `lib/scoring/classify.ts` — operator changes + pseudocode comment updated
 - `content/scoring-thresholds.ts` — PRIMARY_STRONG_SECONDARY_MAX: 50 → 60
+
+---
+
+---
+
+## P3-23 — Community space "Introduce Yourself" renamed to "Your Journey" (2026-05-07)
+
+**Doc 12 §X.X — Community section "Introduce Yourself" replaced with "Your Journey".**
+
+Broader scope covers intros, setbacks, plateaus, and mixed updates. Introduction-only sections
+are underused in practice; members tend to lurk first and post first in a content section.
+Setback and plateau content needs a designated home for member retention.
+
+Slug change: `'introduce-yourself'` → `'your-journey'`
+
+Migration required in Supabase SQL editor (or via `supabase db push`):
+`supabase/migrations/20260507000002_community_rename_introduce_yourself_space.sql`
+
+Files changed:
+- `content/community-spaces.ts` — slug, name, description
+- `app/community/_components/SpacesList.tsx` — SPACE_ICONS key
+- `lib/community/__tests__/queries.test.ts` — slug reference
+
+The hand/wave (Hand) icon is kept. If a footsteps/path icon is preferred in future,
+update SPACE_ICONS key `'your-journey'` in SpacesList.tsx.
 
 ---
 

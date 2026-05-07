@@ -11,8 +11,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
-type CapturePoint = 'intake' | 'completion'
-const VALID_CAPTURE_POINTS: readonly CapturePoint[] = ['intake', 'completion']
+type CapturePoint = 'intake' | 'phase5_completion'
+const VALID_CAPTURE_POINTS: readonly CapturePoint[] = ['intake', 'phase5_completion']
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient()

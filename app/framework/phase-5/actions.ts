@@ -8,9 +8,10 @@
 //     against PHASE5_OUTCOME_VALUES before any DB call — belt-and-
 //     braces alongside the DB CHECK constraint.
 //   - markPhase5Complete: writes phase5_completed_at = NOW() to
-//     framework_progress. Called by Phase5ReadingList when G.8 is
-//     acknowledged (marksPhaseCompleteFlag === 'phase5_completed_at').
-//     Triggers completion email fire-and-forget via next/server after().
+//     framework_progress. Idempotent — no-op if already set (prevents
+//     double email if both "I've finished" button and G.8 acknowledge
+//     are triggered). Throws on DB error so Phase5CompleteButton can
+//     surface the failure. Triggers completion email via next/server after().
 // ─────────────────────────────────────────────────────────────────
 
 'use server'
@@ -87,6 +88,15 @@ export async function markPhase5Complete(): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return
 
+  // Idempotent: already completed → no-op (prevents double email when both
+  // "I've finished" button and G.8 acknowledge call this action).
+  const { data: current } = await supabase
+    .from('framework_progress')
+    .select('phase5_completed_at')
+    .eq('user_id', user.id)
+    .maybeSingle()
+  if (current?.phase5_completed_at) return
+
   const { error: updateError } = await supabase
     .from('framework_progress')
     .update({
@@ -97,7 +107,7 @@ export async function markPhase5Complete(): Promise<void> {
 
   if (updateError) {
     console.error('[phase-5 actions] phase5_completed_at update failed:', updateError.message, 'user:', user.id)
-    return
+    throw new Error('phase5_completed_at update failed')
   }
 
   // Fetch display_name for email personalisation — runs before after() to avoid
