@@ -198,7 +198,7 @@ function jawPrimaryTemplate(ctx: ParagraphContext): string {
   }
 
   if (assessment.tmj_daytime_clenching === true) {
-    text += ' The unconscious daytime clenching pattern you identified means tension is being actively maintained ; the resting position retraining in Phase 3 addresses this directly.'
+    text += ' The unconscious daytime clenching pattern you identified means tension is being actively maintained between your protocol sessions; the resting position retraining in Phase 3 addresses this directly.'
   }
 
   text += ' Your Phase 3 jaw protocol is the central intervention.'
@@ -220,7 +220,7 @@ function cervPrimaryTemplate(ctx: ParagraphContext): string {
   let text = `Your tinnitus is being driven primarily through the upper cervical pathway. The ${findings} indicate chronic upper cervical dysfunction generating elevated sensory input into the brainstem's auditory processing system.`
 
   if (assessment.cerv_forward_head_posture === true) {
-    text += ' Your forward head posture is continuously loading the upper cervical spine ; addressing this through the workstation and postural guidance in Phase 4 will make your Phase 3 protocol work significantly more durable.'
+    text += ' Your forward head posture is continuously loading the upper cervical spine throughout the day; addressing this through the workstation and postural guidance in Phase 4 will make your Phase 3 protocol work significantly more durable.'
   }
 
   text += ' Your Phase 3 cervical protocol is the central intervention.'
@@ -296,29 +296,29 @@ function primaryWithSecondaryTemplate(ctx: ParagraphContext): string {
 
 // Doc 8 B.7 Section 3 — jaw injury flag modification
 function jawInjuryModifier(): string {
-  return 'Your history of jaw injury is ; post-traumatic changes to the joint and surrounding musculature are a well-documented source of the kind of ongoing abnormal input your assessment has identified. The Phase 3 jaw distraction and release work is particularly relevant for post-traumatic cases.'
+  return 'Your history of jaw injury is significant context for this profile; post-traumatic changes to the joint and surrounding musculature are a well-documented source of the kind of ongoing abnormal input your assessment has identified. The Phase 3 jaw distraction and release work is particularly relevant for post-traumatic cases.'
 }
 
 // Doc 8 B.7 Section 3 — orthodontic flag modification
 function orthodonticModifier(): string {
-  return 'Your orthodontic history is worth noting ; changes to bite mechanics can produce lasting alterations in how the jaw loads and moves.'
+  return 'Your orthodontic history is worth noting as contributing context; changes to bite mechanics can produce lasting alterations in how the jaw loads and moves.'
 }
 
 // Doc 8 B.2 Module 1 contextual flag — B.7 equivalent not explicit; using B.2 text
 function dentalExtractionsModifier(): string {
-  return 'Your history of posterior dental extractions is ; loss of posterior teeth, particularly wisdom teeth, can alter jaw mechanics and loading patterns over time, and is worth noting as part of your profile.'
+  return 'Your history of posterior dental extractions is relevant context; loss of posterior teeth, particularly wisdom teeth, can alter jaw mechanics and loading patterns over time, and is worth noting as part of your profile.'
 }
 
 // Doc 8 B.2 Module 1 contextual flag — B.7 equivalent not explicit; using B.2 text
 function jawSurgeryModifier(): string {
-  return '; post-surgical changes to joint mechanics can produce lasting alterations in how the jaw loads and moves.'
+  return 'Your history of jaw surgery is relevant context; post-surgical changes to joint mechanics can produce lasting alterations in how the jaw loads and moves.'
 }
 
 // ── Contextual flag modifiers — cervical-side ────────────────────────────────
 
 // Doc 8 B.7 Section 3 — whiplash flag modification
 function whiplashModifier(): string {
-  return 'Your history of whiplash is ; whiplash-type injuries can produce lasting upper cervical joint and muscle changes that generate ongoing abnormal input long after the acute injury has resolved. Your protocol addresses this directly.'
+  return 'Your history of whiplash is significant context; whiplash-type injuries can produce lasting upper cervical joint and muscle changes that generate ongoing abnormal input long after the acute injury has resolved. Your protocol addresses this directly.'
 }
 
 // Doc 8 B.3 Module 2 contextual flag — B.7 equivalent not explicit; using B.3 text
@@ -328,7 +328,7 @@ function sedentaryOccupationModifier(): string {
 
 // Doc 8 B.3 Module 2 contextual flag — B.7 equivalent not explicit; using B.3 text
 function oneSidedSportModifier(): string {
-  return "Your history of one-sided sport or asymmetric activity is ; repetitive single-side loading can reinforce cervical tension on the dominant side. This is addressed alongside your protocol work in Phase 4's postural correction section."
+  return "Your history of one-sided sport or asymmetric activity is worth factoring in; repetitive single-side loading can reinforce cervical tension on the dominant side. This is addressed alongside your protocol work in Phase 4's postural correction section."
 }
 
 // ── Nervous system modifiers ─────────────────────────────────────────────────
@@ -340,7 +340,7 @@ function highNervousSystemModifier(): string {
 
 // No explicit Doc 8 B.7 text for 1–2 flags — proposed mild modifier (reviewer approved pre-work)
 function mildNervousSystemModifier(): string {
-  return 'Your assessment identified ; not enough to indicate the full Phase 4 breath work as an immediate priority, but worth keeping in mind as you progress. The Phase 4 breath work is accessible from the start if you find stress or anxiety is amplifying your tinnitus during Phase 3.'
+  return 'Your assessment identified some nervous system involvement; not enough to indicate the full Phase 4 breath work as an immediate priority, but worth keeping in mind as you progress. The Phase 4 breath work is accessible from the start if you find stress or anxiety is amplifying your tinnitus during Phase 3.'
 }
 
 // ── Low-confidence wrapper ────────────────────────────────────────────────────
@@ -353,9 +353,9 @@ function mildNervousSystemModifier(): string {
 
 function lowConfidenceWrapper(flag: LowConfidenceFlag): string {
   if (flag === 'LOW_CONFIDENCE_SYMPTOM_DOMINANT') {
-    return 'Your symptom picture ; your tinnitus responds to jaw and neck-related triggers and varies in ways consistent with a somatic driver. However, the physical movement and palpation tests in this assessment did not produce strong confirmatory findings. This can happen for a few reasons: body awareness develops with practice, some people do not respond strongly to initial palpation, or the physical findings may be subtler in your case.\n\nThe framework is still worth pursuing. We recommend completing Phase 2 and beginning Phase 3 with a light exploratory protocol covering both modules, while staying attentive to whether the physical work produces noticeable changes. Reassessing after four weeks of protocol work often produces clearer findings as body awareness improves.'
+    return 'Your symptom picture suggests somatic involvement; your tinnitus responds to jaw and neck-related triggers and varies in ways consistent with a somatic driver. However, the physical movement and palpation tests in this assessment did not produce strong confirmatory findings. This can happen for a few reasons: body awareness develops with practice, some people do not respond strongly to initial palpation, or the physical findings may be subtler in your case.\n\nThe framework is still worth pursuing. We recommend completing Phase 2 and beginning Phase 3 with a light exploratory protocol covering both modules, while staying attentive to whether the physical work produces noticeable changes. Reassessing after four weeks of protocol work often produces clearer findings as body awareness improves.'
   }
-  return 'Your assessment did not produce strong findings in either the jaw or cervical modules. This ; some people find that body awareness and palpation sensitivity develop over time, and a reassessment after a few weeks of protocol work often produces clearer results.\n\nIf you are uncertain whether somatic tinnitus applies to you, ; the mechanism education and self-assessment process itself is valuable. You can retake this assessment at any point from the exercise library.'
+  return 'Your assessment did not produce strong findings in either the jaw or cervical modules. This does not rule out a somatic component; some people find that body awareness and palpation sensitivity develop over time, and a reassessment after a few weeks of protocol work often produces clearer results.\n\nIf you are uncertain whether somatic tinnitus applies to you, Phase 1 of the framework is the right place to start regardless; the mechanism education and self-assessment process itself is valuable. You can retake this assessment at any point from the exercise library.'
 }
 
 // ── Strong-single-finding note ────────────────────────────────────────────────
@@ -382,5 +382,5 @@ function strongSingleFindingNote(findings: SingleStrongMovement): string {
   if (findings.cerv.length > 0) pathways.push('upper cervical pathway')
   const pathwayText = pathways.join(' / ')
 
-  return `One finding worth highlighting: ${findingNames} ; it points directly at ${pathwayText} involvement. Even within your overall score, this finding is meaningful and is reflected in your protocol assignment.`
+  return `One finding worth highlighting: ${findingNames} is a high-specificity indicator; it points directly at ${pathwayText} involvement. Even within your overall score, this finding is meaningful and is reflected in your protocol assignment.`
 }

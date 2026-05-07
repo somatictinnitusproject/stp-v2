@@ -93,7 +93,7 @@ function asymmetryTextByPattern(pattern: AsymmetryPattern, assessment: Phase1Ass
       // Doc 8 Module 5 — Output 1: Consistent Ipsilateral Pattern
       const side = getDominantSide(assessment) ?? 'one'
       const findingsOnSide = getAsymmetryFindingsForSide(assessment, side)
-      return `Your assessment shows a consistent pattern on your ${side} side: ${findingsOnSide}. Your tinnitus being worse in the same ear is consistent with this pattern. Ipsilateral patterns suggest the dominant physical driver is on the same side as the louder tinnitus, which is the more straightforward presentation mechanistically. Be aware of this pattern as you work through Phase 3 release exercises.`
+      return `Your assessment shows a consistent pattern on your ${side} side: ${findingsOnSide}. Your tinnitus being worse in the same ear is consistent with this pattern. Ipsilateral patterns suggest the dominant physical driver is on the same side as the louder tinnitus, which is the more straightforward presentation mechanistically. Your Phase 3 protocol will give asymmetric emphasis to your ${side} side throughout; in the masseter release, suboccipital work, and any other exercises where lateralisation is relevant.`
     }
 
     case 'STRUCTURAL_ASYMMETRY': {
@@ -101,7 +101,7 @@ function asymmetryTextByPattern(pattern: AsymmetryPattern, assessment: Phase1Ass
       // without matching tinnitus lateralisation.
       const side = getDominantSide(assessment) ?? 'one'
       const findingsOnSide = getAsymmetryFindingsForSide(assessment, side)
-      return `Your assessment shows a consistent structural pattern on your ${side} side: ${findingsOnSide}. Your tinnitus presentation does not clearly lateralise to match this pattern, which limits the confidence of the lateralisation; the structural findings are real and your protocol will apply side-specific emphasis where relevant throughout Phase 3.`
+      return `Your assessment shows a consistent structural pattern on your ${side} side: ${findingsOnSide}. Your tinnitus presentation does not clearly lateralise to match this pattern, which limits the confidence of the lateralisation; but the structural findings are real and your protocol will apply side-specific emphasis where relevant throughout Phase 3.`
     }
 
     case 'MIXED_ASYMMETRY': {
@@ -119,7 +119,7 @@ function asymmetryTextByPattern(pattern: AsymmetryPattern, assessment: Phase1Ass
     case 'NO_ASYMMETRY':
     default:
       // Doc 8 Module 5 — Output 4: No Significant Asymmetry
-      return `Your assessment did not identify significant asymmetric patterns. Your tinnitus presentation is bilateral or central, which is consistent with a more symmetrical driver pattern. Your Phase 3 protocol will be bilateral throughout ; both sides worked equally rather than one side prioritised.`
+      return `Your assessment did not identify significant asymmetric patterns. Your tinnitus presentation is bilateral or central, which is consistent with a more symmetrical driver pattern. Your Phase 3 protocol will be bilateral throughout without specific side emphasis; both sides worked equally rather than one side prioritised.`
   }
 }
 

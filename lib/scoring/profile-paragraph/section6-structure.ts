@@ -61,7 +61,7 @@ function sessionStructureOptions(): string {
 
 const recommendationText: Record<string, string> = {
   DUAL_DRIVER:
-    'Both pathways : working them simultaneously from day one is the most efficient approach. Option 2 is recommended.',
+    'Both pathways are equally active; working them simultaneously from day one is the most efficient approach. Option 2 is recommended.',
 
   TMJ_PRIMARY_STRONG_SECONDARY:
     'Your primary driver takes priority. Full primary protocol daily plus the two to three key secondary exercises gives comprehensive coverage without overcommitting time. Option 3 is recommended.',

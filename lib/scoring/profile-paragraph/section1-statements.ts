@@ -51,7 +51,7 @@ function dualDriverStatement(): string {
 
 Your assessment identified meaningful involvement in both pathways, with scores close enough that neither clearly dominates. Both the trigeminal pathway from your jaw and the upper cervical afferent pathway from your neck are generating abnormal input into your auditory system simultaneously.
 
-This is the most common profile. It means your Phase 3 work addresses both protocols : more daily time commitment, but also more complete coverage of the drivers that are active.`
+This is the most common profile. It means your Phase 3 work addresses both protocols with equal emphasis; more daily time commitment, but also more complete coverage of the drivers that are active.`
 }
 
 // Doc 8 B.7 Section 1 — Profile Type 4 — Primary with Strong Secondary
