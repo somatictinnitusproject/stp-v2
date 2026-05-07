@@ -659,7 +659,8 @@ export default async function SessionPage({ params }: Props) {
         </AuthShell>
       )
     }
-    // phase3_first_accessed already set — fall through to default stub
+    // phase3_first_accessed already set — redirect to Phase 3 overview
+    redirect('/framework/phase-3')
   }
 
   // ── Default stub — non-Phase-1 phases (Phase 2 / 3 / 4 / 5 stubs until those phases are built) ──

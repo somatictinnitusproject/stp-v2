@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Activity, AlertCircle, Moon, TrendingUp } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -67,7 +67,7 @@ function buildCorrelationCard(card: CorrelationCard) {
     } else {
       kind = `positive_${strength}` as InsightCardKind
       headline = 'Better sleep correlates with higher loudness in your data'
-      body = 'Unusual pattern — most members see lower loudness with better sleep. May reflect noise in early data.'
+      body = 'Unusual pattern; most members see lower loudness with better sleep. May reflect noise in early data.'
     }
   } else {
     if (direction === 'positive') {
@@ -83,12 +83,12 @@ function buildCorrelationCard(card: CorrelationCard) {
     } else {
       kind = `inverse_${strength}` as InsightCardKind
       headline = `Lower ${metricLabel} doesn't predict lower loudness here`
-      body = `Unusual direction — most members find ${metricLabel} tracks loudness positively. May reflect noise.`
+      body = `Unusual direction; most members find ${metricLabel} tracks loudness positively. May reflect noise.`
     }
   }
 
   const cervicalModifierText = showCervicalModifier
-    ? 'Given your cervical-primary profile, this jaw tension pattern is worth noting — it may reflect the interconnected nature of your jaw and cervical drivers.'
+    ? 'Given your cervical-primary profile, this jaw tension pattern is worth noting; it may reflect the interconnected nature of your jaw and cervical drivers.'
     : undefined
 
   return (

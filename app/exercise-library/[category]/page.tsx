@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+﻿export const dynamic = 'force-dynamic'
 
 // app/exercise-library/[category]/page.tsx
 // ─────────────────────────────────────────────────────────────────
@@ -110,7 +110,7 @@ export default async function ExerciseCategoryPage({ params }: PageProps) {
               No exercises in this category yet.
             </p>
             <p className="text-[14px] text-text-muted mb-4">
-              Coming soon — we&apos;re adding more exercises across all categories.
+              Coming soon; we&apos;re adding more exercises across all categories.
             </p>
             <Link
               href="/exercise-library"

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 // B.7 — Profile Output client component.
 // Renders the already-generated profile_paragraph from the DB plus the protocol
@@ -213,7 +213,7 @@ export default function Session7ProfileOutputClient({
           )}
           {hasMaintenanceNote && (
             <p className="text-body text-text-body">
-              Both are covered in Phase 2 and Phase 4 in full — these are just the immediate actions.
+              Both are covered in Phase 2 and Phase 4 in full; these are just the immediate actions.
             </p>
           )}
         </div>

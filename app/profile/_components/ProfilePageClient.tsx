@@ -11,6 +11,7 @@ import ProfileTabs from './ProfileTabs'
 import ProfilePostList from './ProfilePostList'
 import ProfileReplyList from './ProfileReplyList'
 import EditProfileModal from '@/components/profile/EditProfileModal'
+import ResearchConsentToggle from '@/components/profile/ResearchConsentToggle'
 
 interface Props {
   profile: UserProfile
@@ -19,6 +20,7 @@ interface Props {
   initialPostsHasMore: boolean
   initialReplies: UserReply[]
   initialRepliesHasMore: boolean
+  researchConsent: boolean | null
 }
 
 export default function ProfilePageClient({
@@ -28,6 +30,7 @@ export default function ProfilePageClient({
   initialPostsHasMore,
   initialReplies,
   initialRepliesHasMore,
+  researchConsent,
 }: Props) {
   const [profile, setProfile] = useState(initialProfile)
   const [tab, setTab] = useState<'posts' | 'replies'>('posts')
@@ -64,6 +67,16 @@ export default function ProfilePageClient({
           initialHasMore={initialRepliesHasMore}
           emptyMessage={repliesEmpty}
         />
+      )}
+
+      {isOwnProfile && researchConsent !== null && (
+        <div className="bg-surface border border-border rounded-xl p-5 mt-6">
+          <h3 className="text-[15px] font-semibold text-text-heading mb-1">Research consent</h3>
+          <p className="text-[13px] text-text-muted mb-4">
+            Your progress data may be used anonymously to support tinnitus research. You can withdraw this at any time.
+          </p>
+          <ResearchConsentToggle initialValue={researchConsent} />
+        </div>
       )}
 
       {showEditModal && (

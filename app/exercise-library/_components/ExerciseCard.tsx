@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 // Shared exercise card used by both the library home page grid and the
 // category page grid. Per Doc 11 §C5: thumbnail flush to top, content
@@ -37,7 +37,7 @@ export default function ExerciseCard({ entry }: { entry: LibraryExerciseEntry })
     <Link
       href={href}
       className="group block bg-surface border border-border rounded-xl overflow-hidden no-underline transition-colors duration-150 hover:border-primary"
-      aria-label={`${entry.name} — open exercise`}
+      aria-label={`${entry.name}: open exercise`}
     >
       {/* Thumbnail */}
       <div

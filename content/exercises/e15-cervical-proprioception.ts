@@ -1,4 +1,4 @@
-// /content/exercises/e15-cervical-proprioception.ts
+﻿// /content/exercises/e15-cervical-proprioception.ts
 // E.15 — Cervical Proprioception Retraining
 // Verbatim member-facing copy from Document 8 Part E, section E.15.
 //
@@ -28,11 +28,11 @@ const e15CervicalProprioception: Exercise = {
   fullContent: [
     {
       type: 'p',
-      text: 'Proprioception is the body\'s position sense — the system that tells your brain where your head and neck are in space without you having to look. In the cervical spine this system is extraordinarily precise, and for good reason: accurate head position information is fundamental to balance, gaze stability, and coordination of the entire upper body.',
+      text: 'Proprioception is the body\'s position sense: the system that tells your brain where your head and neck are in space without you having to look. In the cervical spine this system is extraordinarily precise, and for good reason: accurate head position information is fundamental to balance, gaze stability, and coordination of the entire upper body.',
     },
     {
       type: 'p',
-      text: 'The cervical joints contain a dense concentration of proprioceptive receptors — sensors that continuously report joint position, movement speed, and load to the brainstem. In people with chronic cervical dysfunction, these receptors become less accurate. The joints have been held in abnormal positions for so long, and the surrounding muscles have maintained such consistently elevated tone, that the position sense system has recalibrated around the dysfunction rather than around neutral. The brain has learned to treat an abnormal position as normal.',
+      text: 'The cervical joints : sensors that continuously report joint position, movement speed, and load to the brainstem. In people with chronic cervical dysfunction, these receptors become less accurate. The joints have been held in abnormal positions for so long, and the surrounding muscles have maintained such consistently elevated tone, that the position sense system has recalibrated around the dysfunction rather than around neutral. The brain has learned to treat an abnormal position as normal.',
     },
     {
       type: 'p',
@@ -40,15 +40,15 @@ const e15CervicalProprioception: Exercise = {
     },
     {
       type: 'p',
-      text: 'Proprioception retraining works by repeatedly challenging the system to find a precise target position accurately — training the receptors and the neural pathways that process their output to produce more accurate signals. The improvements are measurable, progressive, and durable with consistent practice.',
+      text: 'Proprioception retraining works by repeatedly challenging the system to , training the receptors and the neural pathways that process their output to produce more accurate signals. The improvements are measurable, progressive, and durable with consistent practice.',
     },
     {
       type: 'subhead',
-      text: 'Method — Laser Pointer or Fixed Mark',
+      text: 'Method: Laser Pointer or Fixed Mark',
     },
     {
       type: 'p',
-      text: 'This exercise requires a reference point on a wall and a way to track the position of your head accurately. Two options: a small laser pointer attached to a headband or held lightly against the forehead works well — the laser dot on the wall gives precise visual feedback of head position. Alternatively, sit facing a fixed mark on the wall at eye level and use the mark as your reference target without a laser.',
+      text: 'This exercise requires a reference point on a wall and a way to track the position of your head accurately. Two options: a small laser pointer attached to a headband or held lightly ; the laser dot on the wall gives precise visual feedback of head position. Alternatively, sit facing a fixed mark on the wall at eye level and use the mark as your reference target without a laser.',
     },
     {
       type: 'subhead',
@@ -56,15 +56,15 @@ const e15CervicalProprioception: Exercise = {
     },
     {
       type: 'p',
-      text: 'Sit upright in a chair approximately one metre from a wall. Place a small target on the wall at eye level directly in front of you — a piece of tape or a drawn cross works well.',
+      text: 'Sit upright in a chair approximately one metre from a wall. Place a small target on the wall ; a piece of tape or a drawn cross works well.',
     },
     {
       type: 'p',
-      text: 'Close your eyes. Rotate your head slowly to one side to approximately halfway through your comfortable range. Hold briefly. Then slowly return your head to what feels like the exact starting position — the position where you were looking directly at the target. Open your eyes.',
+      text: 'Close your eyes. Rotate your head slowly to one side to approximately halfway through your comfortable range. Hold briefly. Then slowly : the position where you were looking directly at the target. Open your eyes.',
     },
     {
       type: 'p',
-      text: 'Assess the accuracy of your return. If using a laser, note where the dot has landed relative to the target. If using a fixed mark, note whether your gaze has returned to the exact target position or has drifted to one side. The gap between where you think you returned to and where you actually returned to is your proprioceptive error. The goal of repeated practice is to reduce that error — training the system to return more accurately to neutral after rotation.',
+      text: 'Assess the accuracy of your return. If using a laser, note where the dot has landed relative to the target. If using a fixed mark, note whether your gaze has returned to the exact target position or has drifted to one side. The gap between where you think you returned to and where you actually returned to is your proprioceptive error. , training the system to return more accurately to neutral after rotation.',
     },
     {
       type: 'p',
@@ -76,7 +76,7 @@ const e15CervicalProprioception: Exercise = {
     },
     {
       type: 'p',
-      text: 'As accuracy at half range improves, progress to returning from full comfortable end range rotation. As overall accuracy improves, add a brief nodding movement before the return — introducing a second plane of movement that the system must account for before repositioning. These progressions increase the challenge to the proprioceptive system and continue driving adaptation.',
+      text: 'As accuracy at half range improves, progress to returning from full comfortable end range rotation. As overall accuracy improves, , introducing a second plane of movement that the system must account for before repositioning. These progressions increase the challenge to the proprioceptive system and continue driving adaptation.',
     },
     {
       type: 'emphasis',
@@ -87,7 +87,7 @@ const e15CervicalProprioception: Exercise = {
   condensedSummary: [
     {
       type: 'p',
-      text: 'Sit one metre from a wall with a target at eye level. Close eyes, rotate head halfway through comfortable range, then slowly return to what feels like the exact starting position. Open eyes, assess error — distance from target. Goal is to reduce error across reps and sessions. Ten reps per side. Progress to full comfortable end range, then add a nodding movement before the return.',
+      text: 'Sit one metre from a wall with a target at eye level. Close eyes, rotate head halfway through comfortable range, then slowly return to what feels like the exact starting position. Open eyes, note the distance from the target. Goal is to reduce error across reps and sessions. Ten reps per side. Progress to full comfortable end range, then add a nodding movement before the return.',
     },
   ],
 
@@ -103,7 +103,7 @@ const e15CervicalProprioception: Exercise = {
       content: [
         {
           type: 'p',
-          text: 'Your assessment identified restricted rotation on your [left / right] side. Asymmetric rotation restriction is consistently associated with greater proprioceptive error on the restricted side — the joints that move least accurately tend to report their position least accurately. Begin each set rotating toward your restricted side. Track error direction carefully — consistent drift toward or away from your restricted side on return is the specific pattern this exercise is correcting for your profile.',
+          text: 'Your assessment identified restricted rotation on your [left / right] side. Asymmetric rotation restriction is consistently associated with greater proprioceptive error on the restricted side; the joints that move least accurately tend to report their position least accurately. Begin each set rotating toward your restricted side. Track error direction carefully; consistent drift toward or away from your restricted side on return is the specific pattern this exercise is correcting for your profile.',
         },
       ],
     },

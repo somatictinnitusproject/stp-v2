@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 // app/framework/phase-3/components/ResistancePhaseCard.tsx
 // Client component. Three render states:
@@ -89,7 +89,7 @@ export default function ResistancePhaseCard({
       <div className="bg-surface border border-border rounded-[12px] p-5 mb-6">
         <p className="text-[14px] font-semibold text-text-heading">Resistance Phase</p>
         <p className="text-[14px] text-text-muted mt-1 mb-4">
-          Most members are ready after one to two weeks of consistent release work. The protocol does not push you forward — you decide when you&apos;re ready based on tissue response.
+          Most members are ready after one to two weeks of consistent release work. The protocol does not push you forward; you decide when you&apos;re ready based on tissue response.
         </p>
         <button
           type="button"
@@ -128,11 +128,11 @@ export default function ResistancePhaseCard({
             </p>
             <ol className="list-decimal list-inside space-y-2 mb-4 text-body text-text-body">
               <li>Tenderness on masseter and temporalis self-palpation has reduced noticeably.</li>
-              <li>The release work feels less effortful — tissues responding more readily to pressure.</li>
+              <li>The release work feels less effortful, with tissues responding more readily to pressure.</li>
               <li>Release sessions are producing a clear sense of tissue softening rather than resistance.</li>
             </ol>
             <p className="text-body text-text-body mb-6">
-              You don&apos;t need all three — a clear pattern across most of them is sufficient.
+              You don&apos;t need all three; a clear pattern across most of them is sufficient.
             </p>
             <div className="flex flex-col gap-3">
               <button
@@ -147,7 +147,7 @@ export default function ResistancePhaseCard({
                 onClick={() => setShowModal(false)}
                 className="w-full py-2 px-4 text-primary text-body font-semibold hover:underline transition-colors"
               >
-                Not yet — keep working
+                Not yet, keep working
               </button>
             </div>
           </div>

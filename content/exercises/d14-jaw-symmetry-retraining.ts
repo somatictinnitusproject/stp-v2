@@ -1,4 +1,4 @@
-// /content/exercises/d14-jaw-symmetry-retraining.ts
+﻿// /content/exercises/d14-jaw-symmetry-retraining.ts
 // D.14 — Jaw Symmetry Retraining
 // Verbatim member-facing copy from Document 8 Part D, section D.14.
 //
@@ -34,7 +34,7 @@ const d14JawSymmetryRetraining: Exercise = {
     },
     {
       type: 'p',
-      text: 'Jaw drift on opening — where the lower jaw tracks consistently to one side — is a neuromuscular pattern, not just a tension pattern. The lateral pterygoid on the dominant side has learned to fire earlier and harder than the opposite side. The release work reduces its resting tone. Symmetry retraining corrects the firing pattern itself — teaching the pterygoids to produce a balanced, midline opening movement through repetition and conscious correction.',
+      text: 'Jaw drift on opening (where the lower jaw tracks consistently to one side) is a neuromuscular pattern, not just a tension pattern. The lateral pterygoid on the dominant side has learned to fire earlier and harder than the opposite side. The release work reduces its resting tone. Symmetry retraining corrects the firing pattern itself: teaching the pterygoids to produce a balanced, midline opening movement through repetition and conscious correction.',
     },
     {
       type: 'p',
@@ -50,19 +50,19 @@ const d14JawSymmetryRetraining: Exercise = {
     },
     {
       type: 'p',
-      text: 'Stand or sit in front of a mirror with your face in a neutral, relaxed position. Locate your midline — the centre line running between your upper and lower front teeth.',
+      text: 'Stand or sit in front of a mirror with your face in a neutral, relaxed position. Locate your midline: the centre line running between your upper and lower front teeth.',
     },
     {
       type: 'p',
-      text: 'Open your jaw slowly and in a controlled way, watching the lower teeth track against the upper. Your target is a straight midline trajectory throughout the full range of opening — lower teeth tracking directly downward without deviating left or right.',
+      text: 'Open your jaw slowly and in a controlled way, watching the lower teeth track against the upper. Your target is a straight midline trajectory throughout the full range of opening; lower teeth tracking directly downward without deviating left or right.',
     },
     {
       type: 'p',
-      text: 'Open to a comfortable mid-range — not forced wide. Close slowly and with the same control. One full open-close cycle should take four to six seconds.',
+      text: 'Open to a comfortable mid-range, not forced wide. Close slowly and with the same control. One full open-close cycle should take four to six seconds.',
     },
     {
       type: 'p',
-      text: 'If drift occurs — and it likely will in early sessions — stop at the point of drift, consciously reposition to midline, and continue from there. You are interrupting the habitual pattern and substituting a corrected one. The interruption is the training stimulus.',
+      text: 'If drift occurs (and it likely will in early sessions), stop at the point of drift, consciously reposition to midline, and continue from there. You are interrupting the habitual pattern and substituting a corrected one. The interruption is the training stimulus.',
     },
     {
       type: 'p',
@@ -78,7 +78,7 @@ const d14JawSymmetryRetraining: Exercise = {
     },
     {
       type: 'p',
-      text: 'Once midline tracking is consistent with visual feedback — drift rare or absent on mirror check — introduce proprioceptive training:',
+      text: 'Once midline tracking is consistent with visual feedback (drift rare or absent on mirror check), introduce proprioceptive training:',
     },
     {
       type: 'p',
@@ -86,7 +86,7 @@ const d14JawSymmetryRetraining: Exercise = {
     },
     {
       type: 'p',
-      text: 'This is the progression that consolidates the retraining — moving from visually-guided correction to internally-guided accuracy. It is the difference between needing a mirror to move correctly and moving correctly without one.',
+      text: 'This is the progression that consolidates the retraining: moving from visually-guided correction to internally-guided accuracy. It is the difference between needing a mirror to move correctly and moving correctly without one.',
     },
   ],
 
@@ -109,7 +109,7 @@ const d14JawSymmetryRetraining: Exercise = {
       content: [
         {
           type: 'p',
-          text: 'Your assessment identified consistent jaw drift to the [left / right]. The [left / right] lateral pterygoid is the overactive side producing this pattern. In early sessions your jaw will want to drift in its habitual direction — this is expected. The interruption and correction is the training. Track your drift frequency across sessions — fewer interruptions needed per set is your clearest progress indicator for this exercise.',
+          text: 'Your assessment identified consistent jaw drift to the [left / right]. The [left / right] lateral pterygoid is the overactive side producing this pattern. In early sessions your jaw will want to drift in its habitual direction; this is expected. The interruption and correction is the training. Fewer interruptions needed per set is your clearest progress indicator for this exercise.',
         },
       ],
     },
@@ -120,7 +120,7 @@ const d14JawSymmetryRetraining: Exercise = {
       content: [
         {
           type: 'p',
-          text: 'Your assessment identified joint sounds in your Phase 1 assessment. Work within your comfortable range — do not push into restriction or force range of motion. As the resistance phase progresses and disc position improves through the combined effect of distraction and symmetry retraining, comfortable range typically increases gradually. Track this as a progress indicator alongside drift frequency.',
+          text: 'Your assessment identified joint sounds in your Phase 1 assessment. Work within your comfortable range; do not push into restriction or force range of motion. As the resistance phase progresses and disc position improves through the combined effect of distraction and symmetry retraining, comfortable range typically increases gradually. Track this as a progress indicator alongside drift frequency.',
         },
       ],
     },
@@ -131,7 +131,7 @@ const d14JawSymmetryRetraining: Exercise = {
       content: [
         {
           type: 'p',
-          text: 'Your assessment identified restricted opening in your Phase 1 assessment. Work within your comfortable range — do not push into restriction or force range of motion. As the resistance phase progresses and disc position improves through the combined effect of distraction and symmetry retraining, comfortable range typically increases gradually. Track range improvement across sessions as a progress indicator alongside drift frequency.',
+          text: 'Your assessment identified restricted opening in your Phase 1 assessment. Work within your comfortable range; do not push into restriction or force range of motion. As the resistance phase progresses and disc position improves through the combined effect of distraction and symmetry retraining, comfortable range typically increases gradually. Track range improvement across sessions as a progress indicator alongside drift frequency.',
         },
       ],
     },

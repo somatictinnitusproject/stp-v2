@@ -1,4 +1,4 @@
-// /content/exercises/d10-tmj-distraction.ts
+﻿// /content/exercises/d10-tmj-distraction.ts
 // D.10 — TMJ Distraction
 // Verbatim member-facing copy from Document 8 Part D, section D.10.
 //
@@ -33,7 +33,7 @@ const d10TmjDistraction: Exercise = {
     },
     {
       type: 'p',
-      text: "TMJ distraction applies gentle traction to the jaw joint — a controlled inferior and slightly forward pull on the mandible that separates the joint surfaces briefly, decompresses the disc space, and reduces the intracapsular pressure that accumulates under chronic muscular loading. Performed consistently over time it contributes to disc repositioning and reduces the compressive load on the posterior capsule where the auriculotemporal nerve's articular branches are most concentrated.",
+      text: "TMJ distraction applies gentle traction to the jaw joint: a controlled inferior and slightly forward pull on the mandible that separates the joint surfaces briefly, decompresses the disc space, and reduces the intracapsular pressure that accumulates under chronic muscular loading. Performed consistently over time it contributes to disc repositioning and reduces the compressive load on the posterior capsule where the auriculotemporal nerve's articular branches are most concentrated.",
     },
     {
       type: 'p',
@@ -45,19 +45,19 @@ const d10TmjDistraction: Exercise = {
     },
     {
       type: 'p',
-      text: 'Sit upright with your head in a neutral position. Place both thumbs on the lower back molars — one thumb on each side, resting on the chewing surface of the last molar you can comfortably reach. Your fingers rest under the chin for stability.',
+      text: 'Sit upright with your head in a neutral position. Place both thumbs on the lower back molars: one thumb on each side, resting on the chewing surface of the last molar you can comfortably reach. Your fingers rest under the chin for stability.',
     },
     {
       type: 'p',
-      text: 'Apply gentle, sustained downward pressure through your thumbs — drawing the lower jaw slowly and evenly downward. The movement is small — a few millimetres of separation is sufficient. You are not trying to open the mouth wide. You are creating a gentle sustained traction force that decompresses the joint space.',
+      text: 'Apply gentle, sustained downward pressure through your thumbs, drawing the lower jaw slowly and evenly downward. The movement is small; a few millimetres of separation is sufficient. You are not trying to open the mouth wide. You are creating a gentle sustained traction force that decompresses the joint space.',
     },
     {
       type: 'p',
-      text: 'Hold the traction for 30 to 45 seconds. Release slowly — do not let the jaw snap back. Repeat three times.',
+      text: 'Hold the traction for 30 to 45 seconds. Release slowly; do not let the jaw snap back. Repeat three times.',
     },
     {
       type: 'p',
-      text: 'The sensation should be one of gentle decompression or mild stretch at the joint — often producing an immediate sense of relief around the ear and jaw area. If you feel pain rather than relief, reduce the traction force significantly.',
+      text: 'The sensation should be one of gentle decompression or mild stretch at the joint, often producing an immediate sense of relief around the ear and jaw area. If you feel pain rather than relief, reduce the traction force significantly.',
     },
     {
       type: 'emphasis',
@@ -68,7 +68,7 @@ const d10TmjDistraction: Exercise = {
   condensedSummary: [
     {
       type: 'p',
-      text: 'Sit upright with thumbs on the lower back molars and fingers under the chin for stability. Apply gentle sustained downward pressure for 30 to 45 seconds — a few millimetres of separation is sufficient. Release slowly. Repeat three times.',
+      text: 'Sit upright with thumbs on the lower back molars and fingers under the chin for stability. Apply gentle sustained downward pressure for 30 to 45 seconds; a few millimetres of separation is sufficient. Release slowly. Repeat three times.',
     },
   ],
 
@@ -91,7 +91,7 @@ const d10TmjDistraction: Exercise = {
       content: [
         {
           type: 'p',
-          text: 'Your assessment identified joint sounds — clicking or popping — in your Phase 1 assessment. TMJ distraction is particularly relevant to your presentation. The disc displacement that produces these findings is directly addressed by this exercise. You may notice an immediate reduction in joint sounds after distraction sessions as the protocol progresses.',
+          text: 'Your assessment identified joint sounds (clicking or popping) in your Phase 1 assessment. TMJ distraction is particularly relevant to your presentation. The disc displacement that produces these findings is directly addressed by this exercise. You may notice an immediate reduction in joint sounds after distraction sessions as the protocol progresses.',
         },
       ],
     },

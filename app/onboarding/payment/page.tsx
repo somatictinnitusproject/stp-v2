@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation'
+﻿import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { createServiceClient } from '@/lib/supabase/service'
@@ -77,7 +77,7 @@ export default async function OnboardingPaymentPage() {
             through the same process.
           </p>
           <p className="font-medium text-text-heading">
-            £2.99 per month. Cancel any time. Your data is yours — exported or deleted on
+            £2.99 per month. Cancel any time. Your data is yours; exported or deleted on
             request.
           </p>
         </div>

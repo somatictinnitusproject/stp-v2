@@ -1,4 +1,4 @@
-import type { LucideIcon } from 'lucide-react'
+﻿import type { LucideIcon } from 'lucide-react'
 
 type CardKind =
   | 'positive_strong'
@@ -60,7 +60,7 @@ export default function InsightCard({
 
       {isWeak && (
         <p className="text-[13px] text-text-muted italic mt-2">
-          This is an early pattern — it may strengthen as more data accumulates.
+          This is an early pattern; it may strengthen as more data accumulates.
         </p>
       )}
 

@@ -1,4 +1,4 @@
-// Phase 2 — Lifestyle Foundations types.
+﻿// Phase 2: Lifestyle Foundations types.
 // Spec: Doc 8 Part C, Doc 13 §5.3.
 
 // Section identifier — one of the 8 Phase 2 sessions.

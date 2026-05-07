@@ -1,4 +1,4 @@
-// B.7 — Profile Output
+﻿// B.7 — Profile Output
 // Source: Document 8 Part B, section B.7.
 // This module renders the already-generated profile_paragraph from phase1_assessment
 // plus the interactive protocol option selector (or acknowledge path for low-confidence
@@ -28,7 +28,7 @@ import type {
 export const B7_PROFILE_OUTPUT: B7ProfileOutput = {
   id: 'B7',
   sessionNumber: 7,
-  sectionLabel: 'Phase 1 \u2014 Identification',
+  sectionLabel: 'Phase 1: Identification',
 
   // sectionTitle: Doc 8 §B.7 does not specify a section title for the page heading.
   // 'Your Phase 1 Profile' chosen as the member-facing chrome above the output screen.
@@ -56,12 +56,12 @@ export const B7_PROFILE_OUTPUT: B7ProfileOutput = {
     {
       value: 2,
       name: 'Parallel',
-      description: 'Both protocols simultaneously from day one. Requires 40\u201350 minutes daily for combined release work.',
+      description: 'Both protocols simultaneously from day one. Requires 40 minutes daily for combined release work.',
       recommendedFor: 'Confirmed dual primary driver profiles with sufficient time.',
     },
     {
       value: 3,
-      name: 'Prioritised Parallel (default recommendation)',
+      name: 'Prioritised Parallel',
       description: 'Full primary driver protocol daily plus reduced secondary component. Best balance of comprehensiveness and time for most members.',
       recommendedFor: 'Primary with strong secondary or primary with secondary profiles. Also suitable for dual drivers who prefer a lighter initial load.',
     },
@@ -73,7 +73,7 @@ export const B7_PROFILE_OUTPUT: B7ProfileOutput = {
   recommendations: [
     {
       profileTypePattern: 'dual',
-      text: 'Both pathways are equally active \u2014 working them simultaneously from day one is the most efficient approach. Option 2 is recommended.',
+      text: 'Both pathways are equally active; working them simultaneously from day one is the most efficient approach. Option 2 is recommended.',
     },
     {
       profileTypePattern: 'primary_strong_secondary',
@@ -90,9 +90,9 @@ export const B7_PROFILE_OUTPUT: B7ProfileOutput = {
   // verbatim Doc 8 §B.7 Section 7 (two universal paragraphs).
   // A conditional block for members with confirmed high-impact maintaining factors
   // (stomach sleeping / sustained desk load) is rendered by the client component
-  // from DB data — it is not static content and does not belong here.
+  // from DB data; it is not static content and does not belong here.
   whatComesNextProse: [
-    'Phase 2 begins now. It covers the daily habits, diet, and sleep foundations that need to be in place before your protocol work starts. Work through it at your own pace \u2014 Phase 3 unlocks when you\u2019ve confirmed the maintaining factors relevant to your profile are genuinely addressed. There is no time requirement.',
+    'Phase 2 begins now. It covers the daily habits, diet, and sleep foundations that need to be in place before your protocol work starts. Work through it at your own pace. Phase 3 unlocks when you\u2019ve confirmed the maintaining factors relevant to your profile are genuinely addressed. There is no time requirement.',
     'Phase 3 unlocks when Phase 2 is complete.',
   ],
 

@@ -1,4 +1,4 @@
-// /content/exercises/e11-chin-tuck-rotation.ts
+﻿// /content/exercises/e11-chin-tuck-rotation.ts
 // E.11 — Controlled Chin-Tuck-Rotation
 // Authored from Document 8 Part E §E.11 (anatomical framing only) and
 // pre-launch §1.8 (technique replacement spec).
@@ -40,7 +40,7 @@ const e11ChinTuckRotation: Exercise = {
   fullContent: [
     {
       type: 'p',
-      text: 'The exercises up to this point have worked on the muscles and soft tissues surrounding the upper cervical joints. This exercise works on the joints themselves — specifically C0-C1 and C1-C2, the two uppermost cervical segments that sit directly at the convergence point of the upper cervical afferent pathway feeding into your DCN.',
+      text: 'The exercises up to this point have worked on the muscles and soft tissues surrounding the upper cervical joints. This exercise works on the joints themselves, specifically C0-C1 and C1-C2, the two uppermost cervical segments that sit directly at the convergence point of the upper cervical afferent pathway feeding into your DCN.',
     },
     {
       type: 'p',
@@ -56,7 +56,7 @@ const e11ChinTuckRotation: Exercise = {
     },
     {
       type: 'p',
-      text: 'Sit upright with shoulders relaxed. Perform a chin tuck — drawing your chin straight back, not down. The chin tuck repositions the upper cervical segments before the rotation engages them.',
+      text: 'Sit upright with shoulders relaxed. Perform a chin tuck: drawing your chin straight back, not down. The chin tuck repositions the upper cervical segments before the rotation engages them.',
     },
     {
       type: 'p',
@@ -64,11 +64,11 @@ const e11ChinTuckRotation: Exercise = {
     },
     {
       type: 'p',
-      text: 'Repeat to the other side. The rotation is gentle — work to the point of a comfortable stretch, not to maximum range. Forced end-range rotation is not the goal.',
+      text: 'Repeat to the other side. The rotation is gentle; work to the point of a comfortable stretch, not to maximum range. Forced end-range rotation is not the goal.',
     },
     {
       type: 'p',
-      text: 'Five to eight repetitions per side. The sensation should be a gentle stretch or mild mobilisation feeling at the base of the skull. The chin tuck is what targets the upper cervical segments specifically — without it, the rotation engages the lower cervical spine instead.',
+      text: 'Five to eight repetitions per side. The sensation should be a gentle stretch or mild mobilisation feeling at the base of the skull. The chin tuck is what targets the upper cervical segments specifically; without it, the rotation engages the lower cervical spine instead.',
     },
     {
       type: 'callout',
@@ -84,7 +84,7 @@ const e11ChinTuckRotation: Exercise = {
   condensedSummary: [
     {
       type: 'p',
-      text: 'Sit upright. Chin tuck (draw chin straight back, not down). Maintain the tuck while slowly rotating head to one side until gentle stretch in upper neck. Hold 5 seconds. Return slowly. Repeat to other side. Five to eight reps per side. Gentle stretch only — not forced end-range. Stop and consult physiotherapist if dizziness, nausea, or visual disturbance occur.',
+      text: 'Sit upright. Chin tuck (draw chin straight back, not down). Maintain the tuck while slowly rotating head to one side until gentle stretch in upper neck. Hold 5 seconds. Return slowly. Repeat to other side. Five to eight reps per side. Gentle stretch only, not forced end-range. Stop and consult physiotherapist if dizziness, nausea, or visual disturbance occur.',
     },
   ],
 
@@ -100,7 +100,7 @@ const e11ChinTuckRotation: Exercise = {
       content: [
         {
           type: 'p',
-          text: 'Your assessment identified restricted rotation — more limited on your [left / right] side. Perform an extra repetition on your restricted side: seven to eight repetitions on the [left / right], five to six on the other. Hold the rotation slightly longer on the restricted side — seven seconds instead of five. Track rotation range across sessions on the restricted side as a primary progress indicator for this exercise.',
+          text: 'Your assessment identified restricted rotation: more limited on your [left / right] side. Perform an extra repetition on your restricted side: seven to eight repetitions on the [left / right], five to six on the other. Hold the rotation slightly longer on the restricted side: seven seconds instead of five. Track rotation range across sessions on the restricted side as a primary progress indicator for this exercise.',
         },
       ],
     },

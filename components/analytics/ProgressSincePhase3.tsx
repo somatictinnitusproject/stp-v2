@@ -1,4 +1,4 @@
-import { toLocalDateStr } from '@/lib/analytics/timeWindow'
+﻿import { toLocalDateStr } from '@/lib/analytics/timeWindow'
 import type { ProgressLog } from '@/lib/analytics/types'
 import type { FrameworkProgressRow } from '@/lib/scoring/types'
 
@@ -49,14 +49,14 @@ export default function ProgressSincePhase3({ logs, frameworkProgress }: Props) 
     body = (
       <p className="text-[15px] text-text-body leading-relaxed">
         Since starting Phase 3 {daysSinceP3} days ago, your average loudness has increased by{' '}
-        {Math.abs(change).toFixed(1)} points. Trends fluctuate — most members see meaningful
+        {Math.abs(change).toFixed(1)} points. Trends fluctuate; most members see meaningful
         change after 6–8 weeks of consistent protocol work.
       </p>
     )
   } else {
     body = (
       <p className="text-[15px] text-text-body leading-relaxed">
-        Your trend is still early — most members see meaningful change after 6–8 weeks of
+        Your trend is still early; most members see meaningful change after 6–8 weeks of
         consistent protocol work.
       </p>
     )

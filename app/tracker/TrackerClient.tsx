@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -398,9 +398,9 @@ export default function TrackerClient({
 
 const TFI_CARD_BODY: Record<'intake' | 'completion', string> = {
   intake:
-    "We track outcomes using the Tinnitus Functional Index — a validated 25-item questionnaire used widely in tinnitus research. Your baseline response now will help us measure how the framework is working for you over time.",
+    "We track outcomes using the Tinnitus Functional Index: a validated 25-item questionnaire used widely in tinnitus research. Your baseline response now will help us measure how the framework is working for you over time.",
   completion:
-    "You've finished the framework. Taking the TFI now gives us a clean before-and-after comparison — your data directly contributes to the research evidence supporting somatic tinnitus rehabilitation.",
+    "You've finished the framework. Taking the TFI now gives us ; your data directly contributes to the research evidence supporting somatic tinnitus rehabilitation.",
 }
 
 function TfiCard({
@@ -428,7 +428,7 @@ function TfiCard({
         {/* Badge + dismiss row */}
         <div className="flex items-start justify-between mb-2">
           <span className="text-[11px] font-medium uppercase tracking-wider text-primary">
-            Optional — Research
+            Optional: Research
           </span>
           <button
             type="button"
@@ -470,7 +470,7 @@ function TfiSuccessToast() {
   return (
     <div className="mb-4 rounded-lg bg-[#EEF7F5] border border-[#4A9B8E] px-4 py-3">
       <p className="text-[14px] text-primary font-medium">
-        Thank you — your responses have been recorded.
+        Thank you. Your responses have been recorded.
       </p>
     </div>
   )

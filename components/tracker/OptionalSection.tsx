@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useId } from 'react'
 import { ChevronDown } from 'lucide-react'
@@ -39,7 +39,7 @@ export default function OptionalSection({
       {/* Weekly nudge — above toggle, outside collapsed area */}
       {showWeeklyNudge && (
         <p className="text-body-sm text-text-muted mb-3">
-          You've been logging for {daysSinceCreation} days — today's a great day to add a bit more detail.
+          You've been logging for {daysSinceCreation} days; today's a great day to add a bit more detail.
         </p>
       )}
 
@@ -56,7 +56,7 @@ export default function OptionalSection({
             Add more detail
           </span>
           <span className="text-body-sm text-text-muted mt-0.5">
-            Optional — helps build a richer picture of your progress and contributes to tinnitus research.
+            Optional: helps build a richer picture of your progress and contributes to tinnitus research.
           </span>
         </div>
         <ChevronDown

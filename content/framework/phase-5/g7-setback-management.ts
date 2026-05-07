@@ -1,4 +1,4 @@
-// /content/framework/phase-5/g7-setback-management.ts
+﻿// /content/framework/phase-5/g7-setback-management.ts
 // G.7 — Setback Management
 // Verbatim member-facing copy from Document 8 Part G, section G.7.
 // Daily focus: "A spike is the system under temporary strain — not
@@ -19,11 +19,11 @@ const g7: Phase5ReadingSection = {
   content: [
     {
       type: 'p',
-      text: 'Tinnitus will spike during periods of high stress, illness, significant sleep disruption, or physical strain — regardless of how effectively the framework has worked and regardless of how long the improvement has been stable. This is normal. It is expected. It is not evidence that progress has reversed or that the gains achieved through the protocol are fragile.',
+      text: 'Tinnitus will spike during periods of high stress, illness, significant sleep disruption, , regardless of how effectively the framework has worked and regardless of how long the improvement has been stable. This is normal. It is expected. It is not evidence that progress has reversed or that the gains achieved through the protocol are fragile.',
     },
     {
       type: 'p',
-      text: 'The difference between members who handle setbacks well and those who do not is almost entirely framing. A member who understands that a spike means the system is under temporary strain responds with a targeted protocol reset and returns to baseline within one to two weeks. A member who interprets the same spike as evidence that all progress has been lost responds with anxiety — which activates the anxiety-tinnitus loop, amplifies the perceived loudness further, and converts a temporary strain response into a sustained regression. The setback itself is rarely the problem. The catastrophising response to it is.',
+      text: 'The difference between members who handle setbacks well and those who do not is almost entirely framing. A member who understands that a spike means the system is under temporary strain responds with a targeted protocol reset and returns to baseline within one to two weeks. A member who interprets the same spike as evidence that all progress has been lost responds with anxiety, which activates the anxiety-tinnitus loop, amplifies the perceived loudness further, and converts a temporary strain response into a sustained regression. The setback itself is rarely the problem. The catastrophising response to it is.',
     },
     {
       type: 'subhead',
@@ -31,11 +31,11 @@ const g7: Phase5ReadingSection = {
     },
     {
       type: 'p',
-      text: 'A tinnitus spike during a setback period is the DCN responding to a temporary increase in input or a temporary reduction in its threshold. Illness elevates systemic inflammation and sensitises central neural pathways. High stress elevates sympathetic tone and increases muscle tension in the jaw and cervical structures simultaneously. Significant sleep disruption reduces central inhibitory tone, lowering the threshold at which DCN activity produces conscious tinnitus perception. In each case the underlying mechanism is temporary and resolves when the precipitating condition resolves — provided the anxiety response does not extend and amplify it beyond that window.',
+      text: 'A tinnitus spike during a setback period is the DCN responding to a temporary increase in input or a temporary reduction in its threshold. Illness elevates systemic inflammation and sensitises central neural pathways. High stress elevates sympathetic tone and increases muscle tension in the jaw and cervical structures simultaneously. Significant sleep disruption reduces central inhibitory tone, lowering the threshold at which DCN activity produces conscious tinnitus perception. In each case the underlying mechanism is temporary and resolves when the precipitating condition resolves, provided the anxiety response does not extend and amplify it beyond that window.',
     },
     {
       type: 'p',
-      text: 'The protocol gains are not lost during a setback. The tissue changes produced by weeks and months of consistent release and retraining work do not reverse in a week of high stress or illness. What changes temporarily is the system’s operating conditions — the threshold and amplification environment — not the structural foundation the protocol has built.',
+      text: 'The protocol gains are not lost during a setback. The tissue changes produced by weeks and months of consistent release and retraining work do not reverse in a week of high stress or illness. What changes temporarily is the system’s operating conditions (the threshold and amplification environment), not the structural foundation the protocol has built.',
     },
     {
       type: 'subhead',
@@ -52,10 +52,10 @@ const g7: Phase5ReadingSection = {
     {
       type: 'list',
       items: [
-        'Illness — elevated tinnitus during and immediately after illness, particularly respiratory illness or anything producing systemic inflammation, is extremely common. Resolution typically follows illness resolution by one to two weeks as inflammation subsides and central sensitisation reduces.',
-        'High stress event — a sustained high-stress period produces elevated loudness that typically begins resolving within one to two weeks of stress reduction, provided nervous system regulation work is maintained or increased during the period.',
-        'Sleep disruption — a run of significantly poor sleep produces loudness increases that resolve as sleep quality restores. The sleep protocol from F.10 applied consistently is the primary response alongside the protocol reset.',
-        'Physical strain — significant physical exertion, postural strain from travel, or a period of increased desk load can temporarily increase cervical or jaw tension beyond the maintenance protocol’s capacity to manage. Resolution follows reduction of the precipitating load combined with increased release work frequency.',
+        'Illness: elevated tinnitus during and immediately after illness, particularly respiratory illness or anything producing systemic inflammation, is extremely common. Resolution typically follows illness resolution by one to two weeks as inflammation subsides and central sensitisation reduces.',
+        'High stress event: a sustained high-stress period produces elevated loudness that typically begins resolving within one to two weeks of stress reduction, provided nervous system regulation work is maintained or increased during the period.',
+        'Sleep disruption: a run of significantly poor sleep produces loudness increases that resolve as sleep quality restores. The sleep protocol from F.10 applied consistently is the primary response alongside the protocol reset.',
+        'Physical strain: significant physical exertion, postural strain from travel, or a period of increased desk load can temporarily increase cervical or jaw tension beyond the maintenance protocol’s capacity to manage. Resolution follows reduction of the precipitating load combined with increased release work frequency.',
       ],
     },
     {
@@ -68,19 +68,19 @@ const g7: Phase5ReadingSection = {
     },
     {
       type: 'p',
-      text: 'Return to daily release work immediately. Do not wait to see if the spike resolves on its own. The release phase exercises — suboccipital release, masseter release, or both depending on profile — returned to daily frequency for one to two weeks. Full duration. Correct technique.',
+      text: 'Return to daily release work immediately. Do not wait to see if the spike resolves on its own. The release phase exercises: suboccipital release, masseter release, or both depending on profile, returned to daily frequency for one to two weeks. Full duration. Correct technique.',
     },
     {
       type: 'p',
-      text: 'Increase nervous system regulation work. Breath work daily without exception during the setback period. If hypervigilance interruption or neutralisation practice has reduced during the stable maintenance period, return to consistent daily use. The autonomic amplification layer is most active during setback conditions — this is precisely when nervous system regulation work has the highest leverage.',
+      text: 'Increase nervous system regulation work. Breath work daily without exception during the setback period. If hypervigilance interruption or neutralisation practice has reduced during the stable maintenance period, return to consistent daily use. The autonomic amplification layer is most active during setback conditions; this is precisely when nervous system regulation work has the highest leverage.',
     },
     {
       type: 'p',
-      text: 'Address the trigger directly where possible. If the trigger is ongoing — sustained work stress, continuing sleep disruption, ongoing illness — the protocol reset produces partial improvement that is limited until the trigger resolves. Managing the trigger is part of the response, not separate from it.',
+      text: 'Address the trigger directly where possible. If the trigger is ongoing (sustained work stress, continuing sleep disruption, ongoing illness), the protocol reset produces partial improvement that is limited until the trigger resolves. Managing the trigger is part of the response, not separate from it.',
     },
     {
       type: 'p',
-      text: 'Do not catastrophise. The anxiety response to a setback is the primary risk factor for converting a temporary spike into a sustained regression. The framing that works: this is a temporary strain response with a known mechanism, a known response protocol, and a known resolution window. The progress tracker data from the stable period before the setback is the objective evidence that the baseline is recoverable — it has been achieved before and will be achieved again.',
+      text: 'Do not catastrophise. The anxiety response to a setback is the primary risk factor for converting a temporary spike into a sustained regression. The framing that works: this is a temporary strain response with a known mechanism, a known response protocol, and a known resolution window. The progress tracker data from the stable period before the setback is the objective evidence that the baseline is recoverable; it has been achieved before and will be achieved again.',
     },
     {
       type: 'p',
@@ -92,7 +92,7 @@ const g7: Phase5ReadingSection = {
     },
     {
       type: 'p',
-      text: 'If a full two weeks of daily protocol work and increased nervous system regulation has not produced return toward the pre-setback baseline, the setback has become something more than a temporary strain response. At that point the guidance in G.4 — professional input for a genuine plateau — is the appropriate next step. A physiotherapist assessment to identify whether a new or worsened structural factor is present, and audiological review if tinnitus character has changed, are both warranted.',
+      text: 'If a full two weeks of daily protocol work and increased nervous system regulation has not produced return toward the pre-setback baseline, the setback has become something more than a temporary strain response. At that point the guidance in G.4 (professional input for a genuine plateau) is the appropriate next step. A physiotherapist assessment to identify whether a new or worsened structural factor is present, and audiological review if tinnitus character has changed, are both warranted.',
     },
     {
       type: 'p',

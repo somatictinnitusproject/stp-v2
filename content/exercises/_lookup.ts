@@ -1,4 +1,4 @@
-// /content/exercises/_lookup.ts
+﻿﻿// /content/exercises/_lookup.ts
 // ─────────────────────────────────────────────────────────────────────────────
 // Exercise lookup by ID. Used by /session page to map exercise IDs from
 // buildSessionExerciseList to full Exercise objects.
@@ -53,12 +53,12 @@ function stub(
     bodyRegion,
     libraryDurationLabel: `~${estimatedMinutes} min`,
     estimatedMinutes,
-    focusLine: `${name} — apply slow, controlled pressure.`,
+    focusLine: `${name}: apply slow, controlled pressure.`,
     fullContent: [
       { type: 'p', text: `${name} instructions will be authored in M13m–M13v.` },
     ],
     condensedSummary: [
-      { type: 'p', text: `${name} — follow the technique instructions above.` },
+      { type: 'p', text: `${name}: follow the technique instructions above.` },
     ],
     videoId: null,
     commonMistakes: null,

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 // /components/exercise/reading-view.tsx
 // ─────────────────────────────────────────────────────────────────────────────
@@ -26,7 +26,7 @@ import { protocolAssignmentText } from '@/lib/scoring/profile-paragraph/section5
 
 // ── Protocol option callback text — constructed from b7-profile-output option names.
 const PROTOCOL_OPTION_TEXT: Record<number, string> = {
-  1: 'You selected Option 1: Sequential. Your jaw protocol runs fully first — cervical work begins once the release phase is complete.',
+  1: 'You selected Option 1: Sequential. Your jaw protocol runs fully first; cervical work begins once the release phase is complete.',
   2: 'You selected Option 2: Parallel. Both protocols run simultaneously from your first session.',
   3: 'You selected Option 3: Prioritised Parallel. Full primary protocol daily plus your key secondary exercises.',
 }
@@ -108,7 +108,7 @@ export default function ReadingView({
               if (confirmedFlags.length === 0) {
                 return (
                   <p key={idx} className="text-body text-text-body leading-relaxed">
-                    Your Phase 1 assessment did not identify specific maintaining factors — Phase 4 still covers postural and nervous system content that supports and consolidates Phase 3 work.
+                    Your Phase 1 assessment did not identify specific maintaining factors; Phase 4 still covers postural and nervous system content that supports and consolidates Phase 3 work.
                   </p>
                 )
               }

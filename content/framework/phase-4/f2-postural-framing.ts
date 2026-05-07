@@ -1,4 +1,4 @@
-// /content/framework/phase-4/f2-postural-framing.ts
+﻿// /content/framework/phase-4/f2-postural-framing.ts
 // F.2 — Postural Correction Framing
 // Verbatim member-facing copy from Document 8 Part F, section F.2.
 // Daily focus: "Posture is where Phase 3 gains are either
@@ -32,7 +32,7 @@ const f2: ReadingSection = {
     },
     {
       type: 'p',
-      text: 'Consider what the cervical and jaw structures are absorbing during a typical working day. Eight hours of forward head posture places continuous compressive load on the upper cervical joints and suboccipital muscles. A workstation that forces the head down and forward is not a neutral background condition — it is an active mechanical input into the same pathway the cervical protocol is targeting. Phase 3 drains the accumulated tension. Poor daily posture refills it.',
+      text: 'Consider what the cervical and jaw structures are absorbing during a typical working day. Eight hours of forward head posture places continuous compressive load on the upper cervical joints and suboccipital muscles. A workstation that forces the head down and forward is not a neutral background condition; it is an active mechanical input into the same pathway the cervical protocol is targeting. Phase 3 drains the accumulated tension. Poor daily posture refills it.',
     },
     {
       type: 'p',
@@ -63,7 +63,7 @@ const f2: ReadingSection = {
       content: [
         {
           type: 'p',
-          text: 'Your Phase 1 assessment identified sustained desk load as a confirmed maintaining factor in your specific case. For your pattern, the postural content that follows is not supplementary — it is addressing one of the primary reasons tension continues to rebuild between protocol sessions. Workstation setup in particular warrants treating as a priority rather than an optional addition.',
+          text: 'Your Phase 1 assessment identified sustained desk load as a confirmed maintaining factor in your specific case. For your pattern, the postural content that follows is not supplementary; it is addressing one of the primary reasons tension continues to rebuild between protocol sessions. Workstation setup in particular warrants treating as a priority rather than an optional addition.',
         },
       ],
     },

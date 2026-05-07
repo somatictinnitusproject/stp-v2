@@ -1,4 +1,4 @@
-// /content/framework/phase-4/f5-ns-framing.ts
+﻿// /content/framework/phase-4/f5-ns-framing.ts
 // F.5 — Nervous System Framing and the Anxiety-Tinnitus Loop
 // Verbatim member-facing copy from Document 8 Part F, section F.5.
 // Daily focus: "Reducing the signal and reducing the response to
@@ -49,7 +49,7 @@ const f5: ReadingSection = {
     },
     {
       type: 'p',
-      text: 'Tinnitus triggers anxiety. Anxiety increases hypervigilance — the nervous system allocating threat-level attentional resources to monitoring the tinnitus sound. Hypervigilance amplifies perceived loudness — not because the physical signal has increased, but because the auditory cortex is being directed to attend to it with heightened sensitivity. Increased perceived loudness triggers more anxiety. The loop runs continuously and self-reinforces with each cycle.',
+      text: 'Tinnitus triggers anxiety. Anxiety increases hypervigilance — the nervous system allocating threat-level attentional resources to monitoring the tinnitus sound. Hypervigilance amplifies perceived loudness, not because the physical signal has increased, but because the auditory cortex is being directed to attend to it with heightened sensitivity. Increased perceived loudness triggers more anxiety. The loop runs continuously and self-reinforces with each cycle.',
     },
     {
       type: 'p',
@@ -88,7 +88,7 @@ const f5: ReadingSection = {
       content: [
         {
           type: 'p',
-          text: 'Your Phase 1 assessment identified a strong stress-tinnitus correlation in your specific case — your tinnitus clearly tracks your stress and anxiety levels. For your pattern, the autonomic amplification layer is particularly active. The nervous system content that follows is not supplementary for your profile — it is addressing one of the primary reasons your tinnitus fluctuates as significantly as it does.',
+          text: 'Your Phase 1 assessment identified a strong stress-tinnitus correlation in your specific case: your tinnitus clearly tracks your stress and anxiety levels. For your pattern, the autonomic amplification layer is particularly active. The nervous system content that follows is not supplementary for your profile; it is addressing one of the primary reasons your tinnitus fluctuates as significantly as it does.',
         },
       ],
     },

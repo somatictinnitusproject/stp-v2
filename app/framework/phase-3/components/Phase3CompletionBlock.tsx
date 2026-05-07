@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 // app/framework/phase-3/components/Phase3CompletionBlock.tsx
 // ─────────────────────────────────────────────────────────────────────────────
@@ -60,7 +60,7 @@ export default function Phase3CompletionBlock({
             : 'bg-surface-raised text-text-muted cursor-not-allowed opacity-50'
         }`}
       >
-        I have completed my Phase 3 protocol — move to Phase 5
+        I have completed my Phase 3 protocol. Move to Phase 5
       </button>
       <p className="text-[13px] text-text-muted mt-4 leading-relaxed">
         Most members find Phase 3 takes eight to sixteen weeks to produce meaningful

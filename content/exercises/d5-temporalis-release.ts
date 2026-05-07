@@ -1,4 +1,4 @@
-// /content/exercises/d5-temporalis-release.ts
+﻿// /content/exercises/d5-temporalis-release.ts
 // D.5 — Temporalis Release
 // Verbatim member-facing copy from Document 8 Part D, section D.5.
 // Targets the temporalis — primary jaw closing muscle alongside masseter.
@@ -24,11 +24,11 @@ const d5TemporalisRelease: Exercise = {
   fullContent: [
     {
       type: 'p',
-      text: 'The temporalis is a broad fan-shaped muscle covering the side of the skull above and in front of the ear, running down to attach to the lower jaw. Along with the masseter it is one of the two primary jaw closing muscles — and like the masseter it is a common site of chronic tension in people with jaw-driven tinnitus.',
+      text: 'The temporalis is a broad fan-shaped muscle covering the side of the skull above and in front of the ear, running down to attach to the lower jaw. Along with the masseter it is one of the two ; like the masseter it is a common site of chronic tension in people with jaw-driven tinnitus.',
     },
     {
       type: 'p',
-      text: "Temporalis tension contributes to temporal headaches, a sense of pressure or fullness around the ear, and sustained jaw closing force that loads the TMJ and trigeminal pathway continuously between sessions. Because it sits above and behind the obvious jaw area most people don't associate it with jaw dysfunction — but its attachment to the mandible means chronic temporalis tension is directly loading the same pathway the rest of this protocol is working to unload.",
+      text: "Temporalis tension contributes to temporal headaches, a sense of pressure or fullness around the ear, and sustained jaw closing force that loads the TMJ and trigeminal pathway continuously between sessions. Because it sits above and behind the obvious jaw area most people don't associate it ; its attachment to the mandible means chronic temporalis tension is directly loading the same pathway the rest of this protocol is working to unload.",
     },
     {
       type: 'subhead',
@@ -36,15 +36,15 @@ const d5TemporalisRelease: Exercise = {
     },
     {
       type: 'p',
-      text: 'Place the fingertips of both hands on the temporal region — the area of the skull above and slightly in front of each ear, in the natural hollow between the brow ridge and the top of the ear. You should be able to feel the muscle contract if you gently clench your teeth.',
+      text: 'Place the fingertips of both hands : the area of the skull above and slightly in front of each ear, in the natural hollow between the brow ridge and the top of the ear. You should be able to feel the muscle contract if you gently clench your teeth.',
     },
     {
       type: 'p',
-      text: 'Apply firm sustained pressure into the muscle using your fingertips. Hold each position for 90 seconds without releasing. Work through three positions across the muscle — anterior (closest to the eye), middle (directly above the ear), and posterior (behind the ear toward the back of the skull).',
+      text: 'Apply firm sustained pressure into the muscle using your fingertips. Hold each position for 90 seconds without releasing. Work through three positions across the muscle: anterior (closest to the eye), middle (directly above the ear), and posterior (behind the ear toward the back of the skull).',
     },
     {
       type: 'p',
-      text: 'The pressure should be firm enough to feel the muscle responding — a dull aching sensation under the fingertips is normal and indicates you are in the right tissue. Sharp or shooting pain is not normal — reduce pressure immediately.',
+      text: 'The pressure should be firm enough to feel the muscle responding: a dull aching sensation under the fingertips is normal and indicates you are in the right tissue. Sharp or shooting pain is not normal; reduce pressure immediately.',
     },
     {
       type: 'emphasis',
@@ -55,7 +55,7 @@ const d5TemporalisRelease: Exercise = {
   condensedSummary: [
     {
       type: 'p',
-      text: 'Place fingertips on the temporal region above and slightly in front of each ear. Apply firm sustained pressure for 90 seconds per position across three positions — anterior, middle, posterior. Both sides simultaneously where possible.',
+      text: 'Place fingertips on the temporal region above and slightly in front of each ear. Apply firm sustained pressure for 90 seconds per position across three positions: anterior, middle, posterior. Both sides simultaneously where possible.',
     },
   ],
 
@@ -73,7 +73,7 @@ const d5TemporalisRelease: Exercise = {
       content: [
         {
           type: 'p',
-          text: 'Your symptom history includes temporal headache, ear fullness, or pressure around the ear. Temporalis tension is a direct contributor to both of these alongside its role in your tinnitus pathway. This exercise is particularly relevant to your presentation — give it full attention.',
+          text: 'Your symptom history includes temporal headache, ear fullness, or pressure around the ear. Temporalis tension is a direct contributor to both of these alongside its role in your tinnitus pathway. This exercise is particularly relevant to your presentation; give it full attention.',
         },
       ],
     },

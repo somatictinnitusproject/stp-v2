@@ -1,4 +1,4 @@
-import type { ParagraphContext } from './types'
+﻿import type { ParagraphContext } from './types'
 
 // Doc 13 §4.3 pseudocode (updated per ERRATA E13/E14/E15 — all intake reads removed):
 //   FUNCTION generateSection2_FindingsSummary(assessment):
@@ -6,7 +6,7 @@ import type { ParagraphContext } from './types'
 //     // ── Jaw findings ──────────────────────────────────────────────────
 //     jawFindings = []
 //     IF assessment.tmj_jaw_drift = TRUE
-//       jawFindings.push('Jaw drift on opening — ' + assessment.tmj_jaw_drift_direction + ' deviation confirmed')
+//       jawFindings.push('Jaw drift on opening: ' + assessment.tmj_jaw_drift_direction + ' deviation confirmed')
 //     IF assessment.tmj_m1_jaw_opening = TRUE              // E14: live Phase 1 test
 //       jawFindings.push('Jaw opening response positive on movement test')
 //     IF assessment.tmj_m2_jaw_protrusion = TRUE           // E14: live Phase 1 test
@@ -14,9 +14,9 @@ import type { ParagraphContext } from './types'
 //     IF assessment.tmj_joint_sounds = TRUE                // E15: live Phase 1 test
 //       jawFindings.push('Joint sounds confirmed')
 //     IF assessment.tmj_pterygoid_tenderness = TRUE
-//       jawFindings.push('Lateral pterygoid tenderness reproduced — ' + assessment.tmj_pterygoid_tender_side)
+//       jawFindings.push('Lateral pterygoid tenderness reproduced, ' + assessment.tmj_pterygoid_tender_side)
 //     IF assessment.tmj_masseter_asymmetry = TRUE
-//       jawFindings.push('Masseter asymmetry — dominant side: ' + assessment.tmj_masseter_dominant_side)
+//       jawFindings.push('Masseter asymmetry, dominant side: ' + assessment.tmj_masseter_dominant_side)
 //     IF assessment.tmj_opening_restriction = TRUE
 //       jawFindings.push('Maximum opening restriction noted')
 //     IF assessment.tmj_morning_soreness = TRUE            // E15: s2_score fallback removed
@@ -31,16 +31,16 @@ import type { ParagraphContext } from './types'
 //       cervFindings.push('Neck curl on floor response positive on movement test')
 //     IF assessment.cerv_m4_head_rotation = TRUE           // E13: live Phase 1 test
 //       IF assessment.cerv_m4_asymmetric_side = TRUE
-//         cervFindings.push('Head rotation response positive — asymmetric between sides')
+//         cervFindings.push('Head rotation response positive, asymmetric between sides')
 //       ELSE
 //         cervFindings.push('Head rotation response positive')
 //     IF assessment.cerv_suboccipital_tenderness = TRUE
 //       cervFindings.push('Suboccipital tenderness reproduced'
-//         + (assessment.cerv_suboccipital_asymmetric ? ' — asymmetric, dominant side: ' + assessment.cerv_suboccipital_tender_side : ''))
+//         + (assessment.cerv_suboccipital_asymmetric ? ', asymmetric dominant side: ' + assessment.cerv_suboccipital_tender_side : ''))
 //     IF assessment.cerv_worse_desk_work = TRUE
 //       cervFindings.push('Tinnitus noticeably worse after desk work or driving')
 //     IF assessment.cerv_rotation_restriction = TRUE
-//       cervFindings.push('Restricted or asymmetric rotation range — restricted side: ' + assessment.cerv_restricted_side)
+//       cervFindings.push('Restricted or asymmetric rotation range, restricted side: ' + assessment.cerv_restricted_side)
 //     IF assessment.cerv_forward_head_posture = TRUE
 //       cervFindings.push('Forward head posture confirmed')
 //     IF assessment.cerv_scm_asymmetry = TRUE OR assessment.cerv_trap_asymmetry = TRUE
@@ -50,7 +50,7 @@ import type { ParagraphContext } from './types'
 //     // ── Maintaining factors ──────────────────────────────────────────
 //     maintainingFindings = []
 //     IF assessment.post_shoulder_asymmetry = TRUE
-//       maintainingFindings.push('Shoulder height asymmetry — elevated side: ' + assessment.post_elevated_side)
+//       maintainingFindings.push('Shoulder height asymmetry, elevated side: ' + assessment.post_elevated_side)
 //     IF assessment.post_sustained_desk_load = TRUE
 //       maintainingFindings.push('Sustained desk posture load confirmed')
 //     IF assessment.post_asymmetric_exercise = TRUE
@@ -83,7 +83,7 @@ export function generateSection2_FindingsSummary(ctx: ParagraphContext): string 
   // ── Jaw findings ────────────────────────────────────────────────────
   const jawFindings: string[] = []
   if (assessment.tmj_jaw_drift === true)
-    jawFindings.push('Jaw drift on opening — ' + assessment.tmj_jaw_drift_direction + ' deviation confirmed')
+    jawFindings.push('Jaw drift on opening: ' + assessment.tmj_jaw_drift_direction + ' deviation confirmed')
   if (assessment.tmj_m1_jaw_opening === true)
     jawFindings.push('Jaw opening response positive on movement test')
   if (assessment.tmj_m2_jaw_protrusion === true)
@@ -91,9 +91,9 @@ export function generateSection2_FindingsSummary(ctx: ParagraphContext): string 
   if (assessment.tmj_joint_sounds === true)
     jawFindings.push('Joint sounds confirmed')
   if (assessment.tmj_pterygoid_tenderness === true)
-    jawFindings.push('Lateral pterygoid tenderness reproduced — ' + assessment.tmj_pterygoid_tender_side)
+    jawFindings.push('Lateral pterygoid tenderness reproduced, ' + assessment.tmj_pterygoid_tender_side)
   if (assessment.tmj_masseter_asymmetry === true)
-    jawFindings.push('Masseter asymmetry — dominant side: ' + assessment.tmj_masseter_dominant_side)
+    jawFindings.push('Masseter asymmetry, dominant side: ' + assessment.tmj_masseter_dominant_side)
   if (assessment.tmj_opening_restriction === true)
     jawFindings.push('Maximum opening restriction noted')
   if (assessment.tmj_morning_soreness === true)
@@ -109,7 +109,7 @@ export function generateSection2_FindingsSummary(ctx: ParagraphContext): string 
     cervFindings.push('Neck curl on floor response positive on movement test')
   if (assessment.cerv_m4_head_rotation === true) {
     if (assessment.cerv_m4_asymmetric_side === true)
-      cervFindings.push('Head rotation response positive — asymmetric between sides')
+      cervFindings.push('Head rotation response positive, asymmetric between sides')
     else
       cervFindings.push('Head rotation response positive')
   }
@@ -117,13 +117,13 @@ export function generateSection2_FindingsSummary(ctx: ParagraphContext): string 
     cervFindings.push(
       'Suboccipital tenderness reproduced' +
       (assessment.cerv_suboccipital_asymmetric
-        ? ' — asymmetric, dominant side: ' + assessment.cerv_suboccipital_tender_side
+        ? ', asymmetric dominant side: ' + assessment.cerv_suboccipital_tender_side
         : '')
     )
   if (assessment.cerv_worse_desk_work === true)
     cervFindings.push('Tinnitus noticeably worse after desk work or driving')
   if (assessment.cerv_rotation_restriction === true)
-    cervFindings.push('Restricted or asymmetric rotation range — restricted side: ' + assessment.cerv_restricted_side)
+    cervFindings.push('Restricted or asymmetric rotation range, restricted side: ' + assessment.cerv_restricted_side)
   if (assessment.cerv_forward_head_posture === true)
     cervFindings.push('Forward head posture confirmed')
   if (assessment.cerv_scm_asymmetry === true || assessment.cerv_trap_asymmetry === true)
@@ -134,7 +134,7 @@ export function generateSection2_FindingsSummary(ctx: ParagraphContext): string 
   // ── Maintaining factors ──────────────────────────────────────────────
   const maintainingFindings: string[] = []
   if (assessment.post_shoulder_asymmetry === true)
-    maintainingFindings.push('Shoulder height asymmetry — elevated side: ' + assessment.post_elevated_side)
+    maintainingFindings.push('Shoulder height asymmetry, elevated side: ' + assessment.post_elevated_side)
   if (assessment.post_sustained_desk_load === true)
     maintainingFindings.push('Sustained desk posture load confirmed')
   if (assessment.post_asymmetric_exercise === true)

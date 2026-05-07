@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { Lock } from 'lucide-react'
 
 // Rendered inside AuthShell on /community when the member fails
@@ -14,7 +14,7 @@ export default function CommunityLockedState() {
         Community unlocks at the end of Phase 1
       </h1>
       <p className="text-[15px] text-text-muted mb-6 leading-relaxed">
-        The community space opens up when you complete Phase 1 — once you
+        The community space opens up when you complete Phase 1; once you
         have your profile and know which protocol applies to you, your
         contributions are far more useful to other members.
       </p>

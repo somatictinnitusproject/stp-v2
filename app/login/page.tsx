@@ -18,7 +18,7 @@ function LoginForm() {
 
   useEffect(() => {
     if (searchParams.get('verified') === 'true') {
-      setNotice('Email verified — you can now log in.')
+      setNotice('Email verified. You can now log in.')
     }
   }, [searchParams])
 

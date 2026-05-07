@@ -1,4 +1,4 @@
-// /content/exercises/d15-progressive-resistance.ts
+﻿// /content/exercises/d15-progressive-resistance.ts
 // D.15 — Progressive Resistance Exercises
 // Verbatim member-facing copy from Document 8 Part D, section D.15.
 //
@@ -33,7 +33,7 @@ const d15ProgressiveResistance: Exercise = {
     },
     {
       type: 'p',
-      text: 'The jaw responds to progressive loading — appropriate resistance stimulates the masticatory muscles to develop the strength and endurance needed to maintain correct mechanics during eating, speaking, and sustained jaw use. Without this stage the retraining gains from symmetry work are real but fragile — the pattern holds under controlled low-load conditions and degrades under the loading of normal daily function.',
+      text: 'The jaw responds to progressive loading; appropriate resistance stimulates the masticatory muscles to develop the strength and endurance needed to maintain correct mechanics during eating, speaking, and sustained jaw use. Without this stage the retraining gains from symmetry work are real but fragile; the pattern holds under controlled low-load conditions and degrades under the loading of normal daily function.',
     },
     {
       type: 'emphasis',
@@ -45,7 +45,7 @@ const d15ProgressiveResistance: Exercise = {
     },
     {
       type: 'p',
-      text: 'Place your thumb under the chin, providing light upward resistance. Open the jaw slowly against this resistance through the full comfortable range, maintaining midline tracking throughout. The resistance should be light — enough to create effort without disrupting the movement pattern. Close slowly with control.',
+      text: 'Place your thumb under the chin, providing light upward resistance. Open the jaw slowly against this resistance through the full comfortable range, maintaining midline tracking throughout. The resistance should be light: enough to create effort without disrupting the movement pattern. Close slowly with control.',
     },
     {
       type: 'p',
@@ -57,7 +57,7 @@ const d15ProgressiveResistance: Exercise = {
     },
     {
       type: 'p',
-      text: 'Place your thumb on the lower front teeth, providing light downward resistance. Close the jaw slowly against this resistance from mid-open position to teeth-apart rest position. Control the closing movement — do not let the jaw snap closed against the resistance.',
+      text: 'Place your thumb on the lower front teeth, providing light downward resistance. Close the jaw slowly against this resistance from mid-open position to teeth-apart rest position. Control the closing movement; do not let the jaw snap closed against the resistance.',
     },
     {
       type: 'p',
@@ -69,7 +69,7 @@ const d15ProgressiveResistance: Exercise = {
     },
     {
       type: 'p',
-      text: 'Place two fingers against the side of the chin, providing light resistance to lateral movement. Move the jaw slowly to one side against resistance, return to centre, repeat to the other side. Bilateral — equal repetitions each direction.',
+      text: 'Place two fingers against the side of the chin, providing light resistance to lateral movement. Move the jaw slowly to one side against resistance, return to centre, repeat to the other side. Bilateral: equal repetitions each direction.',
     },
     {
       type: 'p',
@@ -81,14 +81,14 @@ const d15ProgressiveResistance: Exercise = {
     },
     {
       type: 'p',
-      text: 'Increase resistance gradually — only when current resistance level can be completed with full midline control and no drift recurrence. If drift returns under load, reduce resistance and consolidate at the lower level before progressing again. Drift returning under load means the pattern is not yet consolidated enough to support that resistance level — reduce and rebuild.',
+      text: 'Increase resistance gradually; only when current resistance level can be completed with full midline control and no drift recurrence. If drift returns under load, reduce resistance and consolidate at the lower level before progressing again. Drift returning under load means the pattern is not yet consolidated enough to support that resistance level; reduce and rebuild.',
     },
   ],
 
   condensedSummary: [
     {
       type: 'p',
-      text: 'Resisted opening: thumb under chin, light upward resistance, eight to ten reps. Resisted closing: thumb on lower front teeth, light downward resistance, eight to ten reps. Resisted lateral: two fingers against side of chin, six to eight reps each direction. Increase resistance gradually — only when current level is controlled with no drift recurrence. If drift returns under load, reduce and rebuild.',
+      text: 'Resisted opening: thumb under chin, light upward resistance, eight to ten reps. Resisted closing: thumb on lower front teeth, light downward resistance, eight to ten reps. Resisted lateral: two fingers against side of chin, six to eight reps each direction. Increase resistance gradually; only when current level is controlled with no drift recurrence. If drift returns under load, reduce and rebuild.',
     },
   ],
 

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useId } from 'react'
 
@@ -58,7 +58,7 @@ export default function RetroactiveDayPicker({ open, today, recentLogDates, onPi
                 <div key={dateStr}
                   className="flex items-center justify-between px-4 py-3 rounded-lg opacity-40 cursor-default">
                   <span className="text-body-sm text-text-muted">{formatted}</span>
-                  <span className="text-body-sm text-text-muted">Today — use the form above</span>
+                  <span className="text-body-sm text-text-muted">Today, use the form above</span>
                 </div>
               )
             }

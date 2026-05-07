@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation'
+﻿import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import AuthShell from '@/components/shells/AuthShell'
@@ -9,7 +9,7 @@ type PhaseStatus = 'completed' | 'active' | 'unlocked' | 'locked'
 const PHASE_CONTENT: Record<number, { timeline: string; description: string; note?: string }> = {
   1: {
     timeline: '45–75 minutes across one to three sessions',
-    description: 'Phase 1 maps your specific pattern — which physical pathways are driving your tinnitus, how significantly each is involved, and what daily factors are maintaining the problem. The system generates a personalised driver profile that shapes everything in Phase 3 and beyond.',
+    description: 'Phase 1 maps your specific pattern: which physical pathways are driving your tinnitus, how significantly each is involved, and what daily factors are maintaining the problem. The system generates a personalised driver profile that shapes everything in Phase 3 and beyond.',
   },
   2: {
     timeline: 'Work through at your own pace',
@@ -17,7 +17,7 @@ const PHASE_CONTENT: Record<number, { timeline: string; description: string; not
   },
   3: {
     timeline: '8–16 weeks of daily practice',
-    description: 'Phase 3 is the primary intervention — structured daily protocol work targeting the specific physical pathways identified in Phase 1. Release phase first, then resistance and retraining phase added on top. Most members are assigned both jaw and cervical protocols.',
+    description: 'Phase 3 is the primary intervention: structured daily protocol work targeting the specific physical pathways identified in Phase 1. Release phase first, then resistance and retraining phase added on top. Most members are assigned both jaw and cervical protocols.',
   },
   4: {
     timeline: 'Accessible from Phase 2 onwards',
@@ -129,7 +129,7 @@ export default async function ProgrammeOverviewPage() {
         {/* Doc 11 G7: closing note — divider above, italic, body-sm, text-muted, centred, mt-16 */}
         <div className="mt-16 pt-6 border-t border-border">
           <p className="text-[13px] italic text-text-muted text-center leading-relaxed">
-            Every phase remains accessible after you have passed through it. Content does not disappear as you advance — you can return to any section at any time. The exercise library is available throughout as a reference resource independent of your current phase.
+            Every phase remains accessible after you have passed through it. Content does not disappear as you advance; you can return to any section at any time. The exercise library is available throughout as a reference resource independent of your current phase.
           </p>
         </div>
 

@@ -1,4 +1,4 @@
-// /content/framework/phase-3/d3-release-intro.ts
+﻿// /content/framework/phase-3/d3-release-intro.ts
 // D.3 — Release Phase Introduction
 // Verbatim member-facing copy from Document 8 Part D, section D.3.
 // Daily focus: "Release before you retrain"
@@ -24,7 +24,7 @@ const d3: ReadingSection = {
     },
     {
       type: 'p',
-      text: 'Before any strengthening or retraining work is introduced, the tissues need to be in a state where that work is productive. Loading a chronically tensioned jaw before the underlying tension has reduced does not build a stronger, more stable system — it reinforces the existing dysfunction under additional load.',
+      text: 'Before any strengthening or retraining work is introduced, the tissues need to be in a state where that work is productive. Loading a chronically tensioned jaw before the underlying tension has reduced does not build a stronger, more stable system; it reinforces the existing dysfunction under additional load.',
     },
     {
       type: 'p',
@@ -36,7 +36,7 @@ const d3: ReadingSection = {
     },
     {
       type: 'p',
-      text: 'Resting position retraining runs continuously throughout the day alongside all of this — not a session exercise but a persistent habit that reduces the rate at which tension rebuilds between sessions.',
+      text: 'Resting position retraining runs continuously throughout the day alongside all of this, not a session exercise but a persistent habit that reduces the rate at which tension rebuilds between sessions.',
     },
     {
       type: 'p',
@@ -48,7 +48,7 @@ const d3: ReadingSection = {
     },
     {
       type: 'p',
-      text: 'As you work through the exercises for the first time, each one includes a full explanation of what it does and why. From your second session onward, each exercise shows a condensed version — your demonstration video and the key instructions only. The full explanation remains accessible if you want to return to it, but your daily sessions stay focused and efficient.',
+      text: 'As you work through the exercises for the first time, each one includes a full explanation of what it does and why. From your second session onward, each exercise shows a condensed version: your demonstration video and the key instructions only. The full explanation remains accessible if you want to return to it, but your daily sessions stay focused and efficient.',
     },
     {
       type: 'subhead',
@@ -62,7 +62,7 @@ const d3: ReadingSection = {
       type: 'list',
       items: [
         'Tenderness on masseter and temporalis self-palpation has reduced noticeably.',
-        'The release work feels less effortful — tissues responding more readily to pressure.',
+        'The release work feels less effortful, with tissues responding more readily to pressure.',
         'Release sessions are producing a clear sense of tissue softening rather than resistance.',
       ],
     },
@@ -72,11 +72,11 @@ const d3: ReadingSection = {
     },
     {
       type: 'p',
-      text: 'Some members are ready closer to one week. Others with longer-standing dysfunction or significant disc pathology take longer. Both are normal. The tissue tells you — not the calendar.',
+      text: 'Some members are ready closer to one week. Others with longer-standing dysfunction or significant disc pathology take longer. Both are normal. The tissue tells you, not the calendar.',
     },
     {
       type: 'p',
-      text: 'When the signals above are showing across most days — normally after one to two weeks of consistent release work — you\'ll find the resistance phase entry point on your Phase 3 overview page. Some members are ready closer to one week; others take longer. The protocol does not push you forward — you decide when you\'re ready.',
+      text: 'When the signals above are showing across most days, normally after one to two weeks of consistent release work, you\'ll find the resistance phase entry point on your Phase 3 overview page. Some members are ready closer to one week; others take longer. The protocol does not push you forward. You decide when you\'re ready.',
     },
     {
       type: 'acknowledge_prompt',

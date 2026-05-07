@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -10,9 +10,9 @@ interface Props {
 }
 
 const CLASSIFICATIONS: { value: Classification; label: string }[] = [
-  { value: 'A', label: 'A — Likely somatic' },
-  { value: 'B', label: 'B — Possibly somatic' },
-  { value: 'C', label: 'C — Unlikely somatic' },
+  { value: 'A', label: 'A: Likely somatic' },
+  { value: 'B', label: 'B: Possibly somatic' },
+  { value: 'C', label: 'C: Unlikely somatic' },
 ]
 
 export default function TestResultClient({ preselected }: Props) {
@@ -43,8 +43,8 @@ export default function TestResultClient({ preselected }: Props) {
   }
 
   const subtitle = preselected !== null
-    ? 'We carried your result from the test — confirm this is correct'
-    : "We need your assessment result to personalise your framework. If you've already taken the test, select your result below. Otherwise, take it now — it takes around 5 minutes."
+    ? 'We carried your result from the test; confirm this is correct'
+    : "We need your assessment result to personalise your framework. If you've already taken the test, select your result below. Otherwise, take it now; it takes around 5 minutes."
 
   return (
     <div className="max-w-[560px] mx-auto">

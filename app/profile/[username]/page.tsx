@@ -95,6 +95,16 @@ export default async function ProfilePage({ params }: PageProps) {
     getUserReplies(supabase, profile.id, 0, 20),
   ])
 
+  let researchConsent: boolean | null = null
+  if (isOwnProfile) {
+    const { data: consentsRow } = await supabase
+      .from('consents')
+      .select('research_consent')
+      .eq('user_id', user.id)
+      .maybeSingle()
+    researchConsent = (consentsRow as any)?.research_consent ?? null
+  }
+
   return (
     <AuthShell>
       <div className="max-w-[760px] mx-auto py-6">
@@ -105,6 +115,7 @@ export default async function ProfilePage({ params }: PageProps) {
           initialPostsHasMore={postsPage.hasMore}
           initialReplies={repliesPage.replies}
           initialRepliesHasMore={repliesPage.hasMore}
+          researchConsent={researchConsent}
         />
       </div>
     </AuthShell>

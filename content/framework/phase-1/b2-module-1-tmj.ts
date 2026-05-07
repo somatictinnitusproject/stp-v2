@@ -1,4 +1,4 @@
-// B.2 — Module 1: Jaw Driver
+﻿// B.2 — Module 1: Jaw Driver
 // Source: Document 8 Part B, section B.2. All mechanism prose and question text verbatim from Doc 8.
 // "Imported Intake Test Results" block omitted per Amendment 1 / D1.
 // Joint Sounds (Q6) included per Amendment 2 — writes to tmj_joint_sounds BOOLEAN.

@@ -17,9 +17,9 @@ const SHORT_NAMES: Record<number, string> = {
   5: 'Stabilisation',
 }
 
-const STYLES: Record<PhaseStatus, { bg: string; border: string; color: string }> = {
+const STYLES: Record<PhaseStatus, { bg: string; border: string; color: string; shadow?: string }> = {
   completed: { bg: '#EEF7F5', border: '1.5px solid #4A9B8E', color: '#4A9B8E' },
-  active:    { bg: '#FFFFFF', border: '2px solid #1A1A2E',   color: '#1A1A2E' },
+  active:    { bg: '#FFFFFF', border: '2px solid #1A1A2E',   color: '#1A1A2E', shadow: '0 2px 8px rgba(0,0,0,0.10)' },
   locked:    { bg: '#F2F0EC', border: '1px solid #E5E3DF',   color: '#6B7280' },
   unlocked:  { bg: '#EDF2F8', border: '1.5px solid #5B8DB8', color: '#5B8DB8' },
 }
@@ -62,8 +62,8 @@ export default function PhaseProgressionCard({
 
           const content = (
             <div
-              className="min-w-[80px] h-[88px] rounded-[10px] p-[10px] flex flex-col justify-between flex-shrink-0"
-              style={{ background: s.bg, border: s.border }}
+              className="w-full h-[88px] rounded-[10px] p-[10px] flex flex-col justify-between overflow-hidden"
+              style={{ background: s.bg, border: s.border, boxShadow: s.shadow }}
             >
               <div
                 className="text-[10px] font-semibold uppercase tracking-[0.08em]"
@@ -91,15 +91,20 @@ export default function PhaseProgressionCard({
             </div>
           )
 
+          // P2 tappable when active or completed (goes to /framework/phase-2 overview).
           // P3 and P4 always tappable (M13k). P5 tappable when unlocked or active.
-          // P1, P2 always inert. P5 locked/completed renders inert.
-          const isTappable = phase === 3 || phase === 4 || (phase === 5 && (status === 'unlocked' || status === 'active'))
+          // P1 always inert. P5 locked/completed renders inert.
+          const isTappable =
+            (phase === 2 && status !== 'locked') ||
+            phase === 3 ||
+            phase === 4 ||
+            (phase === 5 && (status === 'unlocked' || status === 'active'))
 
           if (!isTappable) {
-            return <div key={phase} className="flex-1 flex">{content}</div>
+            return <div key={phase} className="flex-1 min-w-0 flex">{content}</div>
           }
           return (
-            <Link key={phase} href={`/framework/phase-${phase}`} className="flex-1 flex no-underline">
+            <Link key={phase} href={`/framework/phase-${phase}`} className="flex-1 min-w-0 flex no-underline">
               {content}
             </Link>
           )

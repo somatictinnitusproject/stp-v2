@@ -1,4 +1,4 @@
-import { SCORING_THRESHOLDS } from '@/content/scoring-thresholds'
+﻿import { SCORING_THRESHOLDS } from '@/content/scoring-thresholds'
 import type { ParagraphContext } from './types'
 
 // Doc 13 §4.5 pseudocode (exact):
@@ -49,9 +49,9 @@ function sessionStructureIntro(): string {
 
 function sessionStructureOptions(): string {
   return [
-    'Option 1 — Sequential: Complete jaw release phase fully before introducing the cervical protocol. Lower daily time commitment, cleaner variable control. Recommended for: limited available time or preference for focused approach.',
-    'Option 2 — Parallel: Both protocols simultaneously from day one. Requires 40–50 minutes daily for combined release work. Recommended for: confirmed dual primary driver profiles with sufficient time.',
-    'Option 3 — Prioritised Parallel (default recommendation): Full primary driver protocol daily plus reduced secondary component. Best balance of comprehensiveness and time for most members. Recommended for: primary with strong secondary or primary with secondary profiles. Also suitable for dual drivers who prefer a lighter initial load.',
+    'Option 1, Sequential: Complete jaw release phase fully before introducing the cervical protocol. Lower daily time commitment, cleaner variable control. Recommended for: limited available time or preference for focused approach.',
+    'Option 2, Parallel: Both protocols simultaneously from day one. Requires 40–50 minutes daily for combined release work. Recommended for: confirmed dual primary driver profiles with sufficient time.',
+    'Option 3, Prioritised Parallel (default recommendation): Full primary driver protocol daily plus reduced secondary component. Best balance of comprehensiveness and time for most members. Recommended for: primary with strong secondary or primary with secondary profiles. Also suitable for dual drivers who prefer a lighter initial load.',
   ].join('\n\n')
 }
 
@@ -61,7 +61,7 @@ function sessionStructureOptions(): string {
 
 const recommendationText: Record<string, string> = {
   DUAL_DRIVER:
-    'Both pathways are equally active — working them simultaneously from day one is the most efficient approach. Option 2 is recommended.',
+    'Both pathways : working them simultaneously from day one is the most efficient approach. Option 2 is recommended.',
 
   TMJ_PRIMARY_STRONG_SECONDARY:
     'Your primary driver takes priority. Full primary protocol daily plus the two to three key secondary exercises gives comprehensive coverage without overcommitting time. Option 3 is recommended.',
@@ -77,8 +77,8 @@ const recommendationText: Record<string, string> = {
 
   // Defensive defaults — not reached in normal operation (see function-level note)
   TMJ_DOMINANT:
-    'Your primary pathway is dominant. If a secondary protocol has been included, Option 1 — completing the primary phase fully before introducing secondary work — is the recommended approach.',
+    'Your primary pathway is dominant. If a secondary protocol has been included, Option 1 (completing the primary phase fully before introducing secondary work) is the recommended approach.',
 
   CERV_DOMINANT:
-    'Your primary pathway is dominant. If a secondary protocol has been included, Option 1 — completing the primary phase fully before introducing secondary work — is the recommended approach.',
+    'Your primary pathway is dominant. If a secondary protocol has been included, Option 1 (completing the primary phase fully before introducing secondary work) is the recommended approach.',
 }

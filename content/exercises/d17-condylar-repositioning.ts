@@ -1,4 +1,4 @@
-// /content/exercises/d17-condylar-repositioning.ts
+﻿// /content/exercises/d17-condylar-repositioning.ts
 // D.17 — Condylar Repositioning
 // Verbatim member-facing copy from Document 8 Part D, section D.17.
 //
@@ -41,16 +41,16 @@ const d17CondylarRepositioning: Exercise = {
     },
     {
       type: 'p',
-      text: 'The TMJ distraction work in the release phase decompressed the joint space. The symmetry retraining and progressive resistance work has improved the movement pattern and muscular balance around it. Condylar repositioning builds on both — using specific controlled movement patterns to encourage the condyle to seat correctly within the glenoid fossa and improve disc position over time.',
+      text: 'The TMJ distraction work in the release phase decompressed the joint space. The symmetry retraining and progressive resistance work has improved the movement pattern and muscular balance around it. Condylar repositioning builds on both, using specific controlled movement patterns to encourage the condyle to seat correctly within the glenoid fossa and improve disc position over time.',
     },
     {
       type: 'p',
-      text: 'This is the most advanced exercise in the protocol. It is introduced here, later in the resistance phase, deliberately — the joint needs the foundation of the earlier work before repositioning movements are productive.',
+      text: 'This is the most advanced exercise in the protocol. It is introduced here, later in the resistance phase, deliberately; the joint needs the foundation of the earlier work before repositioning movements are productive.',
     },
     {
       type: 'callout',
       tone: 'warning',
-      text: 'If your jaw catches, locks, or significantly restricts opening on a regular basis rather than occasionally, a single physiotherapy session to confirm your specific displacement pattern before continuing with this exercise is a worthwhile investment. Anterior disc displacement without reduction — where the disc is fully displaced and does not recapture — has a different optimal movement pattern to displacement with reduction. The exercise below is appropriate for the more common displacement with reduction presentation. If you experience frequent locking, confirm your pattern first.',
+      text: 'If your jaw catches, locks, or significantly restricts opening on a regular basis rather than occasionally, a single physiotherapy session to confirm your specific displacement pattern before continuing with this exercise is a worthwhile investment. Anterior disc displacement without reduction (where the disc is fully displaced and does not recapture) has a different optimal movement pattern to displacement with reduction. The exercise below is appropriate for the more common displacement with reduction presentation. If you experience frequent locking, confirm your pattern first.',
     },
     {
       type: 'subhead',
@@ -58,11 +58,11 @@ const d17CondylarRepositioning: Exercise = {
     },
     {
       type: 'p',
-      text: 'Sit upright, head neutral. Begin with your jaw in the resting position — tongue on roof of mouth, teeth slightly apart.',
+      text: 'Sit upright, head neutral. Begin with your jaw in the resting position: tongue on roof of mouth, teeth slightly apart.',
     },
     {
       type: 'p',
-      text: 'Open the jaw slowly to mid-range, pausing briefly at the point where any clicking or deviation typically occurs. At this pause point, apply gentle forward and downward chin pressure with two fingers — encouraging the mandible to translate slightly forward and downward before continuing to open. This movement pattern encourages the condyle to translate correctly under the disc rather than compressing past it.',
+      text: 'Open the jaw slowly to mid-range, pausing briefly at the point where any clicking or deviation typically occurs. At this pause point, apply gentle forward and downward chin pressure with two fingers, encouraging the mandible to translate slightly forward and downward before continuing to open. This movement pattern encourages the condyle to translate correctly under the disc rather than compressing past it.',
     },
     {
       type: 'p',
@@ -70,7 +70,7 @@ const d17CondylarRepositioning: Exercise = {
     },
     {
       type: 'p',
-      text: 'Eight to ten repetitions per set. One set per session. Perform after distraction work — the joint is most receptive to repositioning movement immediately after decompression.',
+      text: 'Eight to ten repetitions per set. One set per session. Perform after distraction work; the joint is most receptive to repositioning movement immediately after decompression.',
     },
     {
       type: 'emphasis',
@@ -97,7 +97,7 @@ const d17CondylarRepositioning: Exercise = {
       content: [
         {
           type: 'p',
-          text: 'Your assessment identified catching or locking rather than simple joint sounds. If this is occurring frequently — more than occasionally — a single physiotherapy session to confirm whether your disc displacement is with or without reduction is worth the time before continuing this exercise. This is not a barrier to the rest of your protocol, which continues unchanged.',
+          text: 'Your assessment identified catching or locking rather than simple joint sounds. If this is occurring frequently (more than occasionally), a single physiotherapy session to confirm whether your disc displacement is with or without reduction is worth the time before continuing this exercise. This is not a barrier to the rest of your protocol, which continues unchanged.',
         },
       ],
     },

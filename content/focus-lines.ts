@@ -42,15 +42,15 @@ export const DAILY_FOCUS_LINES = {
   },
   5: {
     // M15g: all 9 lines populated. Phase 5 content series complete.
-    1: 'The goal is not that tinnitus never occurs — it is that it stops being a significant part of daily life',
-    2: 'The signal has reduced — now the task is keeping it that way',
+    1: 'The goal is not that tinnitus never occurs; it is that it stops being a significant part of daily life',
+    2: 'The signal has reduced. Now the task is keeping it that way.',
     3: 'Residual tinnitus in a calm nervous system is a different condition from the same sound in an anxious one',
     4: 'A plateau is information, not a verdict',
-    5: 'Maintenance is not treatment — it is the habit that makes treatment permanent',
+    5: 'Maintenance is not treatment; it is the habit that makes treatment permanent',
     6: 'Catching the rebuild early means a week of targeted work, not a return to the start',
     7: 'A spike is the system under temporary strain — not evidence that the gains have gone',
     8: 'The protocol becomes invisible when it becomes habit',
-    9: 'Done is not a moment — it is a state you will recognise when you are in it',
+    9: 'Done is not a moment; it is a state you will recognise when you are in it',
   },
   complete: 'Maintain your protocol and trust the progress you have made',
 } as const

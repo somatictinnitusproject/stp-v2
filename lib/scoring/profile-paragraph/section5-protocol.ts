@@ -1,4 +1,4 @@
-import type { ParagraphContext } from './types'
+﻿import type { ParagraphContext } from './types'
 
 // Doc 13 §4.5 pseudocode (exact):
 //   // Section 5 — Protocol assignment statement
@@ -24,19 +24,19 @@ export const protocolAssignmentText: Record<string, string> = {
     'Full cervical release protocol (Weeks 1–2 daily) → cervical retraining phase (Week 3+) → masseter release as optional secondary component.',
 
   DUAL_DRIVER:
-    'Both full protocols — jaw and cervical — see session structure options below.',
+    'Both full protocols (jaw and cervical); see session structure options below.',
 
   TMJ_PRIMARY_STRONG_SECONDARY:
-    'Full jaw protocol daily + two to three key cervical exercises daily — see session structure options below.',
+    'Full jaw protocol daily + two to three key cervical exercises daily; see session structure options below.',
 
   CERV_PRIMARY_STRONG_SECONDARY:
-    'Full cervical protocol daily + two to three key jaw exercises daily — see session structure options below.',
+    'Full cervical protocol daily + two to three key jaw exercises daily; see session structure options below.',
 
   TMJ_PRIMARY_WITH_SECONDARY:
-    'Full jaw protocol daily + one key cervical exercise — see session structure options below.',
+    'Full jaw protocol daily + one key cervical exercise; see session structure options below.',
 
   CERV_PRIMARY_WITH_SECONDARY:
-    'Full cervical protocol daily + one key jaw exercise — see session structure options below.',
+    'Full cervical protocol daily + one key jaw exercise; see session structure options below.',
 }
 
 export function generateSection5_ProtocolAssignment(ctx: ParagraphContext): string {

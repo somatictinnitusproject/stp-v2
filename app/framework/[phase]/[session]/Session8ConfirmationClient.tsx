@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 // C.8 — Maintaining Factor Confirmation Checklist client component.
 // Renders C.8 content with a single confirmation button. The button is
@@ -91,10 +91,10 @@ export default function Session8ConfirmationClient(props: Session8ConfirmationCl
         {props.content.sectionTitle}
       </h1>
 
-      {/* Daily Focus callout — uses literal em-dash character (M12f-hotfix lesson) */}
+      {/* Daily Focus callout */}
       <div className="bg-surface border-l-[3px] border-primary rounded-r-[8px] px-5 py-4 mb-10">
         <p className="text-body-sm text-text-body italic">
-          <span className="font-semibold not-italic text-text-heading">Daily Focus — </span>
+          <span className="font-semibold not-italic text-text-heading">Daily Focus: </span>
           {props.focusLine}
         </p>
       </div>

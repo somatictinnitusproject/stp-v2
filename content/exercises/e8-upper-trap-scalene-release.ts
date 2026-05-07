@@ -1,4 +1,4 @@
-// /content/exercises/e8-upper-trap-scalene-release.ts
+﻿// /content/exercises/e8-upper-trap-scalene-release.ts
 // E.8 — Upper Trapezius and Scalene Release
 // Verbatim member-facing copy from Document 8 Part E, section E.8.
 //
@@ -36,7 +36,7 @@ const e8UpperTrapScaleneRelease: Exercise = {
   fullContent: [
     {
       type: 'p',
-      text: 'These two muscle groups are addressed together because they work in opposition on the cervical spine — the upper trapezius compresses from above and out laterally, the scalenes compress from below. Chronic tension in both simultaneously creates a compressive load on the cervical spine from two directions at once. Releasing them together in the same session produces a more complete decompression than addressing either in isolation.',
+      text: 'These two muscle groups are addressed together because they work in opposition on the cervical spine: the upper trapezius compresses from above and out laterally, the scalenes compress from below. Chronic tension in both simultaneously creates a compressive load on the cervical spine from two directions at once. Releasing them together in the same session produces a more complete decompression than addressing either in isolation.',
     },
     {
       type: 'subhead',
@@ -48,15 +48,15 @@ const e8UpperTrapScaleneRelease: Exercise = {
     },
     {
       type: 'p',
-      text: 'This is a sustained compression release using finger or thumb pressure directly into the muscle belly — sustained pressure applied manually rather than through gravity loading.',
+      text: 'This is a sustained compression release using finger or thumb pressure : sustained pressure applied manually rather than through gravity loading.',
     },
     {
       type: 'subhead',
-      text: 'Technique — Upper Trapezius',
+      text: 'Technique: Upper Trapezius',
     },
     {
       type: 'p',
-      text: 'Reach across with your opposite hand and grasp the muscle at the peak of the shoulder — the highest point of the trapezius ridge between the neck and the shoulder tip. Apply firm sustained pressure into the muscle belly using your fingers, working slowly along the ridge from the shoulder tip toward the base of the skull. Spend extra time on any points of particular tenderness — sustained pressure at those points produces the most release.',
+      text: 'Reach across with your opposite hand and grasp the muscle : the highest point of the trapezius ridge between the neck and the shoulder tip. Apply firm sustained pressure into the muscle belly using your fingers, working slowly along the ridge from the shoulder tip toward the base of the skull. Spend extra time on any particularly tender points; sustained pressure there produces the most release.',
     },
     {
       type: 'p',
@@ -72,20 +72,20 @@ const e8UpperTrapScaleneRelease: Exercise = {
     },
     {
       type: 'p',
-      text: 'Scalene release uses sustained finger pressure into the muscle bellies on the side of the neck. The technique requires care — the scalenes sit adjacent to important neurovascular structures including the brachial plexus and subclavian vessels.',
+      text: 'Scalene release uses sustained finger pressure into the muscle bellies on the side of the neck. The technique requires care: the scalenes sit adjacent to important neurovascular structures including the brachial plexus and subclavian vessels.',
     },
     {
       type: 'callout',
       tone: 'warning',
-      text: 'Apply moderate sustained pressure only — do not dig aggressively into the lateral neck. If you feel a pulsation under your fingers, reposition immediately — you are over a vessel, not muscle tissue. If you experience any tingling, numbness, or shooting sensation into the arm during this technique, stop immediately and reposition. These sensations indicate contact with neural tissue rather than muscle. The correct sensation is a dull muscular ache — nothing sharp, pulsatile, or radiating.',
+      text: 'Apply moderate sustained pressure only; do not dig aggressively into the lateral neck. If you feel a pulsation under your fingers, reposition immediately. You are over a vessel, not muscle tissue. If you experience any tingling, numbness, or shooting sensation into the arm during this technique, stop immediately and reposition. These sensations indicate contact with neural tissue rather than muscle. ; nothing sharp, pulsatile, or radiating.',
     },
     {
       type: 'subhead',
-      text: 'Technique — Scalenes',
+      text: 'Technique: Scalenes',
     },
     {
       type: 'p',
-      text: 'Sit upright and tilt your head slightly away from the side you are working — this slackens the SCM and brings the scalenes closer to the surface. Place two or three fingers on the side of the neck, just behind the SCM and above the collarbone. Apply moderate sustained pressure inward and slightly downward into the muscle tissue.',
+      text: 'Sit upright and tilt your head slightly away from the side you are ; this slackens the SCM and brings the scalenes closer to the surface. Place two or three fingers on the side of the neck, just behind the SCM and above the collarbone. Apply moderate sustained pressure inward and slightly downward into the muscle tissue.',
     },
     {
       type: 'p',
@@ -120,7 +120,7 @@ const e8UpperTrapScaleneRelease: Exercise = {
       content: [
         {
           type: 'p',
-          text: 'Your assessment identified asymmetric upper trapezius tension — more pronounced on your [left / right] side. Spend additional time on that side during the upper trapezius release — work the dominant side for 90 seconds and the other for 60. The scalene release remains bilateral and equal regardless of upper trapezius asymmetry.',
+          text: 'Your assessment identified asymmetric upper trapezius tension: more pronounced on your [left / right] side. Spend additional time on that side ; work the dominant side for 90 seconds and the other for 60. The scalene release remains bilateral and equal regardless of upper trapezius asymmetry.',
         },
       ],
     },

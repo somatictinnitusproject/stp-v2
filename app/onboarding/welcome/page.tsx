@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation'
+﻿import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import OnboardingShell from '@/components/shells/OnboardingShell'
@@ -49,7 +49,7 @@ export default async function OnboardingWelcomePage() {
 
         <div className="flex flex-col gap-4 text-[16px] text-text-body leading-relaxed mb-10">
           <p>
-            Your account is set up and your programme is ready. Start with Phase 1 — it
+            Your account is set up and your programme is ready. Start with Phase 1; it
             builds the foundation everything else depends on.
           </p>
           <p>

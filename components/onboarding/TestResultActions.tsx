@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -38,7 +38,7 @@ export default function TestResultActions() {
         disabled={loading}
         className="w-full bg-primary text-white font-medium text-[15px] py-3 rounded-lg hover:bg-primary-hover active:bg-primary-active disabled:bg-primary-disabled disabled:cursor-not-allowed transition-colors duration-150"
       >
-        {loading ? 'Saving...' : 'This is my result — continue'}
+        {loading ? 'Saving...' : 'This is my result, continue'}
       </button>
 
       <button

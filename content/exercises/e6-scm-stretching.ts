@@ -1,4 +1,4 @@
-// /content/exercises/e6-scm-stretching.ts
+﻿// /content/exercises/e6-scm-stretching.ts
 // E.6 — SCM Stretching
 // Verbatim member-facing copy from Document 8 Part E, section E.6.
 //
@@ -27,7 +27,7 @@ const e6ScmStretching: Exercise = {
   fullContent: [
     {
       type: 'p',
-      text: 'The sternocleidomastoid runs diagonally from just behind your ear down to your collarbone — one on each side of the neck. When chronically hypertonic, it pulls the head into ipsilateral rotation and contralateral lateral flexion, maintaining abnormal cervical joint mechanics and continuously loading the upper cervical structures on the opposite side. It is one of the primary muscles driving lateralised cervical tension patterns.',
+      text: 'The sternocleidomastoid runs diagonally from just behind your ear down to your collarbone; one on each side of the neck. When chronically hypertonic, it pulls the head into ipsilateral rotation and contralateral lateral flexion, maintaining abnormal cervical joint mechanics and continuously loading the upper cervical structures on the opposite side. It is one of the primary muscles driving lateralised cervical tension patterns.',
     },
     {
       type: 'p',
@@ -39,7 +39,7 @@ const e6ScmStretching: Exercise = {
     },
     {
       type: 'p',
-      text: 'The SCM stretch requires a specific combination of movements to isolate the muscle correctly. The most common mistake is an incomplete position that targets the upper trapezius instead — the stretch will feel similar but the wrong tissue is being lengthened.',
+      text: 'The SCM stretch requires a specific combination of movements to isolate the muscle correctly. The most common mistake is an incomplete position that targets the upper trapezius instead: the stretch will feel similar but the wrong tissue is being lengthened.',
     },
     {
       type: 'subhead',
@@ -51,15 +51,15 @@ const e6ScmStretching: Exercise = {
     },
     {
       type: 'p',
-      text: 'Tuck your chin slightly — this is a small movement, not an exaggerated chin tuck. Then rotate your head to the left, away from the side you are stretching. Then tilt your head upward and to the left simultaneously — looking up and to the left. The combination of chin tuck, rotation away, and upward tilt is what isolates the SCM rather than the upper trapezius.',
+      text: 'Tuck your chin slightly: this is a small movement, not an exaggerated chin tuck. Then rotate your head to the left, away from the side you are stretching. Then tilt your head upward and to the left , looking up and to the left. The combination of chin tuck, rotation away, and upward tilt is what isolates the SCM rather than the upper trapezius.',
     },
     {
       type: 'p',
-      text: 'You should feel the stretch running from just behind your ear down toward your collarbone on the right side. If the stretch is felt primarily at the top of the shoulder or the side of the neck rather than along that diagonal line, the position needs adjustment — ensure you have rotated far enough away and added sufficient upward tilt.',
+      text: 'You should feel the stretch running from just behind your ear down toward your collarbone on the right side. If the stretch is felt primarily at the top of the shoulder or the side of the neck rather than along that diagonal line, the position needs adjustment; ensure you have rotated far enough away and added sufficient upward tilt.',
     },
     {
       type: 'p',
-      text: 'Hold for 30 to 45 seconds per side. Repeat twice on each side. Do not force the range — work to the point of a firm comfortable stretch and hold there.',
+      text: 'Hold for 30 to 45 seconds per side. Repeat twice on each side. Do not force the range; work to the point of a firm comfortable stretch and hold there.',
     },
     {
       type: 'p',
@@ -67,7 +67,7 @@ const e6ScmStretching: Exercise = {
     },
     {
       type: 'emphasis',
-      text: 'Watch the demonstration video carefully before your first attempt. The specific combination of movements that isolates the SCM is best learned visually — written description alone is not sufficient for correct positioning.',
+      text: 'Watch the demonstration video carefully before your first attempt. The specific combination of movements that isolates the SCM is best learned visually; written description alone is not sufficient for correct positioning.',
     },
   ],
 
@@ -90,7 +90,7 @@ const e6ScmStretching: Exercise = {
       content: [
         {
           type: 'p',
-          text: 'Your assessment identified asymmetric SCM tone — more pronounced on your [left / right] side. Perform the standard bilateral stretch but spend an additional set on your dominant side. Three repetitions on the [left / right], two on the other. The dominant side is the one pulling your cervical mechanics furthest from neutral — it warrants the additional attention.',
+          text: 'Your assessment identified asymmetric SCM tone: more pronounced on your [left / right] side. Perform the standard bilateral stretch but spend an additional set on your dominant side. Three repetitions on the [left / right], two on the other. The dominant side is the one pulling your cervical mechanics furthest from neutral; it warrants the additional attention.',
         },
       ],
     },

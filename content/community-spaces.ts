@@ -3,7 +3,7 @@
 // constraint on community_posts.space and every UI surface
 // reference these values.
 //
-// Slugs are URL paths — hyphenated, lowercase. The DB stores the
+// Slugs are URL paths, hyphenated, lowercase. The DB stores the
 // hyphenated form verbatim.
 
 export type CommunitySpaceSlug =
@@ -24,7 +24,7 @@ export const COMMUNITY_SPACES: readonly CommunitySpace[] = [
   {
     slug: 'progress-wins',
     name: 'Progress and Wins',
-    description: 'Share your wins — big and small. This is what it’s all about.',
+    description: 'Share your wins, big and small. This is what it is all about.',
     position: 1,
   },
   {
@@ -42,7 +42,7 @@ export const COMMUNITY_SPACES: readonly CommunitySpace[] = [
   {
     slug: 'discussion',
     name: 'Discussion',
-    description: 'Jaw, cervical, posture, nervous system — everything in one place.',
+    description: 'Jaw, cervical, posture, nervous system: everything in one place.',
     position: 4,
   },
   {

@@ -1,4 +1,4 @@
-// NOTE: The "Opening Framing (All Members)" block from Doc 8 B.7 is NOT part of
+﻿// NOTE: The "Opening Framing (All Members)" block from Doc 8 B.7 is NOT part of
 // profile_paragraph. It is static UI text rendered by the profile output screen.
 // generateSection1_ProfileTypeStatement begins after that preamble.
 
@@ -29,7 +29,7 @@ import type { ParagraphContext } from './types'
 function tmjDominantStatement(): string {
   return `Your primary driver is the jaw and masticatory system.
 
-Your assessment identified strong jaw driver involvement and limited cervical involvement. The trigeminal pathway — specifically the auriculotemporal nerve and masticatory muscle tension feeding into the dorsal cochlear nucleus — is the dominant source of abnormal input driving your tinnitus.
+Your assessment identified strong jaw driver involvement and limited cervical involvement. The trigeminal pathway (specifically the auriculotemporal nerve and masticatory muscle tension feeding into the dorsal cochlear nucleus) is the dominant source of abnormal input driving your tinnitus.
 
 This is a relatively clean picture. Your Phase 3 work centres on the jaw protocol, with minimal secondary cervical work.`
 }
@@ -39,7 +39,7 @@ This is a relatively clean picture. Your Phase 3 work centres on the jaw protoco
 function cervDominantStatement(): string {
   return `Your primary driver is the upper cervical spine.
 
-Your assessment identified strong cervical driver involvement and limited jaw involvement. The upper cervical afferent pathway — the joints and muscles at the top of your neck feeding abnormal sensory input into the brainstem's auditory system — is the dominant source driving your tinnitus.
+Your assessment identified strong cervical driver involvement and limited jaw involvement. The upper cervical afferent pathway (the joints and muscles at the top of your neck feeding abnormal sensory input into the brainstem's auditory system) is the dominant source driving your tinnitus.
 
 This is also a relatively clean picture. Your Phase 3 work centres on the cervical protocol, with minimal secondary jaw work.`
 }
@@ -47,11 +47,11 @@ This is also a relatively clean picture. Your Phase 3 work centres on the cervic
 // Doc 8 B.7 Section 1 — Profile Type 3 — Dual Primary Drivers
 // Triggered: both normalised scores >30% AND within 15 percentage points of each other
 function dualDriverStatement(): string {
-  return `You have dual primary drivers — both jaw and cervical involvement are significant.
+  return `You have dual primary drivers: both jaw and cervical involvement are significant.
 
 Your assessment identified meaningful involvement in both pathways, with scores close enough that neither clearly dominates. Both the trigeminal pathway from your jaw and the upper cervical afferent pathway from your neck are generating abnormal input into your auditory system simultaneously.
 
-This is the most common profile. It means your Phase 3 work addresses both protocols with equal emphasis — more daily time commitment, but also more complete coverage of the drivers that are active.`
+This is the most common profile. It means your Phase 3 work addresses both protocols : more daily time commitment, but also more complete coverage of the drivers that are active.`
 }
 
 // Doc 8 B.7 Section 1 — Profile Type 4 — Primary with Strong Secondary
@@ -71,7 +71,7 @@ Your Phase 3 work prioritises the ${primary} protocol while running a full secon
 function primaryWithSecondaryStatement(primary: string, secondary: string): string {
   return `Your primary driver is the ${primary} system, with mild secondary ${secondary} involvement.
 
-Your assessment identified a clear dominant pathway with a secondary one present but less significant. The secondary driver is above the threshold for inclusion — it's real and worth addressing — but the emphasis in your Phase 3 work sits firmly with the primary protocol.
+Your assessment identified a clear dominant pathway with a secondary one present but less significant. The secondary driver is above the threshold for inclusion (it's real and worth addressing), but the emphasis in your Phase 3 work sits firmly with the primary protocol.
 
 Your Phase 3 work runs the full ${primary} protocol with a reduced secondary ${secondary} component.`
 }

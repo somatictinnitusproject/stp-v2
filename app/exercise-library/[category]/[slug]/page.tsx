@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+﻿export const dynamic = 'force-dynamic'
 
 // app/exercise-library/[category]/[slug]/page.tsx
 // ─────────────────────────────────────────────────────────────────
@@ -43,16 +43,16 @@ interface PageProps {
 // Inline rather than in _lookup because this is UI text, not data.
 function getPhaseContextLabel(exercise: Exercise): string {
   const ref = exercise.sectionRef
-  if (ref === 'D.4') return 'Phase 3 — Jaw and TMJ Protocol'
+  if (ref === 'D.4') return 'Phase 3: Jaw and TMJ Protocol'
   if (ref.startsWith('D.')) {
     const num = Number(ref.slice(2))
-    if (num >= 5 && num <= 13) return 'Phase 3 — Jaw and TMJ Release'
-    if (num >= 14) return 'Phase 3 — Jaw and TMJ Resistance'
+    if (num >= 5 && num <= 13) return 'Phase 3: Jaw and TMJ Release'
+    if (num >= 14) return 'Phase 3: Jaw and TMJ Resistance'
   }
   if (ref.startsWith('E.')) {
     const num = Number(ref.slice(2))
-    if (num >= 5 && num <= 12) return 'Phase 3 — Cervical Release'
-    if (num >= 13) return 'Phase 3 — Cervical Retraining'
+    if (num >= 5 && num <= 12) return 'Phase 3: Cervical Release'
+    if (num >= 13) return 'Phase 3: Cervical Retraining'
   }
   return 'Phase 3'
 }

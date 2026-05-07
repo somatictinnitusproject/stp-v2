@@ -1,4 +1,4 @@
-// /content/exercises/d8-lateral-pterygoid-release.ts
+﻿// /content/exercises/d8-lateral-pterygoid-release.ts
 // D.8 — Lateral Pterygoid Release
 // Verbatim member-facing copy from Document 8 Part D, section D.8.
 //
@@ -27,15 +27,15 @@ const d8LateralPterygoidRelease: Exercise = {
   fullContent: [
     {
       type: 'p',
-      text: 'The lateral pterygoid is the primary muscle responsible for jaw deviation on opening — if your Phase 1 assessment identified a consistent drift to one side, the lateral pterygoid on that side is the overactive muscle producing it. It also plays a central role in disc movement within the TMJ, attaching directly to the articular disc and pulling it forward during jaw opening. Chronic overactivity or asymmetric loading in this muscle contributes directly to disc displacement, joint loading, and aberrant trigeminal input.',
+      text: 'The lateral pterygoid is the primary muscle responsible for jaw deviation on opening; if your Phase 1 assessment identified a consistent drift to one side, the lateral pterygoid on that side is the overactive muscle producing it. It also plays a central role in disc movement within the TMJ, attaching directly to the articular disc and pulling it forward during jaw opening. Chronic overactivity or asymmetric loading in this muscle contributes directly to disc displacement, joint loading, and aberrant trigeminal input.',
     },
     {
       type: 'p',
-      text: "The lateral pterygoid sits deep to the masseter and zygomatic arch, which limits direct external access to the muscle belly itself. The external approach targets the lateral pterygoid attachment area and surrounding fascia at the most accessible point — just below the zygomatic arch — producing a release effect through sustained fascial pressure and reducing tension at the muscle's insertion zone.",
+      text: "The lateral pterygoid sits deep to the masseter and zygomatic arch, which limits direct external access to the muscle belly itself. The external approach targets the lateral pterygoid attachment area and surrounding fascia at the most accessible point (just below the zygomatic arch), producing a release effect through sustained fascial pressure and reducing tension at the muscle's insertion zone.",
     },
     {
       type: 'emphasis',
-      text: 'This is not the same depth of access as the intraoral technique — you are working the attachment zone and overlying fascia rather than the muscle belly directly. Sustained pressure here produces a genuine release effect but through a different mechanism than the deep intraoral work. Both are necessary. Neither replaces the other.',
+      text: 'This is not the same depth of access as the intraoral technique. You are working the attachment zone and overlying fascia rather than the muscle belly directly. Sustained pressure here produces a genuine release effect but through a different mechanism than the deep intraoral work. Both are necessary. Neither replaces the other.',
     },
     {
       type: 'subhead',
@@ -43,11 +43,11 @@ const d8LateralPterygoidRelease: Exercise = {
     },
     {
       type: 'p',
-      text: 'Locate the zygomatic arch — the bony ridge running from your cheekbone toward your ear. Place your index finger just below this arch, approximately halfway between your ear and the outer corner of your eye. This is the landmark you used in the Phase 1 lateral pterygoid palpation assessment.',
+      text: 'Locate the zygomatic arch: the bony ridge running from your cheekbone toward your ear. Place your index finger just below this arch, approximately halfway between your ear and the outer corner of your eye. This is the landmark you used in the Phase 1 lateral pterygoid palpation assessment.',
     },
     {
       type: 'p',
-      text: 'Apply firm inward and slightly upward pressure at this point. The tissue here will often be tender in people with confirmed pterygoid overactivity — that tenderness confirms accurate targeting. Hold sustained pressure for 90 seconds per position. Work through two positions — the primary landmark point and one position slightly more anterior along the same line below the arch.',
+      text: 'Apply firm inward and slightly upward pressure at this point. The tissue here will often be tender in people with confirmed pterygoid overactivity; that tenderness confirms accurate targeting. Hold sustained pressure for 90 seconds per position. Work through two positions: the primary landmark point and one position slightly more anterior along the same line below the arch.',
     },
     {
       type: 'subhead',
@@ -79,7 +79,7 @@ const d8LateralPterygoidRelease: Exercise = {
       content: [
         {
           type: 'p',
-          text: 'Your assessment identified jaw drift to the [left / right]. The [left / right] lateral pterygoid is the overactive side. Apply asymmetric emphasis — begin on the [left / right] and spend additional time there before working the other side. Over weeks of consistent release work you should notice the drift becoming less consistent on your mirror check — this is one of your clearest progress indicators for this exercise.',
+          text: 'Your assessment identified jaw drift to the [left / right]. The [left / right] lateral pterygoid is the overactive side. Apply asymmetric emphasis; begin on the [left / right] and spend additional time there before working the other side. Over weeks of consistent release work you should notice the drift becoming less ; this is one of your clearest progress indicators for this exercise.',
         },
       ],
     },

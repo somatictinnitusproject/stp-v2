@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useRef, useId } from 'react'
 
@@ -53,7 +53,7 @@ export default function DefaultConfirmModal({ open, onConfirm, onCancel }: Defau
         className="bg-surface-overlay w-full h-full flex flex-col p-8 z-modal min-[480px]:h-auto min-[480px]:max-w-modal min-[480px]:rounded-xl min-[480px]:shadow-modal"
       >
         <h2 id={headingId} className="text-heading-2 text-text-heading mb-8">
-          All sliders are at 5 — does that reflect today accurately?
+          All sliders are at 5. Does that reflect today accurately?
         </h2>
 
         {/* Ghost left, primary right, 16px gap — mt-auto pushes to bottom on full-screen mobile */}

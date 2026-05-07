@@ -112,12 +112,12 @@ export default async function DashboardPage() {
   // Day line construction
   let dayLine: string
   if (isFirstVisit) {
-    dayLine = "Day 1 — Let's begin · Identification Phase"
+    dayLine = "Day 1: Let's begin · Identification Phase"
   } else if (currentPhase === 3) {
     const suffix = resistancePhaseStart ? 'Release & Resistance' : 'Release Phase'
-    dayLine = `Day ${dayCount} — ${PHASE_NAMES[currentPhase]} · ${suffix}`
+    dayLine = `Day ${dayCount}: ${PHASE_NAMES[currentPhase]} · ${suffix}`
   } else {
-    dayLine = `Day ${dayCount} — ${PHASE_NAMES[currentPhase]}`
+    dayLine = `Day ${dayCount}: ${PHASE_NAMES[currentPhase]}`
   }
 
   // Welcome heading
@@ -325,7 +325,7 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
 
         <Link href="/analytics" className="block bg-surface border border-border rounded-xl p-4 no-underline">
-          <p className="text-[13px] font-semibold text-text-heading mb-3">Loudness &mdash; last 14 days</p>
+          <p className="text-[13px] font-semibold text-text-heading mb-3">Loudness, last 14 days</p>
           {chartLogs.length >= 2 ? (
             <>
               <LoudnessSparkline logs={chartLogs} />
@@ -353,7 +353,7 @@ export default async function DashboardPage() {
       <div className="bg-surface rounded-xl border border-border overflow-hidden">
         <div className="px-5 pt-[18px] pb-3 border-b border-border">
           <h2 className="text-[16px] font-semibold text-text-heading">
-            Phase {currentPhase} &mdash; {PHASE_NAMES[currentPhase]}
+            Phase {currentPhase}: {PHASE_NAMES[currentPhase]}
           </h2>
         </div>
 
@@ -462,7 +462,7 @@ export default async function DashboardPage() {
                     Session {sessionNum}
                   </span>
                 </div>
-                <span className="text-[12px] text-text-muted">&mdash;</span>
+                <span className="text-[12px] text-text-muted"></span>
               </Link>
             )
           })

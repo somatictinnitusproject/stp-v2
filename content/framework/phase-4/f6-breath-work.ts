@@ -1,4 +1,4 @@
-// /content/framework/phase-4/f6-breath-work.ts
+﻿// /content/framework/phase-4/f6-breath-work.ts
 // F.6 — Breath Work Protocol
 // Verbatim member-facing copy from Document 8 Part F, section F.6.
 // Daily focus: "The exhale is the intervention"
@@ -49,7 +49,7 @@ const f6: ReadingSection = {
     },
     {
       type: 'p',
-      text: 'Inhale slowly through the nose for a count of four. Exhale slowly through the mouth for a count of six to eight. The exhale should feel controlled and complete — not forced or strained, but unhurried. Allow the breath to empty fully before the next inhale begins.',
+      text: 'Inhale slowly through the nose for a count of four. Exhale slowly through the mouth for a count of six to eight. The exhale should feel controlled and complete, not forced or strained, but unhurried. Allow the breath to empty fully before the next inhale begins.',
     },
     {
       type: 'p',

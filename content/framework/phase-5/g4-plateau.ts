@@ -1,4 +1,4 @@
-// /content/framework/phase-5/g4-plateau.ts
+﻿// /content/framework/phase-5/g4-plateau.ts
 // G.4 — Plateau: When to Seek Professional Input
 // Verbatim member-facing copy from Document 8 Part G, section G.4.
 // Daily focus: "A plateau is information, not a verdict"
@@ -12,12 +12,12 @@ const g4: Phase5ReadingSection = {
   kind: 'reading',
   id: 'G4_phase5_plateau',
   section: 'G.4',
-  title: 'Plateau — When to Seek Professional Input',
+  title: 'Plateau: When to Seek Professional Input',
   estimatedMinutes: 7,
   content: [
     {
       type: 'p',
-      text: 'If consistent protocol engagement has not produced meaningful improvement — or if progress stalled before reaching a level that adequately addresses the impact of tinnitus on daily life — this section is for you.',
+      text: 'If consistent protocol engagement has not produced meaningful improvement, or if progress stalled before reaching a level that adequately addresses the impact of tinnitus on daily life — this section is for you.',
     },
     {
       type: 'p',
@@ -29,7 +29,7 @@ const g4: Phase5ReadingSection = {
     },
     {
       type: 'p',
-      text: 'A genuine plateau is distinguished from normal nonlinear progress by its duration and consistency. Tinnitus reduction is not linear — periods of improvement followed by apparent stalls are the normal pattern, not a sign that progress has stopped. A plateau is worth concluding only after six to eight weeks of consistent protocol work with no directional change in any of the physical indicators tracked in Phase 3, and no change in the quality or intrusiveness of the tinnitus experience.',
+      text: 'A genuine plateau is distinguished from normal nonlinear progress by its duration and consistency. Tinnitus reduction is not linear; periods of improvement followed by apparent stalls are the normal pattern, not a sign that progress has stopped. A plateau is worth concluding only after six to eight weeks of consistent protocol work with no directional change in any of the physical indicators tracked in Phase 3, and no change in the quality or intrusiveness of the tinnitus experience.',
     },
     {
       type: 'p',
@@ -37,15 +37,15 @@ const g4: Phase5ReadingSection = {
     },
     {
       type: 'p',
-      text: 'Maintaining factors — are the Phase 4 postural and workstation changes genuinely in place, or have they been partially applied? Tension rebuilding through daily habits faster than the protocol releases it is the most common reason for apparent plateaus in members who are doing the protocol work correctly.',
+      text: 'Maintaining factors: are the Phase 4 postural and workstation changes genuinely in place, or have they been partially applied? Tension rebuilding through daily habits faster than the protocol releases it is the most common reason for apparent plateaus in members who are doing the protocol work correctly.',
     },
     {
       type: 'p',
-      text: 'Protocol consistency — has the release work been performed daily at the correct duration and technique? The suboccipital release in particular requires the full ten minute hold and correct ball placement to produce its effect. Shortened or incorrectly performed sessions accumulate into a significantly reduced stimulus over weeks.',
+      text: 'Protocol consistency: has the release work been performed daily at the correct duration and technique? The suboccipital release in particular requires the full ten minute hold and correct ball placement to produce its effect. Shortened or incorrectly performed sessions accumulate into a significantly reduced stimulus over weeks.',
     },
     {
       type: 'p',
-      text: 'Secondary driver — for members with both jaw and cervical involvement, has both protocols received adequate attention? An undertreated secondary driver continuously feeds the same DCN convergence point the primary protocol is addressing. The two work best together and an imbalance in attention between them can limit overall progress substantially.',
+      text: 'Secondary driver: for members with both jaw and cervical involvement, has both protocols received adequate attention? An undertreated secondary driver continuously feeds the same DCN convergence point the primary protocol is addressing. The two work best together and an imbalance in attention between them can limit overall progress substantially.',
     },
     {
       type: 'p',
@@ -57,7 +57,7 @@ const g4: Phase5ReadingSection = {
     },
     {
       type: 'p',
-      text: 'A single session with a physiotherapist experienced in cervical and TMJ dysfunction is the most useful first step — not as a replacement for the self-directed protocol but as a diagnostic check. A physiotherapist can assess whether there is a structural issue limiting the protocol’s effectiveness that self-assessment cannot identify — disc pathology, joint hypomobility that requires hands-on treatment, or a pattern of dysfunction that the home protocol is not adequately addressing. This is not starting again. It is getting specific information about what the limiting factor is.',
+      text: 'A single session with a physiotherapist experienced in cervical and TMJ dysfunction is the most useful first step, not as a replacement for the self-directed protocol but as a diagnostic check. A physiotherapist can assess whether there is a structural issue limiting the protocol’s effectiveness that self-assessment cannot identify: disc pathology, joint hypomobility that requires hands-on treatment, or a pattern of dysfunction that the home protocol is not adequately addressing. This is not starting again. It is getting specific information about what the limiting factor is.',
     },
     {
       type: 'p',
@@ -65,7 +65,7 @@ const g4: Phase5ReadingSection = {
     },
     {
       type: 'p',
-      text: 'For members whose plateau is accompanied by significant psychological distress — ongoing anxiety, low mood, or functional impairment despite framework engagement — the professional support guidance in F.11 applies directly. Physical and psychological professional input are not mutually exclusive and often work best pursued in parallel.',
+      text: 'For members whose plateau is accompanied by significant psychological distress: ongoing anxiety, low mood, or functional impairment despite framework engagement — the professional support guidance in F.11 applies directly. Physical and psychological professional input are not mutually exclusive and often work best pursued in parallel.',
     },
     {
       type: 'subhead',
