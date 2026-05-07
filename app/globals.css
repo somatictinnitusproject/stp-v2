@@ -324,6 +324,16 @@ body {
   white-space: nowrap;
 }
 
+/* ── Avatar background colours ─────────────────────────── */
+/* Defined statically so Tailwind's scanner picks them up.  */
+/* Dynamic generation (bg-avatar-${slot}) would be purged.  */
+.bg-avatar-1 { background-color: var(--color-avatar-1); }
+.bg-avatar-2 { background-color: var(--color-avatar-2); }
+.bg-avatar-3 { background-color: var(--color-avatar-3); }
+.bg-avatar-4 { background-color: var(--color-avatar-4); }
+.bg-avatar-5 { background-color: var(--color-avatar-5); }
+.bg-avatar-6 { background-color: var(--color-avatar-6); }
+
 /* ── Scrollbar utility ─────────────────────────────────── */
 .scrollbar-none {
   -ms-overflow-style: none;

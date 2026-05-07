@@ -7,7 +7,7 @@ interface Props {
 }
 
 export default function ResearchConsentToggle({ initialValue }: Props) {
-  const [enabled, setEnabled] = useState(initialValue ?? true)
+  const [enabled, setEnabled] = useState(initialValue ?? false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 

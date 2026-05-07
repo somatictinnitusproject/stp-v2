@@ -69,7 +69,7 @@ export default function ProfilePageClient({
         />
       )}
 
-      {isOwnProfile && researchConsent !== null && (
+      {isOwnProfile && (
         <div className="bg-surface border border-border rounded-xl p-5 mt-6">
           <h3 className="text-[15px] font-semibold text-text-heading mb-1">Research consent</h3>
           <p className="text-[13px] text-text-muted mb-4">
