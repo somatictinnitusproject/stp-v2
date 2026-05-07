@@ -22,11 +22,11 @@ export function getAvatarBgClass(username: string | null | undefined): string {
   return `bg-avatar-${slot}`
 }
 
-// Returns the first 1–2 characters of the username for the
-// avatar circle. Stripped of any leading non-alphanumeric.
+// Returns the first character of the username for the avatar circle.
+// Stripped of any leading non-alphanumeric.
 export function getAvatarInitials(username: string | null | undefined): string {
   if (!username) return '?'
   const cleaned = username.replace(/^[^a-z0-9]+/i, '')
   if (cleaned.length === 0) return '?'
-  return cleaned.slice(0, 2).toUpperCase()
+  return cleaned.slice(0, 1).toUpperCase()
 }
