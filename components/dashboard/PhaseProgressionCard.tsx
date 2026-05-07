@@ -91,10 +91,11 @@ export default function PhaseProgressionCard({
             </div>
           )
 
-          // P2 tappable when active or completed (goes to /framework/phase-2 overview).
-          // P3 and P4 always tappable (M13k). P5 tappable when unlocked or active.
-          // P1 always inert. P5 locked/completed renders inert.
+          // P1 tappable when completed (lets members revisit sessions/profile).
+          // P2 tappable when active or completed. P3 and P4 always tappable.
+          // P5 tappable when unlocked or active. P5 locked/completed inert.
           const isTappable =
+            (phase === 1 && status === 'completed') ||
             (phase === 2 && status !== 'locked') ||
             phase === 3 ||
             phase === 4 ||

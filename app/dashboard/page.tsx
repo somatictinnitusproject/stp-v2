@@ -104,9 +104,12 @@ export default async function DashboardPage() {
     ? Math.floor((Date.now() - new Date(phaseStartedAt).getTime()) / (1000 * 60 * 60 * 24)) + 1
     : 1
 
-  // First visit: phase_started_at within 5 minutes of now
+  // First visit: phase_started_at within 5 minutes AND still on phase 1 session 1.
+  // If they've advanced past session 1 within those 5 minutes, show normal CTA.
   const isFirstVisit = phaseStartedAt
     ? Date.now() - new Date(phaseStartedAt).getTime() < 5 * 60 * 1000
+      && currentPhase === 1
+      && currentSession === 1
     : false
 
   // Day line construction

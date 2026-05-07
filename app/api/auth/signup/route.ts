@@ -96,6 +96,7 @@ export async function POST(request: Request) {
   await serviceClient.from('users').insert({
     id: userId,
     email: cleanEmail,
+    username: cleanUsername.toLowerCase(),
     display_name: cleanUsername,
   })
 
