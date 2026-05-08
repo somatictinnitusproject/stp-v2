@@ -16,7 +16,10 @@ export type CorrelationCard = {
   direction: 'positive' | 'negative'
   avgMetricHighLoudness: number   // avg metric on days where tinnitus_score >= 7
   avgMetricLowLoudness: number    // avg metric on days where tinnitus_score <= 3
-  showCervicalModifier: boolean   // true only for jaw_tension + CERV_DOMINANT + strong
+  highLoudnessDayCount: number    // count of days with tinnitus_score >= 7
+  lowLoudnessDayCount: number     // count of days with tinnitus_score <= 3
+  bucketDirection: 'positive' | 'negative' | 'insufficient' // drives headline; 'insufficient' if either bucket < 3 days
+  showCervicalModifier: boolean   // true for jaw_tension + (CERV_DOMINANT | DUAL_DRIVER) + strong
 }
 
 export type BestWorstDayCard = {
@@ -77,10 +80,19 @@ export function computeInsights(
     const avgMetricHighLoudness = avg(highLoudnessDays.map((l) => l[field] as number))
     const avgMetricLowLoudness  = avg(lowLoudnessDays.map((l) => l[field] as number))
 
+    const highLoudnessDayCount = highLoudnessDays.length
+    const lowLoudnessDayCount  = lowLoudnessDays.length
+    const bucketDirection: 'positive' | 'negative' | 'insufficient' =
+      highLoudnessDayCount < 3 || lowLoudnessDayCount < 3
+        ? 'insufficient'
+        : avgMetricHighLoudness > avgMetricLowLoudness
+          ? 'positive'
+          : 'negative'
+
     const showCervicalModifier =
       metric === 'jaw_tension' &&
       strength === 'strong' &&
-      profileType === 'CERV_DOMINANT'
+      (profileType === 'CERV_DOMINANT' || profileType === 'DUAL_DRIVER')
 
     correlationCards.push({
       kind: 'correlation',
@@ -90,13 +102,16 @@ export function computeInsights(
       direction,
       avgMetricHighLoudness,
       avgMetricLowLoudness,
+      highLoudnessDayCount,
+      lowLoudnessDayCount,
+      bucketDirection,
       showCervicalModifier,
     })
   }
 
-  // Best/worst day card — only meaningful if we have at least 10 logs
+  // Best/worst day card — only meaningful if we have at least 20 logs
   let bestWorstCard: BestWorstDayCard | null = null
-  if (logs.length >= 10) {
+  if (logs.length >= 20) {
     const sorted = [...logs].sort((a, b) => a.tinnitus_score - b.tinnitus_score)
     const best5  = sorted.slice(0, 5)
     const worst5 = sorted.slice(-5)

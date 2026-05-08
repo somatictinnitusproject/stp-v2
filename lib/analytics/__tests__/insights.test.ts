@@ -24,7 +24,7 @@ function makeLog(
   }
 }
 
-// 14 logs with a strong positive jaw↔loudness correlation
+// 20 logs with a strong positive jaw↔loudness correlation
 const STRONG_JAW_LOGS: ProgressLog[] = [
   makeLog('2026-01-01', 8, 8, 5, 6, 4),
   makeLog('2026-01-02', 9, 9, 5, 6, 4),
@@ -40,6 +40,12 @@ const STRONG_JAW_LOGS: ProgressLog[] = [
   makeLog('2026-01-12', 9, 9, 5, 6, 4),
   makeLog('2026-01-13', 2, 1, 5, 4, 8),
   makeLog('2026-01-14', 3, 2, 5, 4, 7),
+  makeLog('2026-01-15', 8, 8, 5, 6, 4),
+  makeLog('2026-01-16', 9, 9, 5, 6, 4),
+  makeLog('2026-01-17', 7, 7, 5, 6, 4),
+  makeLog('2026-01-18', 2, 1, 5, 4, 8),
+  makeLog('2026-01-19', 3, 2, 5, 4, 7),
+  makeLog('2026-01-20', 2, 1, 5, 4, 8),
 ]
 
 // 14 logs where all metrics are constant — no correlations possible
@@ -110,12 +116,21 @@ describe('computeInsights', () => {
     }
   })
 
-  it('includes a best_worst card when logs.length >= 10', () => {
-    const result = computeInsights(STRONG_JAW_LOGS, null)
+  it('includes a best_worst card when logs.length >= 20', () => {
+    const result = computeInsights(STRONG_JAW_LOGS, null)  // 20 logs
     expect(result.kind).toBe('insights')
     if (result.kind === 'insights') {
       const bwCard = result.cards.find((c) => c.kind === 'best_worst')
       expect(bwCard).toBeDefined()
+    }
+  })
+
+  it('does NOT include a best_worst card when logs.length < 20', () => {
+    const result = computeInsights(STRONG_JAW_LOGS.slice(0, 19), null)
+    expect(result.kind).toBe('insights')
+    if (result.kind === 'insights') {
+      const bwCard = result.cards.find((c) => c.kind === 'best_worst')
+      expect(bwCard).toBeUndefined()
     }
   })
 })

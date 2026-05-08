@@ -42,7 +42,7 @@ const METRIC_LABELS: Record<string, string> = {
 }
 
 function buildCorrelationCard(card: CorrelationCard) {
-  const { metric, strength, direction, avgMetricHighLoudness, avgMetricLowLoudness, showCervicalModifier } = card
+  const { metric, strength, bucketDirection, avgMetricHighLoudness, avgMetricLowLoudness, showCervicalModifier } = card
   const icon = METRIC_ICONS[metric]
   const metricLabel = METRIC_LABELS[metric]
   const strengthLabel = strengthToLabel(strength)
@@ -53,9 +53,14 @@ function buildCorrelationCard(card: CorrelationCard) {
   let headline: string
   let body: React.ReactNode
 
-  if (metric === 'sleep_quality') {
-    if (direction === 'negative') {
-      kind = `inverse_${strength}` as InsightCardKind
+  if (bucketDirection === 'insufficient') {
+    kind = `positive_${strength}` as InsightCardKind
+    headline = `Your ${metricLabel} and loudness are linked — keep logging for clearer patterns`
+    body = `Pearson correlation suggests a relationship between your ${metricLabel} and loudness, but you don't yet have enough days at the high or low end of the loudness scale to characterise the pattern clearly. This will sharpen as you log more days, especially days at the extremes.`
+  } else if (metric === 'sleep_quality') {
+    if (bucketDirection === 'negative') {
+      // Expected: higher sleep score on quieter days → positive_strength for styling
+      kind = `positive_${strength}` as InsightCardKind
       headline = 'Better sleep nights tend to have lower loudness'
       body = (
         <>
@@ -65,26 +70,35 @@ function buildCorrelationCard(card: CorrelationCard) {
         </>
       )
     } else {
-      kind = `positive_${strength}` as InsightCardKind
-      headline = 'Better sleep correlates with higher loudness in your data'
-      body = 'Unusual pattern; most members see lower loudness with better sleep. May reflect noise in early data.'
-    }
-  } else {
-    if (direction === 'positive') {
-      kind = `positive_${strength}` as InsightCardKind
-      headline = `Higher ${metricLabel} days tend to be louder days`
+      // bucketDirection === 'positive': higher sleep score on louder days — unusual
+      kind = `inverse_${strength}` as InsightCardKind
+      headline = 'Better sleep nights tend to have higher loudness'
       body = (
         <>
-          On your high-loudness days (tinnitus 7 or above) your {metricLabel} averaged{' '}
-          <strong>{highStr}</strong>. On low-loudness days (3 or below) it averaged{' '}
-          <strong>{lowStr}</strong>.
+          On your low-loudness days (tinnitus 3 or below) your sleep averaged{' '}
+          <strong>{lowStr}</strong>. On high-loudness days (7+) it averaged{' '}
+          <strong>{highStr}</strong>.
         </>
       )
-    } else {
-      kind = `inverse_${strength}` as InsightCardKind
-      headline = `Lower ${metricLabel} doesn't predict lower loudness here`
-      body = `Unusual direction; most members find ${metricLabel} tracks loudness positively. May reflect noise.`
     }
+  } else {
+    // jaw_tension, neck_tension, stress
+    if (bucketDirection === 'positive') {
+      // Expected: metric higher on louder days
+      kind = `positive_${strength}` as InsightCardKind
+      headline = `Higher ${metricLabel} days tend to be louder days`
+    } else {
+      // Unusual: metric lower on louder days
+      kind = `inverse_${strength}` as InsightCardKind
+      headline = `Lower ${metricLabel} days tend to be louder days`
+    }
+    body = (
+      <>
+        On your high-loudness days (tinnitus 7 or above) your {metricLabel} averaged{' '}
+        <strong>{highStr}</strong>. On low-loudness days (3 or below) it averaged{' '}
+        <strong>{lowStr}</strong>.
+      </>
+    )
   }
 
   const cervicalModifierText = showCervicalModifier
@@ -104,14 +118,32 @@ function buildCorrelationCard(card: CorrelationCard) {
   )
 }
 
+function joinNatural(parts: string[]): string {
+  if (parts.length === 0) return ''
+  if (parts.length === 1) return parts[0]
+  if (parts.length === 2) return `${parts[0]} and ${parts[1]}`
+  return `${parts.slice(0, -1).join(', ')}, and ${parts[parts.length - 1]}`
+}
+
 function buildBestWorstCard(card: BestWorstDayCard) {
+  // Only include metrics where the absolute difference between best-5 and
+  // worst-5 averages is >= 1.0 — filters out noise on small samples.
+  const metrics: Array<{ label: string; best: number; worst: number }> = [
+    { label: 'stress',        best: card.bestAvgStress, worst: card.worstAvgStress },
+    { label: 'sleep',         best: card.bestAvgSleep,  worst: card.worstAvgSleep  },
+    { label: 'jaw tension',   best: card.bestAvgJaw,    worst: card.worstAvgJaw    },
+    { label: 'neck tension',  best: card.bestAvgNeck,   worst: card.worstAvgNeck   },
+  ].filter((m) => Math.abs(m.best - m.worst) >= 1.0)
+
+  if (metrics.length === 0) return null
+
+  const bestParts  = metrics.map((m) => `${m.label} ${toDisplayStr(m.best)}`)
+  const worstParts = metrics.map((m) => `${m.label} ${toDisplayStr(m.worst)}`)
+
   const body = (
     <>
-      Your 5 lowest-loudness days averaged stress {toDisplayStr(card.bestAvgStress)}, sleep{' '}
-      {toDisplayStr(card.bestAvgSleep)}, jaw tension {toDisplayStr(card.bestAvgJaw)}, neck
-      tension {toDisplayStr(card.bestAvgNeck)}. Your 5 highest-loudness days averaged stress{' '}
-      {toDisplayStr(card.worstAvgStress)}, sleep {toDisplayStr(card.worstAvgSleep)}, jaw{' '}
-      {toDisplayStr(card.worstAvgJaw)}, neck {toDisplayStr(card.worstAvgNeck)}.
+      Your 5 lowest-loudness days averaged {joinNatural(bestParts)}. Your 5 highest-loudness
+      days averaged {joinNatural(worstParts)}.
     </>
   )
 
