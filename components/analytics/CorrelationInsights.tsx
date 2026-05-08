@@ -41,7 +41,7 @@ const METRIC_LABELS: Record<string, string> = {
   sleep_quality: 'sleep quality',
 }
 
-function buildCorrelationCard(card: CorrelationCard) {
+function buildCorrelationCard(card: CorrelationCard, profileType: string | null) {
   const { metric, strength, bucketDirection, avgMetricHighLoudness, avgMetricLowLoudness, showCervicalModifier } = card
   const icon = METRIC_ICONS[metric]
   const metricLabel = METRIC_LABELS[metric]
@@ -101,9 +101,17 @@ function buildCorrelationCard(card: CorrelationCard) {
     )
   }
 
-  const cervicalModifierText = showCervicalModifier
-    ? 'Given your cervical-primary profile, this jaw tension pattern is worth noting; it may reflect the interconnected nature of your jaw and cervical drivers.'
-    : undefined
+  // Profile-aware modifier text. showCervicalModifier fires for both
+  // CERV_DOMINANT and DUAL_DRIVER, but the copy needs to differ.
+  let cervicalModifierText: string | undefined = undefined
+  if (showCervicalModifier) {
+    if (profileType === 'DUAL_DRIVER') {
+      cervicalModifierText = 'Given your dual-driver profile, this jaw tension pattern is consistent with the interconnected role both pathways play in your tinnitus.'
+    } else {
+      // CERV_DOMINANT
+      cervicalModifierText = 'Given your cervical-primary profile, this jaw tension pattern is worth noting; it may reflect the interconnected nature of your jaw and cervical drivers.'
+    }
+  }
 
   return (
     <InsightCard
@@ -187,7 +195,7 @@ export default function CorrelationInsights({ logs, profileType }: Props) {
         <div className="flex flex-col gap-4">
           {result.cards.map((card) =>
             card.kind === 'correlation'
-              ? buildCorrelationCard(card)
+              ? buildCorrelationCard(card, profileType)
               : buildBestWorstCard(card)
           )}
         </div>
