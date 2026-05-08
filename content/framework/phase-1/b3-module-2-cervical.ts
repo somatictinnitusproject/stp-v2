@@ -50,7 +50,7 @@ export const B3_MODULE_2_CERV: B3Module2Cerv = {
       recordLabel: 'Did your tinnitus change? \u2014 yes / no.',
       inputKind: 'yes-no',
       dbField: 'cerv_m3_neck_curl',
-      videoId: null,
+      videoId: 'dd9069b30878cb3d0d03adba3e0768b0',
     },
     {
       heading: 'M4. Head Rotation \u2014 Movement Test',
@@ -63,7 +63,7 @@ export const B3_MODULE_2_CERV: B3Module2Cerv = {
       inputKind: 'yes-no-asymmetric',
       dbField: 'cerv_m4_head_rotation',
       dbFieldSecondary: 'cerv_m4_asymmetric_side',
-      videoId: null,
+      videoId: '85415eae22ec6576ec004665b34af552',
     },
     {
       heading: 'M5. Chin Retraction \u2014 Movement Test',
@@ -75,7 +75,7 @@ export const B3_MODULE_2_CERV: B3Module2Cerv = {
       recordLabel: 'Did your tinnitus change? \u2014 yes / no.',
       inputKind: 'yes-no',
       dbField: 'cerv_m5_chin_tuck',
-      videoId: null,
+      videoId: 'bf5283201d10359cda9b36caef682601',
     },
     // \u2500\u2500 Physical Assessment \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
     {

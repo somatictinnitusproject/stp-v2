@@ -54,7 +54,7 @@ export const B2_MODULE_1_TMJ: B2Module1Tmj = {
       recordLabel: 'Did your tinnitus change? \u2014 yes / no.',
       inputKind: 'yes-no',
       dbField: 'tmj_m1_jaw_opening',
-      videoId: null,
+      videoId: '9c46ca130088457174fb6b92c6f435e1',
     },
     {
       heading: '2. Jaw Protrusion \u2014 Movement Test',
@@ -66,7 +66,7 @@ export const B2_MODULE_1_TMJ: B2Module1Tmj = {
       recordLabel: 'Did your tinnitus change? \u2014 yes / no.',
       inputKind: 'yes-no',
       dbField: 'tmj_m2_jaw_protrusion',
-      videoId: null,
+      videoId: '20ff311ebd3c1c495a625fa21a82b6a4',
     },
     // ── Physical Assessment ─────────────────────────────────────────────────────
     {

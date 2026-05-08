@@ -24,22 +24,22 @@ export const VIDEO_IDS: Record<string, string> = {
   d7_intraoral_pterygoid_release: '',
   d8_lateral_pterygoid_release: '',
   d9_auriculotemporal_nerve_mobilisation: '',
-  d10_tmj_distraction: '',
+  d10_tmj_distraction: 'abc227476ee1bbdb547695c01b051950',
 
   // Phase 3 TMJ resistance exercises
   d14_jaw_symmetry_retraining: '',
   d15_progressive_resistance: '',
-  d17_condylar_repositioning: '',
+  d17_condylar_repositioning: 'd0ec161ae3a01ba6b2b18dfc97664753',
 
   // Phase 3 cervical release exercises
-  e5_suboccipital_tennis_ball: '',
-  e6_scm_stretching: '',
-  e7_levator_scapulae_stretching: '',
+  e5_suboccipital_tennis_ball: 'ac56c091b591e80a2d9a63f1fb4a0e44',
+  e6_scm_stretching: 'bd8d5eeaff4d6e45f00c97d1a9daf235',
+  e7_levator_scapulae_stretching: '9823f073689e9aeaeb7fe6cfe8d616c5',
   e8_upper_trap_scalene_release: '',
 
   // Phase 3 cervical retraining exercises
-  e11_chin_tuck_rotation: '',
-  e13_deep_cervical_flexor_training: '',
+  e11_chin_tuck_rotation: 'ef52b4b2a97a8bd23aaf4ef83e1fab3c',
+  e13_deep_cervical_flexor_training: '22d62cd4ee343db4d24465f77f807b22',
   e14_cervical_rotation_holds: '',
   e15_cervical_proprioception: '',
 }
