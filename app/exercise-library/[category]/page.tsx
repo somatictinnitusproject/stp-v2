@@ -28,6 +28,7 @@ import {
   getExercisesByCategory,
   getFilterLabel,
 } from '@/content/exercises/_lookup'
+import { resolveVideoId } from '@/content/video-config'
 import type { LibraryExerciseEntry } from '../_components/ExerciseCard'
 import CategoryPageClient from './CategoryPageClient'
 
@@ -139,7 +140,11 @@ export default async function ExerciseCategoryPage({ params }: PageProps) {
       category: exercise.category,
       bodyRegion: exercise.bodyRegion,
       libraryDurationLabel: exercise.libraryDurationLabel,
-      videoId: exercise.videoId,
+      videoId: (() => {
+        const key = exercise.id.toLowerCase()
+        const resolved = resolveVideoId(key)
+        return resolved.isPlaceholder ? null : resolved.id
+      })(),
       filterLabel: getFilterLabel(exercise),
       inProtocol,
     }

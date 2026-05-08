@@ -34,6 +34,7 @@ import type { Phase1AssessmentRow } from '@/lib/scoring/types'
 import ExerciseView from '@/components/exercise/exercise-view'
 import ExerciseCard, { type LibraryExerciseEntry } from '../../_components/ExerciseCard'
 import LibraryFirstViewMarker from './LibraryFirstViewMarker'
+import { resolveVideoId } from '@/content/video-config'
 
 interface PageProps {
   params: Promise<{ category: string; slug: string }>
@@ -150,7 +151,11 @@ export default async function IndividualExercisePage({ params }: PageProps) {
     category: rel.category,
     bodyRegion: rel.bodyRegion,
     libraryDurationLabel: rel.libraryDurationLabel,
-    videoId: rel.videoId,
+    videoId: (() => {
+      const key = rel.id.toLowerCase()
+      const resolved = resolveVideoId(key)
+      return resolved.isPlaceholder ? null : resolved.id
+    })(),
     filterLabel: getFilterLabel(rel),
     inProtocol: computeInProtocol(rel),
   }))

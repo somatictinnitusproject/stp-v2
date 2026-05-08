@@ -22,6 +22,7 @@ import {
   getAllLibraryExercises,
   getFilterLabel,
 } from '@/content/exercises/_lookup'
+import { resolveVideoId } from '@/content/video-config'
 import ExerciseLibraryClient, { type LibraryExerciseEntry } from './ExerciseLibraryClient'
 
 export default async function ExerciseLibraryPage() {
@@ -76,7 +77,11 @@ export default async function ExerciseLibraryPage() {
       category: exercise.category,
       bodyRegion: exercise.bodyRegion,
       libraryDurationLabel: exercise.libraryDurationLabel,
-      videoId: exercise.videoId,
+      videoId: (() => {
+        const key = exercise.id.toLowerCase()
+        const resolved = resolveVideoId(key)
+        return resolved.isPlaceholder ? null : resolved.id
+      })(),
       filterLabel: getFilterLabel(exercise),
       inProtocol,
     }
