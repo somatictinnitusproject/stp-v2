@@ -47,10 +47,6 @@ const d9AuriculotemporalNerveMob: Exercise = {
       type: 'p',
       text: "Work along the nerve's course from just in front of the ear upward toward the temple in two to three positions. Bilateral, both sides simultaneously where comfortable.",
     },
-    {
-      type: 'emphasis',
-      text: 'Watch the demonstration video before your first attempt. Accurate tissue contact and the combination of pressure with jaw movement is best learned visually.',
-    },
   ],
 
   condensedSummary: [

@@ -59,10 +59,6 @@ const d10TmjDistraction: Exercise = {
       type: 'p',
       text: 'The sensation should be one of gentle decompression or mild stretch at the joint, often producing an immediate sense of relief around the ear and jaw area. If you feel pain rather than relief, reduce the traction force significantly.',
     },
-    {
-      type: 'emphasis',
-      text: 'Watch the demonstration video before your first attempt.',
-    },
   ],
 
   condensedSummary: [

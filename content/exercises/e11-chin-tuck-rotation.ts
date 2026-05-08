@@ -75,10 +75,6 @@ const e11ChinTuckRotation: Exercise = {
       tone: 'warning',
       text: 'Dizziness, nausea, or visual disturbance during this exercise are uncommon with the gentle chin-tuck-rotation technique but can occur in some members, particularly those with undiagnosed cervical instability. Stop immediately if these sensations appear and consult a physiotherapist before resuming. They must not be ignored.',
     },
-    {
-      type: 'emphasis',
-      text: 'Watch the demonstration video before your first attempt. The combination of chin tuck and rotation that targets the upper cervical segments specifically is best confirmed visually.',
-    },
   ],
 
   condensedSummary: [

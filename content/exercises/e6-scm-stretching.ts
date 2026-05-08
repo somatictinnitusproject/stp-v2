@@ -65,10 +65,6 @@ const e6ScmStretching: Exercise = {
       type: 'p',
       text: 'Repeat on the left side by reversing the direction of all movements.',
     },
-    {
-      type: 'emphasis',
-      text: 'Watch the demonstration video carefully before your first attempt. The specific combination of movements that isolates the SCM is best learned visually; written description alone is not sufficient for correct positioning.',
-    },
   ],
 
   condensedSummary: [

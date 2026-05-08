@@ -95,10 +95,6 @@ const e8UpperTrapScaleneRelease: Exercise = {
       type: 'p',
       text: 'Work each side for 60 to 90 seconds total.',
     },
-    {
-      type: 'emphasis',
-      text: 'Watch the demonstration video carefully before your first attempt. Correct finger placement to target muscle rather than adjacent structures is best confirmed visually.',
-    },
   ],
 
   condensedSummary: [

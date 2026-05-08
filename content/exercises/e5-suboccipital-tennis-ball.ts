@@ -69,10 +69,6 @@ const e5SuboccipitalTennisBall: Exercise = {
       tone: 'warning',
       text: 'The sensation should be significant but not sharp. A deep ache, pressure, or dull discomfort is correct. Sharp, shooting, or radiating pain, particularly down into the arms or producing numbness or tingling, means the position is incorrect. Reposition before continuing.',
     },
-    {
-      type: 'emphasis',
-      text: 'Watch the demonstration video before your first attempt. Correct ball placement and head positioning is best learned visually.',
-    },
   ],
 
   condensedSummary: [

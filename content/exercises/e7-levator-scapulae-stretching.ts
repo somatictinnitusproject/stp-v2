@@ -60,10 +60,6 @@ const e7LevatorScapulaeStretching: Exercise = {
       type: 'p',
       text: 'Hold for 30 to 45 seconds per side. Repeat twice on each side.',
     },
-    {
-      type: 'emphasis',
-      text: 'Watch the demonstration video carefully before your first attempt. The anchor position and the rotation direction relative to the SCM stretch are best confirmed visually.',
-    },
   ],
 
   condensedSummary: [

@@ -72,10 +72,6 @@ const d17CondylarRepositioning: Exercise = {
       type: 'p',
       text: 'Eight to ten repetitions per set. One set per session. Perform after distraction work; the joint is most receptive to repositioning movement immediately after decompression.',
     },
-    {
-      type: 'emphasis',
-      text: 'Watch the demonstration video carefully before your first attempt. The specific timing of the forward encouragement at mid-range is best learned visually.',
-    },
   ],
 
   condensedSummary: [

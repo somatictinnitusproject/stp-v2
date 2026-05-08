@@ -98,7 +98,7 @@ export const B2_MODULE_1_TMJ: B2Module1Tmj = {
     {
       heading: '5. Lateral Pterygoid Palpation',
       instructions: [
-        'This one requires care and accurate landmark location. Watch the demonstration video before attempting it.',
+        'This one requires care and accurate landmark location.',
         'The external landmark for the lateral pterygoid insertion area sits just below the zygomatic arch \u2014 the bony ridge running from your cheekbone toward your ear. Place your index finger below this arch, approximately halfway between your ear and the outer corner of your eye. Press firmly inward and slightly upward. You are looking for tenderness, a dull aching sensation, or reproduction of any jaw discomfort.',
         'Compare both sides using the same pressure. Asymmetric tenderness \u2014 significantly more on one side than the other \u2014 is more diagnostically significant than bilateral tenderness. This palpation will be tender in many people with jaw driver involvement. Marked tenderness, particularly where the pressure reproduces a familiar sensation, is a high-specificity finding.',
       ],

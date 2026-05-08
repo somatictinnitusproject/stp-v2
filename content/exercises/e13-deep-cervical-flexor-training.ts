@@ -98,10 +98,6 @@ const e13DeepCervicalFlexorTraining: Exercise = {
       type: 'p',
       text: '; the lying activation work continues as the foundation.',
     },
-    {
-      type: 'emphasis',
-      text: 'Watch the demonstration video before your first attempt. The distinction between deep flexor activation and superficial substitution is difficult to self-assess without a visual reference.',
-    },
   ],
 
   condensedSummary: [

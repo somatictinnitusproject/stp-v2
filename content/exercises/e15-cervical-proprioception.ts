@@ -78,10 +78,6 @@ const e15CervicalProprioception: Exercise = {
       type: 'p',
       text: 'As accuracy at half range improves, progress to returning from full comfortable end range rotation. As overall accuracy improves, , introducing a second plane of movement that the system must account for before repositioning. These progressions increase the challenge to the proprioceptive system and continue driving adaptation.',
     },
-    {
-      type: 'emphasis',
-      text: 'Watch the demonstration video before your first attempt. The setup and the method of assessing return accuracy are both best confirmed visually.',
-    },
   ],
 
   condensedSummary: [

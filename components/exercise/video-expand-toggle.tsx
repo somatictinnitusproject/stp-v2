@@ -8,6 +8,7 @@
 
 import { useState } from 'react'
 import VideoSlot from '@/components/ui/VideoSlot'
+import { resolveVideoId } from '@/content/video-config'
 
 interface VideoExpandToggleProps {
   videoId: string | null
@@ -16,6 +17,14 @@ interface VideoExpandToggleProps {
 }
 
 export function VideoExpandToggle({ videoId, videoKey, label }: VideoExpandToggleProps) {
+  // No video — don't render the toggle at all.
+  const hasDirectVideoId = videoId !== null && videoId !== undefined && videoId.length > 0
+  const resolvedFromKey = videoKey ? resolveVideoId(videoKey) : null
+  const hasResolvedVideo = resolvedFromKey !== null && !resolvedFromKey.isPlaceholder
+  if (!hasDirectVideoId && !hasResolvedVideo) {
+    return null
+  }
+
   const [expanded, setExpanded] = useState(false)
 
   return (

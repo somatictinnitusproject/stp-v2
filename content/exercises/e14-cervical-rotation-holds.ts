@@ -70,10 +70,6 @@ const e14CervicalRotationHolds: Exercise = {
       type: 'p',
       text: 'The common mistake is rotating too quickly and relying on momentum rather than controlled muscular effort. The movement should be slow enough that you are aware of the muscular activity ; not a quick turn to end range and a passive hold.',
     },
-    {
-      type: 'emphasis',
-      text: 'Watch the demonstration video before your first attempt. The chin tuck starting position and the controlled return movement are best confirmed visually.',
-    },
   ],
 
   condensedSummary: [

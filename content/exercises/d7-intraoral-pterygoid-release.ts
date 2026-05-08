@@ -56,10 +56,6 @@ const d7IntraoralPterygoidRelease: Exercise = {
       type: 'p',
       text: 'Do not force the finger too far back; you do not need to reach the full muscle origin. Work within comfortable access range and let sustained pressure do the work.',
     },
-    {
-      type: 'emphasis',
-      text: 'Watch the demonstration video before your first attempt. Accurate tissue targeting for this exercise depends on the video.',
-    },
   ],
 
   condensedSummary: [

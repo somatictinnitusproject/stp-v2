@@ -52,13 +52,7 @@ export default function ExerciseCard({ entry }: { entry: LibraryExerciseEntry })
             className="absolute inset-0 w-full h-full object-cover"
             loading="lazy"
           />
-        ) : (
-          <div className="w-12 h-12 rounded-full border border-border bg-surface flex items-center justify-center">
-            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-              <path d="M7 5.5l8 4.5-8 4.5V5.5z" fill="#6B7280" />
-            </svg>
-          </div>
-        )}
+        ) : null}
       </div>
 
       {/* Content */}

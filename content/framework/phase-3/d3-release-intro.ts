@@ -48,7 +48,7 @@ const d3: ReadingSection = {
     },
     {
       type: 'p',
-      text: 'As you work through the exercises for the first time, each one includes a full explanation of what it does and why. From your second session onward, each exercise shows a condensed version: your demonstration video and the key instructions only. The full explanation remains accessible if you want to return to it, but your daily sessions stay focused and efficient.',
+      text: 'As you work through the exercises for the first time, each one includes a full explanation of what it does and why. From your second session onward, each exercise shows a condensed version: the key instructions only, with demonstration videos available where relevant. The full explanation remains accessible if you want to return to it, but your daily sessions stay focused and efficient.',
     },
     {
       type: 'subhead',
