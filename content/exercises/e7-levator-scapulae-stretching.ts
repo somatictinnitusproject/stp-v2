@@ -6,9 +6,10 @@
 // renders side from post_elevated_side. Literal [left / right]
 // placeholder retained per Decision 2.
 //
-// Cross-reference to E.6 SCM in positioning warning paragraph
-// (rotation toward vs rotation away) intentionally retained from
-// Doc 8 source — disambiguates the two stretches.
+// Pre-launch correction: rotation direction was inverted in original Doc 8 source.
+// Levator scapulae stretch requires contralateral rotation (rotate AWAY from
+// stretching side), not ipsilateral. Disambiguation from E.6 SCM is via scapular
+// anchor and side-flexion plane, not rotation direction (both rotate away).
 
 import type { Exercise } from './_types'
 
@@ -34,7 +35,7 @@ const e7LevatorScapulaeStretching: Exercise = {
     },
     {
       type: 'p',
-      text: 'The stretch position requires care. The levator scapulae and upper trapezius run close to each other and an incomplete position will target the upper trap instead. The difference is in the rotation component: the levator stretch requires the head rotated toward the side being stretched rather than away from it, which is the opposite of the SCM stretch.',
+      text: 'The stretch position requires care. The levator scapulae and upper trapezius run close to each other, and an incomplete position will target the upper trap instead. Two things isolate the levator: anchoring the shoulder blade firmly down on the side being stretched, and combining contralateral head rotation with forward diagonal flexion toward the opposite shoulder rather than the upward extension used for the SCM.',
     },
     {
       type: 'subhead',
@@ -50,11 +51,11 @@ const e7LevatorScapulaeStretching: Exercise = {
     },
     {
       type: 'p',
-      text: 'With the shoulder anchored, drop your chin toward your chest. Then rotate your head , toward the side you are stretching. Then tilt your head forward and to the right, bringing your nose toward your right knee. The combination of chin drop, rotation toward, and forward diagonal tilt isolates the levator scapulae.',
+      text: 'With the shoulder anchored, drop your chin toward your chest. Then rotate your head away from the side you are stretching — for the right levator, rotate your head to the left. Then tilt your head forward and down toward the opposite shoulder, bringing your nose toward your left knee. The combination of chin drop, contralateral rotation, and forward diagonal tilt isolates the levator scapulae.',
     },
     {
       type: 'p',
-      text: 'You should feel the stretch deep in the back of the neck on the right side, running diagonally from the base of the skull down toward the shoulder blade. If the stretch is felt primarily at the top of the shoulder, the anchor is insufficient or the rotation is incomplete.',
+      text: 'You should feel the stretch deep in the back of the neck on the right side, running diagonally from the base of the skull down toward the shoulder blade on the anchored side. If the stretch is felt primarily at the top of the shoulder, the anchor is insufficient or the rotation is incomplete.',
     },
     {
       type: 'p',
@@ -65,7 +66,7 @@ const e7LevatorScapulaeStretching: Exercise = {
   condensedSummary: [
     {
       type: 'p',
-      text: 'Sit upright. To stretch right levator: anchor right shoulder blade down (arm behind back or hand under thigh), drop chin to chest, rotate head right (toward the stretching side, opposite of SCM), tilt forward and to the right toward your right knee. Feel stretch deep in back of right neck, base of skull to shoulder blade. 30 to 45 seconds per side, two reps each.',
+      text: 'Sit upright. To stretch right levator: anchor right shoulder blade down (arm behind back or hand under thigh), drop chin to chest, rotate head left (away from the stretching side), tilt forward and down toward your left knee. Feel stretch deep in back of right neck, base of skull to shoulder blade. 30 to 45 seconds per side, two reps each.',
     },
   ],
 
