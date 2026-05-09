@@ -29,7 +29,7 @@ const d17CondylarRepositioning: Exercise = {
   name: 'Condylar Repositioning',
   category: 'resistance-training',
   bodyRegion: 'jaw',
-  libraryDurationLabel: '5 minutes',
+  libraryDurationLabel: '2 minutes',
   estimatedMinutes: 2,
   focusLine: 'Guide the joint into its correct position',
 

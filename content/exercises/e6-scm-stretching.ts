@@ -20,7 +20,7 @@ const e6ScmStretching: Exercise = {
   name: 'SCM Stretching',
   category: 'cervical-release',
   bodyRegion: 'cervical',
-  libraryDurationLabel: '60 sec per side',
+  libraryDurationLabel: '45 sec per side',
   estimatedMinutes: 2,
   focusLine: 'Lengthen the muscle that\'s pulling your head out of position',
 
