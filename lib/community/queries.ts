@@ -327,15 +327,15 @@ export interface UserProfile {
 // Fetch a user's public profile by username (case-insensitive).
 // Returns null when the username is not found.
 //
-// IMPORTANT: pass a service-role client. The standard
-// user RLS policy only permits a user to SELECT their own
-// row, but profile pages must be readable by all members.
+// Reads from public_users view which exposes only safe public columns
+// (id, username, is_admin, bio, created_at). Works with either a
+// standard authenticated client or a service-role client.
 export async function getUserProfile(
-  serviceClient: SupabaseClient,
+  client: SupabaseClient,
   username: string,
 ): Promise<UserProfile | null> {
-  const { data, error } = await serviceClient
-    .from('users')
+  const { data, error } = await client
+    .from('public_users')
     .select('id, username, bio, is_admin, created_at')
     .ilike('username', username)
     .maybeSingle()

@@ -609,7 +609,7 @@ describe('getPostWithReplies', () => {
 
 describe('getUserProfile', () => {
   it('returns null when no row found', async () => {
-    const { supabase } = buildMockSupabase({ users: [] })
+    const { supabase } = buildMockSupabase({ public_users: [] })
     const result = await getUserProfile(supabase, 'nobody')
     expect(result).toBeNull()
   })
@@ -622,7 +622,7 @@ describe('getUserProfile', () => {
       is_admin: false,
       created_at: '2026-01-01T00:00:00Z',
     }
-    const { supabase } = buildMockSupabase({ users: [row] })
+    const { supabase } = buildMockSupabase({ public_users: [row] })
     const result = await getUserProfile(supabase, 'alice')
     expect(result).toEqual({
       id: 'u1',
@@ -641,7 +641,7 @@ describe('getUserProfile', () => {
       is_admin: false,
       created_at: '2026-02-01T00:00:00Z',
     }
-    const { supabase } = buildMockSupabase({ users: [row] })
+    const { supabase } = buildMockSupabase({ public_users: [row] })
     const result = await getUserProfile(supabase, 'bob')
     expect(result!.bio).toBeNull()
   })
@@ -654,7 +654,7 @@ describe('getUserProfile', () => {
       is_admin: true,
       created_at: '2026-01-01T00:00:00Z',
     }
-    const { supabase, calls } = buildMockSupabase({ users: [row] })
+    const { supabase, calls } = buildMockSupabase({ public_users: [row] })
     await getUserProfile(supabase, 'Oliver')
     expect(calls.eq).toContainEqual(['username', 'Oliver'])
   })

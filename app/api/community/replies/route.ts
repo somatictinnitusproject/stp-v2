@@ -150,7 +150,7 @@ export async function DELETE(request: Request) {
   }
 
   const { data: userRow } = await supabase
-    .from('users')
+    .from('public_users')
     .select('is_admin')
     .eq('id', user.id)
     .maybeSingle()
