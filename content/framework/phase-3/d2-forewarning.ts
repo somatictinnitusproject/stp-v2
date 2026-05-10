@@ -40,6 +40,10 @@ const d2: ReadingSection = {
       text: 'This is the same mechanism that makes muscles sore after the first session of a new exercise programme. The soreness is not damage; it is adaptation beginning. The temporary tinnitus increase is not worsening; it is the early phase of the same process.',
     },
     {
+      type: 'p',
+      text: 'Counterintuitively, members who experience this initial increase often see the strongest improvement once they continue past it. Keep going. The increase typically settles within two weeks of consistent release work.',
+    },
+    {
       type: 'subhead',
       text: 'What This Looks Like in Practice',
     },
