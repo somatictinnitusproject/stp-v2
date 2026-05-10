@@ -81,7 +81,7 @@ export async function POST(request: Request) {
         body,
         created_at,
         user_id,
-        users:user_id ( username, is_admin )
+        public_users:user_id ( username, is_admin )
       `,
     )
     .single()

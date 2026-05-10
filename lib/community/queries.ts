@@ -38,7 +38,7 @@ export async function getRecentActivity(
         space,
         title,
         created_at,
-        users:user_id ( username, is_admin )
+        public_users:user_id ( username, is_admin )
       `,
     )
     .eq('is_deleted', false)
@@ -162,7 +162,7 @@ export async function getSpacePosts(
         body,
         is_pinned,
         created_at,
-        users:user_id ( username, is_admin )
+        public_users:user_id ( username, is_admin )
       `,
     )
     .eq('is_deleted', false)
@@ -262,7 +262,7 @@ export async function getPostWithReplies(
         is_pinned,
         created_at,
         user_id,
-        users:user_id ( username, is_admin )
+        public_users:user_id ( username, is_admin )
       `,
     )
     .eq('id', postId)
@@ -281,7 +281,7 @@ export async function getPostWithReplies(
         body,
         created_at,
         user_id,
-        users:user_id ( username, is_admin )
+        public_users:user_id ( username, is_admin )
       `,
     )
     .eq('post_id', postId)
@@ -373,7 +373,7 @@ export async function getUserPosts(
         body,
         is_pinned,
         created_at,
-        users:user_id ( username, is_admin )
+        public_users:user_id ( username, is_admin )
       `,
     )
     .eq('is_deleted', false)
