@@ -94,8 +94,8 @@ export async function POST(request: Request) {
     id: (inserted as any).id,
     body: (inserted as any).body,
     created_at: (inserted as any).created_at,
-    author_username: (inserted as any).users?.username ?? null,
-    author_is_admin: (inserted as any).users?.is_admin === true,
+    author_username: (inserted as any).public_users?.username ?? null,
+    author_is_admin: (inserted as any).public_users?.is_admin === true,
     author_user_id: (inserted as any).user_id,
   }
 

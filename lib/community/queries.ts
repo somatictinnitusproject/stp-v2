@@ -53,8 +53,8 @@ export async function getRecentActivity(
     space: row.space as CommunitySpaceSlug,
     title: row.title,
     created_at: row.created_at,
-    author_username: row.users?.username ?? null,
-    author_is_admin: row.users?.is_admin === true,
+    author_username: row.public_users?.username ?? null,
+    author_is_admin: row.public_users?.is_admin === true,
   }))
 }
 
@@ -203,8 +203,8 @@ export async function getSpacePosts(
     body: row.body,
     is_pinned: row.is_pinned === true,
     created_at: row.created_at,
-    author_username: row.users?.username ?? null,
-    author_is_admin: row.users?.is_admin === true,
+    author_username: row.public_users?.username ?? null,
+    author_is_admin: row.public_users?.is_admin === true,
     reply_count: replyCounts.get(row.id) ?? 0,
   }))
 
@@ -294,8 +294,8 @@ export async function getPostWithReplies(
     id: row.id,
     body: row.body,
     created_at: row.created_at,
-    author_username: row.users?.username ?? null,
-    author_is_admin: row.users?.is_admin === true,
+    author_username: row.public_users?.username ?? null,
+    author_is_admin: row.public_users?.is_admin === true,
     author_user_id: row.user_id,
   }))
 
@@ -306,8 +306,8 @@ export async function getPostWithReplies(
     body: (postRow as any).body,
     is_pinned: (postRow as any).is_pinned === true,
     created_at: (postRow as any).created_at,
-    author_username: (postRow as any).users?.username ?? null,
-    author_is_admin: (postRow as any).users?.is_admin === true,
+    author_username: (postRow as any).public_users?.username ?? null,
+    author_is_admin: (postRow as any).public_users?.is_admin === true,
     author_user_id: (postRow as any).user_id,
     replies,
   }
@@ -412,8 +412,8 @@ export async function getUserPosts(
     body: row.body,
     is_pinned: row.is_pinned === true,
     created_at: row.created_at,
-    author_username: row.users?.username ?? null,
-    author_is_admin: row.users?.is_admin === true,
+    author_username: row.public_users?.username ?? null,
+    author_is_admin: row.public_users?.is_admin === true,
     reply_count: replyCounts.get(row.id) ?? 0,
   }))
 

@@ -114,14 +114,14 @@ describe('getRecentActivity', () => {
         space: 'progress-wins',
         title: 'My win',
         created_at: '2026-05-01T10:00:00Z',
-        users: { username: 'oliver', is_admin: true },
+        public_users: { username:'oliver', is_admin: true },
       },
       {
         id: 'post-2',
         space: 'discussion',
         title: 'A question',
         created_at: '2026-04-30T08:00:00Z',
-        users: { username: 'alice', is_admin: false },
+        public_users: { username:'alice', is_admin: false },
       },
     ]
     const { supabase } = buildMockSupabase({ community_posts: fakeRows })
@@ -152,7 +152,7 @@ describe('getRecentActivity', () => {
         space: 'discussion',
         title: 'Orphan',
         created_at: '2026-05-01T10:00:00Z',
-        users: null,
+        public_users: null,
       },
     ]
     const { supabase } = buildMockSupabase({ community_posts: fakeRows })
@@ -261,7 +261,7 @@ describe('getSpacePosts', () => {
       body: 'body',
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
-      users: { username: 'alice', is_admin: false },
+      public_users: { username:'alice', is_admin: false },
     }))
     const { supabase } = buildMockSupabase({
       community_posts: rows,
@@ -280,7 +280,7 @@ describe('getSpacePosts', () => {
       body: 'body',
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
-      users: { username: 'alice', is_admin: false },
+      public_users: { username:'alice', is_admin: false },
     }))
     const { supabase } = buildMockSupabase({
       community_posts: rows,
@@ -300,7 +300,7 @@ describe('getSpacePosts', () => {
         body: 'b',
         is_pinned: false,
         created_at: '2026-05-01T10:00:00Z',
-        users: { username: 'alice', is_admin: false },
+        public_users: { username:'alice', is_admin: false },
       },
       {
         id: 'p2',
@@ -309,7 +309,7 @@ describe('getSpacePosts', () => {
         body: 'b',
         is_pinned: false,
         created_at: '2026-04-30T10:00:00Z',
-        users: { username: 'bob', is_admin: false },
+        public_users: { username:'bob', is_admin: false },
       },
     ]
     const replyRows = [
@@ -338,7 +338,7 @@ describe('getSpacePosts', () => {
         body: 'b',
         is_pinned: false,
         created_at: '2026-05-01T10:00:00Z',
-        users: { username: 'alice', is_admin: false },
+        public_users: { username:'alice', is_admin: false },
       },
     ]
     const { supabase } = buildMockSupabase({
@@ -358,7 +358,7 @@ describe('getSpacePosts', () => {
         body: 'b',
         is_pinned: true,
         created_at: '2026-05-01T10:00:00Z',
-        users: { username: 'oliver', is_admin: true },
+        public_users: { username:'oliver', is_admin: true },
       },
     ]
     const { supabase } = buildMockSupabase({
@@ -380,7 +380,7 @@ describe('getSpacePosts', () => {
         body: 'b',
         is_pinned: false,
         created_at: '2026-05-01T10:00:00Z',
-        users: null,
+        public_users: null,
       },
     ]
     const { supabase } = buildMockSupabase({
@@ -428,7 +428,7 @@ describe('getPostWithReplies', () => {
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
       user_id: 'u1',
-      users: { username: 'alice', is_admin: false },
+      public_users: { username:'alice', is_admin: false },
     }
     const { supabase } = buildMockSupabase({
       community_posts: [postRow],
@@ -451,7 +451,7 @@ describe('getPostWithReplies', () => {
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
       user_id: 'u1',
-      users: { username: 'alice', is_admin: false },
+      public_users: { username:'alice', is_admin: false },
     }
     const { supabase } = buildMockSupabase({
       community_posts: [postRow],
@@ -476,7 +476,7 @@ describe('getPostWithReplies', () => {
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
       user_id: 'u1',
-      users: { username: 'alice', is_admin: false },
+      public_users: { username:'alice', is_admin: false },
     }
     // Mock returns replies in whatever order — production code
     // relies on .order('created_at', ascending: true) to enforce
@@ -488,14 +488,14 @@ describe('getPostWithReplies', () => {
         body: 'first',
         created_at: '2026-05-02T08:00:00Z',
         user_id: 'u1',
-        users: { username: 'alice', is_admin: false },
+        public_users: { username:'alice', is_admin: false },
       },
       {
         id: 'r2',
         body: 'oliver weighs in',
         created_at: '2026-05-02T09:00:00Z',
         user_id: 'u-ol',
-        users: { username: 'oliver', is_admin: true },
+        public_users: { username:'oliver', is_admin: true },
       },
     ]
     const { supabase } = buildMockSupabase({
@@ -530,7 +530,7 @@ describe('getPostWithReplies', () => {
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
       user_id: 'u1',
-      users: { username: 'alice', is_admin: false },
+      public_users: { username:'alice', is_admin: false },
     }
     const { supabase, calls } = buildMockSupabase({
       community_posts: [postRow],
@@ -556,7 +556,7 @@ describe('getPostWithReplies', () => {
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
       user_id: 'u1',
-      users: { username: 'alice', is_admin: false },
+      public_users: { username:'alice', is_admin: false },
     }
     const replyRows = [
       {
@@ -564,7 +564,7 @@ describe('getPostWithReplies', () => {
         body: 'orphan',
         created_at: '2026-05-02T08:00:00Z',
         user_id: 'u-missing',
-        users: null,
+        public_users: null,
       },
     ]
     const { supabase } = buildMockSupabase({
@@ -589,7 +589,7 @@ describe('getPostWithReplies', () => {
       is_pinned: true,
       created_at: '2026-05-01T10:00:00Z',
       user_id: 'u-ol',
-      users: { username: 'oliver', is_admin: true },
+      public_users: { username:'oliver', is_admin: true },
     }
     const { supabase } = buildMockSupabase({
       community_posts: [postRow],
@@ -699,7 +699,7 @@ describe('getUserPosts', () => {
       body: 'body',
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
-      users: { username: 'alice', is_admin: false },
+      public_users: { username:'alice', is_admin: false },
     }
     const replyRows = [
       { post_id: 'p1' },
@@ -721,7 +721,7 @@ describe('getUserPosts', () => {
       body: 'b',
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
-      users: { username: 'alice', is_admin: false },
+      public_users: { username:'alice', is_admin: false },
     }))
     const { supabase } = buildMockSupabase({
       community_posts: rows,
