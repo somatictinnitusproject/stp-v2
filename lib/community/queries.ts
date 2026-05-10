@@ -3,6 +3,7 @@ import {
   COMMUNITY_SPACES,
   type CommunitySpaceSlug,
 } from '@/content/community-spaces'
+import { createServiceClient } from '@/lib/supabase/service'
 
 // Each row returned for the recent activity section.
 export interface RecentActivityItem {
@@ -21,14 +22,39 @@ export interface SpaceMetadata {
   last_active_at: string | null
 }
 
+// Batch-fetch username + is_admin for a list of user IDs.
+// Creates a service-role client lazily — only invoked when userIds is non-empty.
+// Service-role read — public columns only (id, username, is_admin).
+async function fetchUserMap(
+  userIds: string[],
+  serviceClient?: SupabaseClient,
+): Promise<Map<string, { username: string | null; is_admin: boolean }>> {
+  if (userIds.length === 0) return new Map()
+  const svc = serviceClient ?? createServiceClient()
+  const { data } = await svc
+    .from('users')
+    .select('id, username, is_admin')
+    .in('id', userIds)
+  const map = new Map<string, { username: string | null; is_admin: boolean }>()
+  for (const u of data ?? []) {
+    map.set((u as any).id, {
+      username: (u as any).username ?? null,
+      is_admin: (u as any).is_admin === true,
+    })
+  }
+  return map
+}
+
 // Fetch the N most recent non-deleted posts across all spaces.
-// Joins users for the author username and admin flag.
+// User data fetched separately via service-role to avoid PostgREST embed
+// RLS issues with the users table.
 //
 // Every query against community_posts MUST include
 // is_deleted = FALSE per CLAUDE.md ALL1.
 export async function getRecentActivity(
   supabase: SupabaseClient,
   limit: number = 4,
+  serviceClient?: SupabaseClient,
 ): Promise<RecentActivityItem[]> {
   const { data, error } = await supabase
     .from('community_posts')
@@ -38,7 +64,7 @@ export async function getRecentActivity(
         space,
         title,
         created_at,
-        public_users:user_id ( username, is_admin )
+        user_id
       `,
     )
     .eq('is_deleted', false)
@@ -48,13 +74,16 @@ export async function getRecentActivity(
   if (error) throw error
   if (!data) return []
 
+  const userIds = [...new Set(data.map((r: any) => r.user_id as string))]
+  const userMap = await fetchUserMap(userIds, serviceClient)
+
   return data.map((row: any) => ({
     id: row.id,
     space: row.space as CommunitySpaceSlug,
     title: row.title,
     created_at: row.created_at,
-    author_username: row.public_users?.username ?? null,
-    author_is_admin: row.public_users?.is_admin === true,
+    author_username: userMap.get(row.user_id)?.username ?? null,
+    author_is_admin: userMap.get(row.user_id)?.is_admin === true,
   }))
 }
 
@@ -142,11 +171,15 @@ export interface SpacePostsPage {
 //
 // Pagination: 20 posts per page by default. Returns hasMore=TRUE
 // if any post exists beyond the requested window.
+//
+// User data fetched separately via service-role to avoid PostgREST
+// embed RLS issues with the users table.
 export async function getSpacePosts(
   supabase: SupabaseClient,
   space: CommunitySpaceSlug,
   page: number = 0,
   pageSize: number = 20,
+  serviceClient?: SupabaseClient,
 ): Promise<SpacePostsPage> {
   const from = page * pageSize
   // Fetch one extra row to detect hasMore without a count query.
@@ -162,7 +195,7 @@ export async function getSpacePosts(
         body,
         is_pinned,
         created_at,
-        public_users:user_id ( username, is_admin )
+        user_id
       `,
     )
     .eq('is_deleted', false)
@@ -196,6 +229,9 @@ export async function getSpacePosts(
     replyCounts.set(id, (replyCounts.get(id) ?? 0) + 1)
   }
 
+  const userIds = [...new Set(visibleRows.map((r: any) => r.user_id as string))]
+  const userMap = await fetchUserMap(userIds, serviceClient)
+
   const posts: SpacePost[] = visibleRows.map((row: any) => ({
     id: row.id,
     space: row.space as CommunitySpaceSlug,
@@ -203,8 +239,8 @@ export async function getSpacePosts(
     body: row.body,
     is_pinned: row.is_pinned === true,
     created_at: row.created_at,
-    author_username: row.public_users?.username ?? null,
-    author_is_admin: row.public_users?.is_admin === true,
+    author_username: userMap.get(row.user_id)?.username ?? null,
+    author_is_admin: userMap.get(row.user_id)?.is_admin === true,
     reply_count: replyCounts.get(row.id) ?? 0,
   }))
 
@@ -246,10 +282,14 @@ export interface PostWithReplies {
 //
 // Replies are ordered created_at ASC — chronological thread
 // per Doc 12 §11.6.
+//
+// User data (post author + all reply authors) fetched in a single
+// batch via service-role to avoid PostgREST embed RLS issues.
 export async function getPostWithReplies(
   supabase: SupabaseClient,
   postId: string,
   expectedSpace: CommunitySpaceSlug,
+  serviceClient?: SupabaseClient,
 ): Promise<PostWithReplies | null> {
   const { data: postRow, error: postError } = await supabase
     .from('community_posts')
@@ -261,8 +301,7 @@ export async function getPostWithReplies(
         body,
         is_pinned,
         created_at,
-        user_id,
-        public_users:user_id ( username, is_admin )
+        user_id
       `,
     )
     .eq('id', postId)
@@ -280,8 +319,7 @@ export async function getPostWithReplies(
         id,
         body,
         created_at,
-        user_id,
-        public_users:user_id ( username, is_admin )
+        user_id
       `,
     )
     .eq('post_id', postId)
@@ -290,12 +328,21 @@ export async function getPostWithReplies(
 
   if (repliesError) throw repliesError
 
+  // Collect user IDs for post author + all reply authors in one batch.
+  const allUserIds = [
+    ...new Set([
+      (postRow as any).user_id as string,
+      ...(replyRows ?? []).map((r: any) => r.user_id as string),
+    ]),
+  ]
+  const userMap = await fetchUserMap(allUserIds, serviceClient)
+
   const replies: PostReply[] = (replyRows ?? []).map((row: any) => ({
     id: row.id,
     body: row.body,
     created_at: row.created_at,
-    author_username: row.public_users?.username ?? null,
-    author_is_admin: row.public_users?.is_admin === true,
+    author_username: userMap.get(row.user_id)?.username ?? null,
+    author_is_admin: userMap.get(row.user_id)?.is_admin === true,
     author_user_id: row.user_id,
   }))
 
@@ -306,8 +353,8 @@ export async function getPostWithReplies(
     body: (postRow as any).body,
     is_pinned: (postRow as any).is_pinned === true,
     created_at: (postRow as any).created_at,
-    author_username: (postRow as any).public_users?.username ?? null,
-    author_is_admin: (postRow as any).public_users?.is_admin === true,
+    author_username: userMap.get((postRow as any).user_id)?.username ?? null,
+    author_is_admin: userMap.get((postRow as any).user_id)?.is_admin === true,
     author_user_id: (postRow as any).user_id,
     replies,
   }
@@ -327,15 +374,16 @@ export interface UserProfile {
 // Fetch a user's public profile by username (case-insensitive).
 // Returns null when the username is not found.
 //
-// Reads from public_users view which exposes only safe public columns
-// (id, username, is_admin, bio, created_at). Works with either a
-// standard authenticated client or a service-role client.
+// Caller must pass a service-role client — the users table SELECT
+// policy only allows reading own row, so a regular client would
+// return null for any other user's profile.
 export async function getUserProfile(
   client: SupabaseClient,
   username: string,
 ): Promise<UserProfile | null> {
+  // Service-role read — public columns only (id, username, bio, is_admin, created_at)
   const { data, error } = await client
-    .from('public_users')
+    .from('users')
     .select('id, username, bio, is_admin, created_at')
     .ilike('username', username)
     .maybeSingle()
@@ -359,6 +407,7 @@ export async function getUserPosts(
   userId: string,
   page: number = 0,
   pageSize: number = 20,
+  serviceClient?: SupabaseClient,
 ): Promise<SpacePostsPage> {
   const from = page * pageSize
   const to = from + pageSize
@@ -373,7 +422,7 @@ export async function getUserPosts(
         body,
         is_pinned,
         created_at,
-        public_users:user_id ( username, is_admin )
+        user_id
       `,
     )
     .eq('is_deleted', false)
@@ -405,6 +454,9 @@ export async function getUserPosts(
     replyCounts.set(id, (replyCounts.get(id) ?? 0) + 1)
   }
 
+  const userIds = [...new Set(visibleRows.map((r: any) => r.user_id as string))]
+  const userMap = await fetchUserMap(userIds, serviceClient)
+
   const posts: SpacePost[] = visibleRows.map((row: any) => ({
     id: row.id,
     space: row.space as CommunitySpaceSlug,
@@ -412,8 +464,8 @@ export async function getUserPosts(
     body: row.body,
     is_pinned: row.is_pinned === true,
     created_at: row.created_at,
-    author_username: row.public_users?.username ?? null,
-    author_is_admin: row.public_users?.is_admin === true,
+    author_username: userMap.get(row.user_id)?.username ?? null,
+    author_is_admin: userMap.get(row.user_id)?.is_admin === true,
     reply_count: replyCounts.get(row.id) ?? 0,
   }))
 

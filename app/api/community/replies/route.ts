@@ -75,27 +75,26 @@ export async function POST(request: Request) {
   const { data: inserted, error: insertError } = await supabase
     .from('community_replies')
     .insert({ post_id: postId, user_id: user.id, body })
-    .select(
-      `
-        id,
-        body,
-        created_at,
-        user_id,
-        public_users:user_id ( username, is_admin )
-      `,
-    )
+    .select('id, body, created_at, user_id')
     .single()
 
   if (insertError || !inserted) {
     return NextResponse.json({ error: 'insert_failed' }, { status: 500 })
   }
 
+  // Service-role read — public columns only (username, is_admin)
+  const { data: authorRow } = await createServiceClient()
+    .from('users')
+    .select('username, is_admin')
+    .eq('id', user.id)
+    .maybeSingle()
+
   const reply = {
     id: (inserted as any).id,
     body: (inserted as any).body,
     created_at: (inserted as any).created_at,
-    author_username: (inserted as any).public_users?.username ?? null,
-    author_is_admin: (inserted as any).public_users?.is_admin === true,
+    author_username: (authorRow as any)?.username ?? null,
+    author_is_admin: (authorRow as any)?.is_admin === true,
     author_user_id: (inserted as any).user_id,
   }
 
@@ -150,7 +149,7 @@ export async function DELETE(request: Request) {
   }
 
   const { data: userRow } = await supabase
-    .from('public_users')
+    .from('users')
     .select('is_admin')
     .eq('id', user.id)
     .maybeSingle()

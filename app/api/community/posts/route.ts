@@ -195,7 +195,7 @@ export async function PATCH(request: Request) {
 
   // Admin only.
   const { data: userRow } = await supabase
-    .from('public_users')
+    .from('users')
     .select('is_admin')
     .eq('id', user.id)
     .maybeSingle()
@@ -267,7 +267,7 @@ export async function DELETE(request: Request) {
   }
 
   const { data: userRow } = await supabase
-    .from('public_users')
+    .from('users')
     .select('is_admin')
     .eq('id', user.id)
     .maybeSingle()

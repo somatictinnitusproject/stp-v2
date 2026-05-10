@@ -90,7 +90,7 @@ function buildMockSupabase(
 describe('getRecentActivity', () => {
   it('queries community_posts with is_deleted=false and ordering', async () => {
     const { supabase, calls } = buildMockSupabase({ community_posts: [] })
-    await getRecentActivity(supabase, 4)
+    await getRecentActivity(supabase, 4, supabase)
 
     expect(calls.from).toContain('community_posts')
     expect(calls.eq).toContainEqual(['is_deleted', false])
@@ -103,7 +103,7 @@ describe('getRecentActivity', () => {
 
   it('uses default limit of 4 when none provided', async () => {
     const { supabase, calls } = buildMockSupabase({ community_posts: [] })
-    await getRecentActivity(supabase)
+    await getRecentActivity(supabase, 4, supabase)
     expect(calls.limit).toBe(4)
   })
 
@@ -114,18 +114,25 @@ describe('getRecentActivity', () => {
         space: 'progress-wins',
         title: 'My win',
         created_at: '2026-05-01T10:00:00Z',
-        public_users: { username:'oliver', is_admin: true },
+        user_id: 'u-ol',
       },
       {
         id: 'post-2',
         space: 'discussion',
         title: 'A question',
         created_at: '2026-04-30T08:00:00Z',
-        public_users: { username:'alice', is_admin: false },
+        user_id: 'u-al',
       },
     ]
-    const { supabase } = buildMockSupabase({ community_posts: fakeRows })
-    const result = await getRecentActivity(supabase)
+    const userRows = [
+      { id: 'u-ol', username: 'oliver', is_admin: true },
+      { id: 'u-al', username: 'alice', is_admin: false },
+    ]
+    const { supabase } = buildMockSupabase({
+      community_posts: fakeRows,
+      users: userRows,
+    })
+    const result = await getRecentActivity(supabase, 4, supabase)
 
     expect(result).toHaveLength(2)
     expect(result[0]).toEqual({
@@ -141,7 +148,7 @@ describe('getRecentActivity', () => {
 
   it('returns empty array when no rows', async () => {
     const { supabase } = buildMockSupabase({ community_posts: [] })
-    const result = await getRecentActivity(supabase)
+    const result = await getRecentActivity(supabase, 4, supabase)
     expect(result).toEqual([])
   })
 
@@ -152,11 +159,14 @@ describe('getRecentActivity', () => {
         space: 'discussion',
         title: 'Orphan',
         created_at: '2026-05-01T10:00:00Z',
-        public_users: null,
+        user_id: 'u-missing',
       },
     ]
-    const { supabase } = buildMockSupabase({ community_posts: fakeRows })
-    const result = await getRecentActivity(supabase)
+    const { supabase } = buildMockSupabase({
+      community_posts: fakeRows,
+      users: [],
+    })
+    const result = await getRecentActivity(supabase, 4, supabase)
     expect(result[0].author_username).toBeNull()
     expect(result[0].author_is_admin).toBe(false)
   })
@@ -213,7 +223,7 @@ describe('getSpacePosts', () => {
       community_posts: [],
       community_replies: [],
     })
-    await getSpacePosts(supabase, 'discussion', 0, 20)
+    await getSpacePosts(supabase, 'discussion', 0, 20, supabase)
 
     expect(calls.from).toContain('community_posts')
     expect(calls.eq).toContainEqual(['is_deleted', false])
@@ -236,7 +246,7 @@ describe('getSpacePosts', () => {
       community_posts: [],
       community_replies: [],
     })
-    await getSpacePosts(supabase, 'discussion', 2, 20)
+    await getSpacePosts(supabase, 'discussion', 2, 20, supabase)
     // page 2 → from = 40, to = 60
     expect(calls.range).toEqual([40, 60])
   })
@@ -246,7 +256,7 @@ describe('getSpacePosts', () => {
       community_posts: [],
       community_replies: [],
     })
-    const result = await getSpacePosts(supabase, 'discussion', 0, 20)
+    const result = await getSpacePosts(supabase, 'discussion', 0, 20, supabase)
     expect(result.posts).toEqual([])
     expect(result.hasMore).toBe(false)
   })
@@ -261,13 +271,14 @@ describe('getSpacePosts', () => {
       body: 'body',
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
-      public_users: { username:'alice', is_admin: false },
+      user_id: 'u-al',
     }))
     const { supabase } = buildMockSupabase({
       community_posts: rows,
       community_replies: [],
+      users: [{ id: 'u-al', username: 'alice', is_admin: false }],
     })
-    const result = await getSpacePosts(supabase, 'discussion', 0, 20)
+    const result = await getSpacePosts(supabase, 'discussion', 0, 20, supabase)
     expect(result.posts).toHaveLength(20)
     expect(result.hasMore).toBe(true)
   })
@@ -280,13 +291,14 @@ describe('getSpacePosts', () => {
       body: 'body',
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
-      public_users: { username:'alice', is_admin: false },
+      user_id: 'u-al',
     }))
     const { supabase } = buildMockSupabase({
       community_posts: rows,
       community_replies: [],
+      users: [{ id: 'u-al', username: 'alice', is_admin: false }],
     })
-    const result = await getSpacePosts(supabase, 'discussion', 0, 20)
+    const result = await getSpacePosts(supabase, 'discussion', 0, 20, supabase)
     expect(result.posts).toHaveLength(20)
     expect(result.hasMore).toBe(false)
   })
@@ -300,7 +312,7 @@ describe('getSpacePosts', () => {
         body: 'b',
         is_pinned: false,
         created_at: '2026-05-01T10:00:00Z',
-        public_users: { username:'alice', is_admin: false },
+        user_id: 'u-al',
       },
       {
         id: 'p2',
@@ -309,7 +321,7 @@ describe('getSpacePosts', () => {
         body: 'b',
         is_pinned: false,
         created_at: '2026-04-30T10:00:00Z',
-        public_users: { username:'bob', is_admin: false },
+        user_id: 'u-bo',
       },
     ]
     const replyRows = [
@@ -321,8 +333,12 @@ describe('getSpacePosts', () => {
     const { supabase } = buildMockSupabase({
       community_posts: postRows,
       community_replies: replyRows,
+      users: [
+        { id: 'u-al', username: 'alice', is_admin: false },
+        { id: 'u-bo', username: 'bob', is_admin: false },
+      ],
     })
-    const result = await getSpacePosts(supabase, 'discussion', 0, 20)
+    const result = await getSpacePosts(supabase, 'discussion', 0, 20, supabase)
     const p1 = result.posts.find((p) => p.id === 'p1')!
     const p2 = result.posts.find((p) => p.id === 'p2')!
     expect(p1.reply_count).toBe(3)
@@ -338,14 +354,15 @@ describe('getSpacePosts', () => {
         body: 'b',
         is_pinned: false,
         created_at: '2026-05-01T10:00:00Z',
-        public_users: { username:'alice', is_admin: false },
+        user_id: 'u-al',
       },
     ]
     const { supabase } = buildMockSupabase({
       community_posts: postRows,
       community_replies: [],
+      users: [{ id: 'u-al', username: 'alice', is_admin: false }],
     })
-    const result = await getSpacePosts(supabase, 'discussion', 0, 20)
+    const result = await getSpacePosts(supabase, 'discussion', 0, 20, supabase)
     expect(result.posts[0].reply_count).toBe(0)
   })
 
@@ -358,14 +375,15 @@ describe('getSpacePosts', () => {
         body: 'b',
         is_pinned: true,
         created_at: '2026-05-01T10:00:00Z',
-        public_users: { username:'oliver', is_admin: true },
+        user_id: 'u-ol',
       },
     ]
     const { supabase } = buildMockSupabase({
       community_posts: postRows,
       community_replies: [],
+      users: [{ id: 'u-ol', username: 'oliver', is_admin: true }],
     })
-    const result = await getSpacePosts(supabase, 'discussion', 0, 20)
+    const result = await getSpacePosts(supabase, 'discussion', 0, 20, supabase)
     expect(result.posts[0].is_pinned).toBe(true)
     expect(result.posts[0].author_is_admin).toBe(true)
     expect(result.posts[0].author_username).toBe('oliver')
@@ -380,14 +398,15 @@ describe('getSpacePosts', () => {
         body: 'b',
         is_pinned: false,
         created_at: '2026-05-01T10:00:00Z',
-        public_users: null,
+        user_id: 'u-missing',
       },
     ]
     const { supabase } = buildMockSupabase({
       community_posts: postRows,
       community_replies: [],
+      users: [],
     })
-    const result = await getSpacePosts(supabase, 'discussion', 0, 20)
+    const result = await getSpacePosts(supabase, 'discussion', 0, 20, supabase)
     expect(result.posts[0].author_username).toBeNull()
     expect(result.posts[0].author_is_admin).toBe(false)
   })
@@ -403,6 +422,7 @@ describe('getPostWithReplies', () => {
       supabase,
       'missing-id',
       'discussion',
+      supabase,
     )
     expect(result).toBeNull()
   })
@@ -412,7 +432,7 @@ describe('getPostWithReplies', () => {
       community_posts: [],
       community_replies: [],
     })
-    await getPostWithReplies(supabase, 'p1', 'discussion')
+    await getPostWithReplies(supabase, 'p1', 'discussion', supabase)
 
     expect(calls.from).toContain('community_posts')
     expect(calls.eq).toContainEqual(['id', 'p1'])
@@ -428,16 +448,17 @@ describe('getPostWithReplies', () => {
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
       user_id: 'u1',
-      public_users: { username:'alice', is_admin: false },
     }
     const { supabase } = buildMockSupabase({
       community_posts: [postRow],
       community_replies: [],
+      users: [{ id: 'u1', username: 'alice', is_admin: false }],
     })
     const result = await getPostWithReplies(
       supabase,
       'p1',
       'discussion',
+      supabase,
     )
     expect(result).toBeNull()
   })
@@ -451,16 +472,17 @@ describe('getPostWithReplies', () => {
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
       user_id: 'u1',
-      public_users: { username:'alice', is_admin: false },
     }
     const { supabase } = buildMockSupabase({
       community_posts: [postRow],
       community_replies: [],
+      users: [{ id: 'u1', username: 'alice', is_admin: false }],
     })
     const result = await getPostWithReplies(
       supabase,
       'p1',
       'discussion',
+      supabase,
     )
     expect(result).not.toBeNull()
     expect(result!.id).toBe('p1')
@@ -476,7 +498,6 @@ describe('getPostWithReplies', () => {
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
       user_id: 'u1',
-      public_users: { username:'alice', is_admin: false },
     }
     // Mock returns replies in whatever order — production code
     // relies on .order('created_at', ascending: true) to enforce
@@ -488,24 +509,27 @@ describe('getPostWithReplies', () => {
         body: 'first',
         created_at: '2026-05-02T08:00:00Z',
         user_id: 'u1',
-        public_users: { username:'alice', is_admin: false },
       },
       {
         id: 'r2',
         body: 'oliver weighs in',
         created_at: '2026-05-02T09:00:00Z',
         user_id: 'u-ol',
-        public_users: { username:'oliver', is_admin: true },
       },
     ]
     const { supabase } = buildMockSupabase({
       community_posts: [postRow],
       community_replies: replyRows,
+      users: [
+        { id: 'u1', username: 'alice', is_admin: false },
+        { id: 'u-ol', username: 'oliver', is_admin: true },
+      ],
     })
     const result = await getPostWithReplies(
       supabase,
       'p1',
       'discussion',
+      supabase,
     )
 
     expect(result!.replies).toHaveLength(2)
@@ -530,13 +554,13 @@ describe('getPostWithReplies', () => {
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
       user_id: 'u1',
-      public_users: { username:'alice', is_admin: false },
     }
     const { supabase, calls } = buildMockSupabase({
       community_posts: [postRow],
       community_replies: [],
+      users: [{ id: 'u1', username: 'alice', is_admin: false }],
     })
-    await getPostWithReplies(supabase, 'p1', 'discussion')
+    await getPostWithReplies(supabase, 'p1', 'discussion', supabase)
 
     expect(calls.from).toContain('community_replies')
     expect(calls.eq).toContainEqual(['post_id', 'p1'])
@@ -556,7 +580,6 @@ describe('getPostWithReplies', () => {
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
       user_id: 'u1',
-      public_users: { username:'alice', is_admin: false },
     }
     const replyRows = [
       {
@@ -564,17 +587,18 @@ describe('getPostWithReplies', () => {
         body: 'orphan',
         created_at: '2026-05-02T08:00:00Z',
         user_id: 'u-missing',
-        public_users: null,
       },
     ]
     const { supabase } = buildMockSupabase({
       community_posts: [postRow],
       community_replies: replyRows,
+      users: [{ id: 'u1', username: 'alice', is_admin: false }],
     })
     const result = await getPostWithReplies(
       supabase,
       'p1',
       'discussion',
+      supabase,
     )
     expect(result!.replies[0].author_username).toBeNull()
     expect(result!.replies[0].author_is_admin).toBe(false)
@@ -589,16 +613,17 @@ describe('getPostWithReplies', () => {
       is_pinned: true,
       created_at: '2026-05-01T10:00:00Z',
       user_id: 'u-ol',
-      public_users: { username:'oliver', is_admin: true },
     }
     const { supabase } = buildMockSupabase({
       community_posts: [postRow],
       community_replies: [],
+      users: [{ id: 'u-ol', username: 'oliver', is_admin: true }],
     })
     const result = await getPostWithReplies(
       supabase,
       'p1',
       'discussion',
+      supabase,
     )
     expect(result!.is_pinned).toBe(true)
     expect(result!.author_is_admin).toBe(true)
@@ -609,7 +634,7 @@ describe('getPostWithReplies', () => {
 
 describe('getUserProfile', () => {
   it('returns null when no row found', async () => {
-    const { supabase } = buildMockSupabase({ public_users: [] })
+    const { supabase } = buildMockSupabase({ users: [] })
     const result = await getUserProfile(supabase, 'nobody')
     expect(result).toBeNull()
   })
@@ -622,7 +647,7 @@ describe('getUserProfile', () => {
       is_admin: false,
       created_at: '2026-01-01T00:00:00Z',
     }
-    const { supabase } = buildMockSupabase({ public_users: [row] })
+    const { supabase } = buildMockSupabase({ users: [row] })
     const result = await getUserProfile(supabase, 'alice')
     expect(result).toEqual({
       id: 'u1',
@@ -641,7 +666,7 @@ describe('getUserProfile', () => {
       is_admin: false,
       created_at: '2026-02-01T00:00:00Z',
     }
-    const { supabase } = buildMockSupabase({ public_users: [row] })
+    const { supabase } = buildMockSupabase({ users: [row] })
     const result = await getUserProfile(supabase, 'bob')
     expect(result!.bio).toBeNull()
   })
@@ -654,7 +679,7 @@ describe('getUserProfile', () => {
       is_admin: true,
       created_at: '2026-01-01T00:00:00Z',
     }
-    const { supabase, calls } = buildMockSupabase({ public_users: [row] })
+    const { supabase, calls } = buildMockSupabase({ users: [row] })
     await getUserProfile(supabase, 'Oliver')
     expect(calls.eq).toContainEqual(['username', 'Oliver'])
   })
@@ -666,7 +691,7 @@ describe('getUserPosts', () => {
       community_posts: [],
       community_replies: [],
     })
-    await getUserPosts(supabase, 'u1', 0, 20)
+    await getUserPosts(supabase, 'u1', 0, 20, supabase)
     expect(calls.eq).toContainEqual(['is_deleted', false])
     expect(calls.eq).toContainEqual(['user_id', 'u1'])
   })
@@ -676,7 +701,7 @@ describe('getUserPosts', () => {
       community_posts: [],
       community_replies: [],
     })
-    await getUserPosts(supabase, 'u1', 0, 20)
+    await getUserPosts(supabase, 'u1', 0, 20, supabase)
     expect(calls.order).toContainEqual(['is_pinned', { ascending: false }])
     expect(calls.order).toContainEqual(['created_at', { ascending: false }])
   })
@@ -686,7 +711,7 @@ describe('getUserPosts', () => {
       community_posts: [],
       community_replies: [],
     })
-    const result = await getUserPosts(supabase, 'u-nobody', 0, 20)
+    const result = await getUserPosts(supabase, 'u-nobody', 0, 20, supabase)
     expect(result.posts).toHaveLength(0)
     expect(result.hasMore).toBe(false)
   })
@@ -699,7 +724,7 @@ describe('getUserPosts', () => {
       body: 'body',
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
-      public_users: { username:'alice', is_admin: false },
+      user_id: 'u-al',
     }
     const replyRows = [
       { post_id: 'p1' },
@@ -708,8 +733,9 @@ describe('getUserPosts', () => {
     const { supabase } = buildMockSupabase({
       community_posts: [postRow],
       community_replies: replyRows,
+      users: [{ id: 'u-al', username: 'alice', is_admin: false }],
     })
-    const result = await getUserPosts(supabase, 'u1', 0, 20)
+    const result = await getUserPosts(supabase, 'u1', 0, 20, supabase)
     expect(result.posts[0].reply_count).toBe(2)
   })
 
@@ -721,13 +747,14 @@ describe('getUserPosts', () => {
       body: 'b',
       is_pinned: false,
       created_at: '2026-05-01T10:00:00Z',
-      public_users: { username:'alice', is_admin: false },
+      user_id: 'u-al',
     }))
     const { supabase } = buildMockSupabase({
       community_posts: rows,
       community_replies: [],
+      users: [{ id: 'u-al', username: 'alice', is_admin: false }],
     })
-    const result = await getUserPosts(supabase, 'u1', 0, 2)
+    const result = await getUserPosts(supabase, 'u1', 0, 2, supabase)
     expect(result.hasMore).toBe(true)
     expect(result.posts).toHaveLength(2)
   })
