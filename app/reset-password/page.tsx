@@ -40,7 +40,7 @@ export default function ResetPasswordPage() {
             Check your email
           </h1>
           <p className="text-[16px] text-text-body mb-6">
-            If an account exists for <strong>{email}</strong>, we&apos;ve sent a password reset link.
+            If an account exists for <strong>{email}</strong>, we&apos;ve sent a password reset link. If you don&apos;t see it, check your spam folder.
           </p>
           <Link href="/login" className="text-[14px] text-primary hover:text-primary-hover font-medium">
             Back to log in
