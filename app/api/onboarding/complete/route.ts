@@ -49,16 +49,21 @@ export async function POST() {
   const email = user.email ?? ''
   const username = userData?.display_name ?? ''
 
-  // EO sync and welcome email are independent; run together, never awaited for response
-  void Promise.all([
-    syncSignupToEmailOctopus({
-      email,
-      username,
-      is_founding_member: membership?.is_founding_member ?? false,
-      is_free_for_life: membership?.is_free_for_life ?? false,
-    }),
-    sendWelcomeEmail({ email, username }),
-  ])
+  // Sync must complete before welcome email — sendWelcomeEmail looks up the
+  // contact by email, so the contact must exist first. Fire-and-forget but ordered.
+  void (async () => {
+    try {
+      await syncSignupToEmailOctopus({
+        email,
+        username,
+        is_founding_member: membership?.is_founding_member ?? false,
+        is_free_for_life: membership?.is_free_for_life ?? false,
+      })
+      await sendWelcomeEmail({ email, username })
+    } catch (err) {
+      console.error('[onboarding/complete] emailoctopus chain failed:', err)
+    }
+  })()
 
   return NextResponse.json({ success: true })
 }
