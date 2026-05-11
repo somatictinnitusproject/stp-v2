@@ -88,26 +88,20 @@ function buildMockSupabase(
 }
 
 describe('getRecentActivity', () => {
-  it('queries community_posts with is_deleted=false and ordering', async () => {
-    const { supabase, calls } = buildMockSupabase({ community_posts: [] })
+  it('queries both community_posts and community_replies with is_deleted=false', async () => {
+    const { supabase, calls } = buildMockSupabase({
+      community_posts: [],
+      community_replies: [],
+    })
     await getRecentActivity(supabase, 4, supabase)
 
     expect(calls.from).toContain('community_posts')
+    expect(calls.from).toContain('community_replies')
     expect(calls.eq).toContainEqual(['is_deleted', false])
-    expect(calls.order).toContainEqual([
-      'created_at',
-      { ascending: false },
-    ])
-    expect(calls.limit).toBe(4)
+    expect(calls.order).toContainEqual(['created_at', { ascending: false }])
   })
 
-  it('uses default limit of 4 when none provided', async () => {
-    const { supabase, calls } = buildMockSupabase({ community_posts: [] })
-    await getRecentActivity(supabase, 4, supabase)
-    expect(calls.limit).toBe(4)
-  })
-
-  it('maps rows including author_username and admin flag', async () => {
+  it('maps post rows with type=post and post_id=id', async () => {
     const fakeRows = [
       {
         id: 'post-1',
@@ -130,6 +124,7 @@ describe('getRecentActivity', () => {
     ]
     const { supabase } = buildMockSupabase({
       community_posts: fakeRows,
+      community_replies: [],
       users: userRows,
     })
     const result = await getRecentActivity(supabase, 4, supabase)
@@ -137,7 +132,9 @@ describe('getRecentActivity', () => {
     expect(result).toHaveLength(2)
     expect(result[0]).toEqual({
       id: 'post-1',
+      type: 'post',
       space: 'progress-wins',
+      post_id: 'post-1',
       title: 'My win',
       created_at: '2026-05-01T10:00:00Z',
       author_username: 'oliver',
@@ -146,13 +143,86 @@ describe('getRecentActivity', () => {
     expect(result[1].author_is_admin).toBe(false)
   })
 
-  it('returns empty array when no rows', async () => {
-    const { supabase } = buildMockSupabase({ community_posts: [] })
+  it('maps reply rows with type=reply and parent post title/space', async () => {
+    const replyRows = [
+      {
+        id: 'reply-1',
+        created_at: '2026-05-02T09:00:00Z',
+        user_id: 'u-al',
+        post_id: 'post-1',
+        community_posts: { space: 'discussion', title: 'A question', is_deleted: false },
+      },
+    ]
+    const { supabase } = buildMockSupabase({
+      community_posts: [],
+      community_replies: replyRows,
+      users: [{ id: 'u-al', username: 'alice', is_admin: false }],
+    })
+    const result = await getRecentActivity(supabase, 4, supabase)
+
+    expect(result).toHaveLength(1)
+    expect(result[0]).toEqual({
+      id: 'reply-1',
+      type: 'reply',
+      space: 'discussion',
+      post_id: 'post-1',
+      title: 'A question',
+      created_at: '2026-05-02T09:00:00Z',
+      author_username: 'alice',
+      author_is_admin: false,
+    })
+  })
+
+  it('merges posts and replies sorted by created_at DESC, capped at limit', async () => {
+    const postRows = [
+      {
+        id: 'p1',
+        space: 'discussion',
+        title: 'Old post',
+        created_at: '2026-05-01T08:00:00Z',
+        user_id: 'u1',
+      },
+    ]
+    const replyRows = [
+      {
+        id: 'r1',
+        created_at: '2026-05-03T10:00:00Z',
+        user_id: 'u1',
+        post_id: 'p1',
+        community_posts: { space: 'discussion', title: 'Old post', is_deleted: false },
+      },
+      {
+        id: 'r2',
+        created_at: '2026-05-02T10:00:00Z',
+        user_id: 'u1',
+        post_id: 'p1',
+        community_posts: { space: 'discussion', title: 'Old post', is_deleted: false },
+      },
+    ]
+    const { supabase } = buildMockSupabase({
+      community_posts: postRows,
+      community_replies: replyRows,
+      users: [{ id: 'u1', username: 'alice', is_admin: false }],
+    })
+    // Limit 2: should return r1 (newest), r2 (second) — old post excluded
+    const result = await getRecentActivity(supabase, 2, supabase)
+
+    expect(result).toHaveLength(2)
+    expect(result[0].id).toBe('r1')
+    expect(result[0].type).toBe('reply')
+    expect(result[1].id).toBe('r2')
+  })
+
+  it('returns empty array when no posts or replies', async () => {
+    const { supabase } = buildMockSupabase({
+      community_posts: [],
+      community_replies: [],
+    })
     const result = await getRecentActivity(supabase, 4, supabase)
     expect(result).toEqual([])
   })
 
-  it('handles missing user join gracefully', async () => {
+  it('handles missing user gracefully (null username, false admin)', async () => {
     const fakeRows = [
       {
         id: 'post-1',
@@ -164,6 +234,7 @@ describe('getRecentActivity', () => {
     ]
     const { supabase } = buildMockSupabase({
       community_posts: fakeRows,
+      community_replies: [],
       users: [],
     })
     const result = await getRecentActivity(supabase, 4, supabase)

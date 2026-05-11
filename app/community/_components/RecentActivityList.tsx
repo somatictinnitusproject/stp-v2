@@ -46,7 +46,7 @@ export default function RecentActivityList({ items }: Props) {
               className="bg-surface border border-border rounded-lg p-3 hover:border-primary transition-colors"
             >
               <Link
-                href={`/community/${item.space}/${item.id}`}
+                href={`/community/${item.space}/${item.post_id}`}
                 className="block"
               >
                 <div className="flex items-center gap-2 text-[12px] text-text-muted mb-1">
@@ -64,7 +64,7 @@ export default function RecentActivityList({ items }: Props) {
                   <span>{formatTimeAgo(item.created_at)}</span>
                 </div>
                 <div className="text-[15px] font-medium text-text-heading">
-                  {item.title}
+                  {item.type === 'reply' ? `Re: ${item.title}` : item.title}
                 </div>
               </Link>
             </li>

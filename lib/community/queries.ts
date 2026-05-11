@@ -6,9 +6,13 @@ import {
 import { createServiceClient } from '@/lib/supabase/service'
 
 // Each row returned for the recent activity section.
+// type='post'  → id is the post id, title is the post title
+// type='reply' → id is the reply id, post_id is the parent post, title is the parent post title
 export interface RecentActivityItem {
   id: string
+  type: 'post' | 'reply'
   space: CommunitySpaceSlug
+  post_id: string
   title: string
   created_at: string
   author_username: string | null
@@ -45,9 +49,9 @@ async function fetchUserMap(
   return map
 }
 
-// Fetch the N most recent non-deleted posts across all spaces.
-// User data fetched separately via service-role to avoid PostgREST embed
-// RLS issues with the users table.
+// Fetch the N most recent non-deleted posts and replies across all spaces,
+// merged and sorted chronologically. Replies include their parent post's
+// space and title so the item can link to the correct post page.
 //
 // Every query against community_posts MUST include
 // is_deleted = FALSE per CLAUDE.md ALL1.
@@ -56,35 +60,66 @@ export async function getRecentActivity(
   limit: number = 4,
   serviceClient?: SupabaseClient,
 ): Promise<RecentActivityItem[]> {
-  const { data, error } = await supabase
-    .from('community_posts')
-    .select(
-      `
-        id,
-        space,
-        title,
-        created_at,
-        user_id
-      `,
-    )
-    .eq('is_deleted', false)
-    .order('created_at', { ascending: false })
-    .limit(limit)
+  // Fetch limit*2 from each source so the merged top-N has enough candidates.
+  const fetchCount = limit * 2
 
-  if (error) throw error
-  if (!data) return []
+  const [postsResult, repliesResult] = await Promise.all([
+    supabase
+      .from('community_posts')
+      .select('id, space, title, created_at, user_id')
+      .eq('is_deleted', false)
+      .order('created_at', { ascending: false })
+      .limit(fetchCount),
+    supabase
+      .from('community_replies')
+      .select(
+        'id, created_at, user_id, post_id, community_posts!inner ( space, title, is_deleted )',
+      )
+      .eq('is_deleted', false)
+      .eq('community_posts.is_deleted', false)
+      .order('created_at', { ascending: false })
+      .limit(fetchCount),
+  ])
 
-  const userIds = [...new Set(data.map((r: any) => r.user_id as string))]
-  const userMap = await fetchUserMap(userIds, serviceClient)
+  if (postsResult.error) throw postsResult.error
+  if (repliesResult.error) throw repliesResult.error
 
-  return data.map((row: any) => ({
+  const postRows = postsResult.data ?? []
+  const replyRows = repliesResult.data ?? []
+
+  const allUserIds = [
+    ...new Set([
+      ...postRows.map((r: any) => r.user_id as string),
+      ...replyRows.map((r: any) => r.user_id as string),
+    ]),
+  ]
+  const userMap = await fetchUserMap(allUserIds, serviceClient)
+
+  const postItems: RecentActivityItem[] = postRows.map((row: any) => ({
     id: row.id,
+    type: 'post' as const,
     space: row.space as CommunitySpaceSlug,
+    post_id: row.id,
     title: row.title,
     created_at: row.created_at,
     author_username: userMap.get(row.user_id)?.username ?? null,
     author_is_admin: userMap.get(row.user_id)?.is_admin === true,
   }))
+
+  const replyItems: RecentActivityItem[] = replyRows.map((row: any) => ({
+    id: row.id,
+    type: 'reply' as const,
+    space: (row as any).community_posts.space as CommunitySpaceSlug,
+    post_id: row.post_id,
+    title: (row as any).community_posts.title,
+    created_at: row.created_at,
+    author_username: userMap.get(row.user_id)?.username ?? null,
+    author_is_admin: userMap.get(row.user_id)?.is_admin === true,
+  }))
+
+  return [...postItems, ...replyItems]
+    .sort((a, b) => b.created_at.localeCompare(a.created_at))
+    .slice(0, limit)
 }
 
 // Fetch post counts and last-active timestamps for every space.
