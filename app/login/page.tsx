@@ -20,6 +20,9 @@ function LoginForm() {
     if (searchParams.get('verified') === 'true') {
       setNotice('Email verified. You can now log in.')
     }
+    if (searchParams.get('error') === 'verification_failed') {
+      setError('This link has expired or is invalid. Please request a new password reset.')
+    }
   }, [searchParams])
 
   async function handleSubmit(e: React.FormEvent) {
