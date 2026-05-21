@@ -43,7 +43,7 @@ const d8LateralPterygoidRelease: Exercise = {
     },
     {
       type: 'p',
-      text: 'Locate the zygomatic arch: the bony ridge running from your cheekbone toward your ear. Place your index finger just below this arch, approximately halfway between your ear and the outer corner of your eye. This is the landmark you used in the Phase 1 lateral pterygoid palpation assessment.',
+      text: 'Locate the zygomatic arch: the bony ridge running from your cheekbone toward your ear. Place your index finger just below this arch, approximately one finger-width in front of your ear. This is the landmark you used in the Phase 1 lateral pterygoid palpation assessment.',
     },
     {
       type: 'p',
@@ -62,7 +62,7 @@ const d8LateralPterygoidRelease: Exercise = {
   condensedSummary: [
     {
       type: 'p',
-      text: 'Locate the zygomatic arch and place your index finger just below it, halfway between your ear and the outer corner of your eye. Apply firm inward and slightly upward sustained pressure for 90 seconds per position. Work through two positions along the line below the arch. Both sides.',
+      text: 'Locate the zygomatic arch and place your index finger just below it, approximately one finger-width in front of your ear. Apply firm inward and slightly upward sustained pressure for 90 seconds per position. Work through two positions along the line below the arch. Both sides.',
     },
   ],
 
