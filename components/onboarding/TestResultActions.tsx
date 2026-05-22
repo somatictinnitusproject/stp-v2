@@ -52,10 +52,9 @@ export default function TestResultActions() {
         <div className="w-full bg-surface border border-border rounded-xl p-5 flex flex-col gap-3">
           <Link
             href="/test"
-            target="_blank"
             className="text-[14px] text-primary hover:text-primary-hover font-medium"
           >
-            Retake the assessment ↗
+            Retake the assessment
           </Link>
           <a
             href="mailto:oliver@somatictinnitusproject.com"

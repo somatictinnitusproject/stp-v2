@@ -11,6 +11,7 @@ import { getExerciseById } from '@/content/exercises/_lookup'
 import { getTodayStatus, type TodayStatus } from '@/lib/session/get-today-status'
 import type { FrameworkProgressRow, Phase1AssessmentRow } from '@/lib/scoring/types'
 import ShorterSessionLink from '@/components/dashboard/ShorterSessionLink'
+import InstallPromptCard from '@/components/InstallPromptCard'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -323,6 +324,8 @@ export default async function DashboardPage() {
           )}
         </div>
       )}
+
+      <InstallPromptCard />
 
       {/* Sparkline + Phase progression */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">

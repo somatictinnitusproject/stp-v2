@@ -43,11 +43,11 @@ export default function OnboardingTermsPage() {
         <div className="bg-surface border border-border rounded-xl p-6 mb-6 flex flex-col gap-4 text-[15px] text-text-body leading-relaxed">
           <p>
             By using the Somatic Tinnitus Project, you agree to our{' '}
-            <Link href="/terms" target="_blank" className="text-primary hover:text-primary-hover font-medium underline">
+            <Link href="/terms" className="text-primary hover:text-primary-hover font-medium underline">
               Terms of Service
             </Link>{' '}
             and{' '}
-            <Link href="/privacy" target="_blank" className="text-primary hover:text-primary-hover font-medium underline">
+            <Link href="/privacy" className="text-primary hover:text-primary-hover font-medium underline">
               Privacy Policy
             </Link>.
           </p>
