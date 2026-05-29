@@ -149,15 +149,17 @@ export function buildReducedTmjResistanceList(profileType: string): string[] {
 // ── Resistance block ordering ─────────────────────────────────────────────────
 
 /**
- * E13 and D14 are motor control exercises — they activate deep stabilisers
- * before progressive load is introduced. When both cervical retraining and
- * TMJ resistance lists are combined in the same session, pull E13 and D14
- * to the front while preserving the relative order of everything else.
+ * E15, D14, and E13 are motor control exercises — proprioception first to
+ * prime neuromuscular control, then jaw symmetry, then deep cervical flexor
+ * activation. When both cervical retraining and TMJ resistance lists are
+ * combined, these three are pulled to the front in this order; everything
+ * else follows in its list-builder order.
  * Single-driver sessions are unaffected (their lists already start correctly).
  */
 const RESISTANCE_MOTOR_CONTROL = [
-  'E13_deep_cervical_flexor_training',
+  'E15_cervical_proprioception',
   'D14_jaw_symmetry_retraining',
+  'E13_deep_cervical_flexor_training',
 ]
 
 function sortResistanceBlock(exercises: string[]): string[] {

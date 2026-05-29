@@ -75,7 +75,7 @@ const d13: ReadingSection = {
     },
     {
       type: 'p',
-      text: 'Deep Cervical Flexor Training and Jaw Symmetry Training appear first. These are motor control exercises — they activate the deep stabilising muscles of your neck and jaw. The deep cervical flexors in particular are typically underactive in people with somatic tinnitus, with the superficial muscles (SCM, scalenes, upper trapezius) compensating. Starting each session by activating the deep stabilisers means the heavier resistance work that follows loads a coordinated system rather than reinforcing the compensation pattern.',
+      text: 'Cervical Proprioception Retraining, Jaw Symmetry Retraining, and Deep Cervical Flexor Training appear first. These are motor control exercises — they activate the deep stabilising muscles of your neck and jaw and re-train head position sense. The deep cervical flexors and jaw stabilisers are typically underactive in people with somatic tinnitus, with the superficial muscles (SCM, scalenes, upper trapezius, masseter) compensating. Starting each session by activating the deep stabilisers means the heavier resistance work that follows loads a coordinated system rather than reinforcing the compensation pattern. Proprioception work comes first because it primes neuromuscular control for the rest of the session.',
     },
     {
       type: 'p',

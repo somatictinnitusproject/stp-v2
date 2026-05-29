@@ -371,7 +371,7 @@ describe('buildSessionExerciseList', () => {
   })
 
   // C6 — DUAL_DRIVER, Option 2, resistance → 17 IDs
-  // Motor control leads: E13 then D14, remaining in original relative order.
+  // Motor control leads: E15, D14, E13 — then remaining in original relative order.
   it('C6: DUAL_DRIVER / Option 2 / resistance → 17 IDs', () => {
     const phase1 = makePhase1({ tmj_joint_sounds: true })
     const progress = makeProgress({ protocol_option: 2, resistance_phase_start: '2026-04-01T00:00:00Z' })
@@ -381,10 +381,10 @@ describe('buildSessionExerciseList', () => {
     expect(result.slice(1, 6)).toEqual(buildCervReleaseList())
     expect(result.slice(6, 11)).toEqual(buildTmjReleaseList())
     expect(result.slice(11)).toEqual([
-      'E13_deep_cervical_flexor_training',
-      'D14_jaw_symmetry_retraining',
-      'E14_cervical_rotation_holds',
       'E15_cervical_proprioception',
+      'D14_jaw_symmetry_retraining',
+      'E13_deep_cervical_flexor_training',
+      'E14_cervical_rotation_holds',
       'D15_progressive_resistance',
       'D17_condylar_repositioning',
     ])
@@ -402,7 +402,7 @@ describe('buildSessionExerciseList', () => {
   })
 
   // C8 — TMJ_PRIMARY_WITH_SECONDARY, Option 3, resistance → 12 IDs (per P3-21: reduced cerv retraining, not full)
-  // Motor control leads: E13 (from reduced cerv retraining) then D14 (from TMJ resistance).
+  // E15 absent from reduced cerv list — motor control leads with D14 then E13 only.
   it('C8: TMJ_PRIMARY_WITH_SECONDARY / Option 3 / resistance → 12 IDs (P3-21 reduced secondary resistance)', () => {
     const phase1 = makePhase1({ profile_type: 'TMJ_PRIMARY_WITH_SECONDARY', tmj_protocol_assigned: true, cerv_protocol_assigned: true, tmj_joint_sounds: true })
     const progress = makeProgress({ protocol_option: 3, resistance_phase_start: '2026-04-01T00:00:00Z' })
@@ -412,8 +412,8 @@ describe('buildSessionExerciseList', () => {
     expect(result.slice(1, 6)).toEqual(buildTmjReleaseList())
     expect(result.slice(6, 7)).toEqual(buildReducedCervList('TMJ_PRIMARY_WITH_SECONDARY'))
     expect(result.slice(7)).toEqual([
-      'E13_deep_cervical_flexor_training',
       'D14_jaw_symmetry_retraining',
+      'E13_deep_cervical_flexor_training',
       'D15_progressive_resistance',
       'D17_condylar_repositioning',
       'E14_cervical_rotation_holds',
@@ -465,7 +465,7 @@ describe('buildSessionExerciseList', () => {
   })
 
   // C20 — CERV_PRIMARY_WITH_SECONDARY, Option 3, resistance → 12 IDs (per P3-21)
-  // Motor control leads: E13 then D14, remaining in original relative order.
+  // Motor control leads: E15, D14, E13 — then remaining in original relative order.
   it('C20: CERV_PRIMARY_WITH_SECONDARY / Option 3 / resistance → 12 IDs (P3-21 reduced secondary resistance)', () => {
     const phase1 = makePhase1({ profile_type: 'CERV_PRIMARY_WITH_SECONDARY', tmj_protocol_assigned: true, cerv_protocol_assigned: true })
     const progress = makeProgress({ protocol_option: 3, resistance_phase_start: '2026-04-01T00:00:00Z' })
@@ -475,16 +475,16 @@ describe('buildSessionExerciseList', () => {
     expect(result.slice(1, 6)).toEqual(buildCervReleaseList())
     expect(result.slice(6, 7)).toEqual(buildReducedTmjList('CERV_PRIMARY_WITH_SECONDARY'))
     expect(result.slice(7)).toEqual([
-      'E13_deep_cervical_flexor_training',
-      'D14_jaw_symmetry_retraining',
-      'E14_cervical_rotation_holds',
       'E15_cervical_proprioception',
+      'D14_jaw_symmetry_retraining',
+      'E13_deep_cervical_flexor_training',
+      'E14_cervical_rotation_holds',
       'D15_progressive_resistance',
     ])
   })
 
   // C21 — TMJ_PRIMARY_STRONG_SECONDARY, Option 3, resistance → full both lists (not reduced)
-  // Motor control leads: E13 then D14, remaining in original relative order.
+  // Motor control leads: E15, D14, E13 — then remaining in original relative order.
   it('C21: TMJ_PRIMARY_STRONG_SECONDARY / Option 3 / resistance → 13 IDs (STRONG_SECONDARY gets full both lists)', () => {
     const phase1 = makePhase1({ profile_type: 'TMJ_PRIMARY_STRONG_SECONDARY', tmj_protocol_assigned: true, cerv_protocol_assigned: true })
     const progress = makeProgress({ protocol_option: 3, resistance_phase_start: '2026-04-01T00:00:00Z' })
@@ -495,10 +495,10 @@ describe('buildSessionExerciseList', () => {
     expect(result.slice(1, 6)).toEqual(buildTmjReleaseList())
     expect(result.slice(6, 8)).toEqual(buildReducedCervList('TMJ_PRIMARY_STRONG_SECONDARY'))
     expect(result.slice(8)).toEqual([
-      'E13_deep_cervical_flexor_training',
-      'D14_jaw_symmetry_retraining',
-      'E14_cervical_rotation_holds',
       'E15_cervical_proprioception',
+      'D14_jaw_symmetry_retraining',
+      'E13_deep_cervical_flexor_training',
+      'E14_cervical_rotation_holds',
       'D15_progressive_resistance',
     ])
   })
@@ -523,7 +523,7 @@ describe('buildSessionExerciseList', () => {
   })
 
   // C15 — Low-confidence, null protocol_option, resistance → 9 IDs (D.4 + 2 + 3 cerv + 3 TMJ)
-  // Motor control leads: E13 then D14, remaining in original relative order.
+  // Motor control leads: E15, D14, E13 — then remaining in original relative order.
   it('C15: low-confidence / null option / resistance → 9 IDs (both resistance lists per P3-16)', () => {
     const phase1 = makePhase1({ tmj_normalised_score: 17, cerv_normalised_score: 12, tmj_joint_sounds: true })
     const progress = makeProgress({ protocol_option: null, resistance_phase_start: '2026-04-01T00:00:00Z' })
@@ -532,10 +532,10 @@ describe('buildSessionExerciseList', () => {
     expect(result[0]).toBe('D4_heat_application')
     expect(result.slice(1, 3)).toEqual(buildLowConfidenceList())
     expect(result.slice(3)).toEqual([
-      'E13_deep_cervical_flexor_training',
-      'D14_jaw_symmetry_retraining',
-      'E14_cervical_rotation_holds',
       'E15_cervical_proprioception',
+      'D14_jaw_symmetry_retraining',
+      'E13_deep_cervical_flexor_training',
+      'E14_cervical_rotation_holds',
       'D15_progressive_resistance',
       'D17_condylar_repositioning',
     ])
@@ -608,20 +608,21 @@ describe('session list ordering', () => {
     expect(result.slice(1 + cervIds.length, 1 + cervIds.length + tmjIds.length)).toEqual(tmjIds)
   })
 
-  it('D2: DUAL_DRIVER Option 2 with resistance — motor control (E13, D14) leads resistance block, all resistance after all release', () => {
+  it('D2: DUAL_DRIVER Option 2 with resistance — motor control (E15, D14, E13) leads resistance block, all resistance after all release', () => {
     const progress = makeProgress({ protocol_option: 2, resistance_phase_start: '2026-04-01T00:00:00Z' })
     const result = buildSessionExerciseList(progress, makePhase1({ tmj_joint_sounds: true }))
     const releaseCount = buildCervReleaseList().length + buildTmjReleaseList().length  // 10
     expect(result[0]).toBe('D4_heat_application')
-    // Motor control leads the resistance block
-    expect(result[1 + releaseCount]).toBe('E13_deep_cervical_flexor_training')
+    // Motor control leads the resistance block in order: E15, D14, E13
+    expect(result[1 + releaseCount]).toBe('E15_cervical_proprioception')
     expect(result[2 + releaseCount]).toBe('D14_jaw_symmetry_retraining')
+    expect(result[3 + releaseCount]).toBe('E13_deep_cervical_flexor_training')
     // Full resistance block in sorted order
     expect(result.slice(1 + releaseCount)).toEqual([
-      'E13_deep_cervical_flexor_training',
-      'D14_jaw_symmetry_retraining',
-      'E14_cervical_rotation_holds',
       'E15_cervical_proprioception',
+      'D14_jaw_symmetry_retraining',
+      'E13_deep_cervical_flexor_training',
+      'E14_cervical_rotation_holds',
       'D15_progressive_resistance',
       'D17_condylar_repositioning',
     ])
