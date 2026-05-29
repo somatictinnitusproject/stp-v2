@@ -66,6 +66,26 @@ const d13: ReadingSection = {
       text: 'There is no fixed timeline within the resistance phase. Progress through the exercises at the rate your jaw allows. Neuromuscular retraining should feel established: movement pattern more controlled, drift reduced or absent on mirror check — before progressive resistance begins. Let the tissue and the mirror guide the pace, not a calendar.',
     },
     {
+      type: 'subhead',
+      text: 'How to Work Through These Sessions',
+    },
+    {
+      type: 'p',
+      text: 'The exercises in your resistance phase sessions are presented in a specific order. Work through them in sequence.',
+    },
+    {
+      type: 'p',
+      text: 'Deep Cervical Flexor Training and Jaw Symmetry Training appear first. These are motor control exercises — they activate the deep stabilising muscles of your neck and jaw. The deep cervical flexors in particular are typically underactive in people with somatic tinnitus, with the superficial muscles (SCM, scalenes, upper trapezius) compensating. Starting each session by activating the deep stabilisers means the heavier resistance work that follows loads a coordinated system rather than reinforcing the compensation pattern.',
+    },
+    {
+      type: 'p',
+      text: 'The progressive resistance exercises follow. Start at light intensity in the first week. Build load gradually as the motor control work becomes more controlled. By the second week of resistance phase, the progressive resistance exercises will be working with the foundation the motor control work has built rather than against it.',
+    },
+    {
+      type: 'p',
+      text: 'Take the order seriously. It matters more than how hard you push on any individual exercise.',
+    },
+    {
       type: 'acknowledge_prompt',
       text: "I understand the structure of the resistance phase and I'm ready to begin.",
     },

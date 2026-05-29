@@ -146,6 +146,26 @@ export function buildReducedTmjResistanceList(profileType: string): string[] {
   return []
 }
 
+// ── Resistance block ordering ─────────────────────────────────────────────────
+
+/**
+ * E13 and D14 are motor control exercises — they activate deep stabilisers
+ * before progressive load is introduced. When both cervical retraining and
+ * TMJ resistance lists are combined in the same session, pull E13 and D14
+ * to the front while preserving the relative order of everything else.
+ * Single-driver sessions are unaffected (their lists already start correctly).
+ */
+const RESISTANCE_MOTOR_CONTROL = [
+  'E13_deep_cervical_flexor_training',
+  'D14_jaw_symmetry_retraining',
+]
+
+function sortResistanceBlock(exercises: string[]): string[] {
+  const motorControl = RESISTANCE_MOTOR_CONTROL.filter(id => exercises.includes(id))
+  const rest = exercises.filter(id => !RESISTANCE_MOTOR_CONTROL.includes(id))
+  return [...motorControl, ...rest]
+}
+
 // ── Low-confidence runtime detection per errata P3-12 ────────────────────────
 
 /**
@@ -199,8 +219,10 @@ export function buildSessionExerciseList(
       // protocols assigned per Doc 13 §3.1)
       exercises = [
         ...exercises,
-        ...buildCervRetainingList(),
-        ...buildTmjResistanceList(phase1),
+        ...sortResistanceBlock([
+          ...buildCervRetainingList(),
+          ...buildTmjResistanceList(phase1),
+        ]),
       ]
     }
     exercises = [...exercises, ...(progress.phase4_exercises_added ?? [])]
@@ -233,14 +255,34 @@ export function buildSessionExerciseList(
     // All others (incl. _STRONG_SECONDARY, DUAL_DRIVER): full both per P3-16.
     if (resistanceStart !== null) {
       if (protocolOption === 3 && profileType === 'TMJ_PRIMARY_WITH_SECONDARY') {
-        exercises = [...exercises, ...buildTmjResistanceList(phase1)]
-        exercises = [...exercises, ...buildReducedCervRetainingList(profileType)]
+        exercises = [
+          ...exercises,
+          ...sortResistanceBlock([
+            ...buildTmjResistanceList(phase1),
+            ...buildReducedCervRetainingList(profileType),
+          ]),
+        ]
       } else if (protocolOption === 3 && profileType === 'CERV_PRIMARY_WITH_SECONDARY') {
-        exercises = [...exercises, ...buildCervRetainingList()]
-        exercises = [...exercises, ...buildReducedTmjResistanceList(profileType)]
+        exercises = [
+          ...exercises,
+          ...sortResistanceBlock([
+            ...buildCervRetainingList(),
+            ...buildReducedTmjResistanceList(profileType),
+          ]),
+        ]
       } else {
-        if (cervAssigned) exercises = [...exercises, ...buildCervRetainingList()]
-        if (tmjAssigned) exercises = [...exercises, ...buildTmjResistanceList(phase1)]
+        if (cervAssigned && tmjAssigned) {
+          exercises = [
+            ...exercises,
+            ...sortResistanceBlock([
+              ...buildCervRetainingList(),
+              ...buildTmjResistanceList(phase1),
+            ]),
+          ]
+        } else {
+          if (cervAssigned) exercises = [...exercises, ...buildCervRetainingList()]
+          if (tmjAssigned) exercises = [...exercises, ...buildTmjResistanceList(phase1)]
+        }
       }
     }
 
