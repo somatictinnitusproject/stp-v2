@@ -359,6 +359,21 @@ describe('buildSessionExerciseList', () => {
     expect(result.slice(6, 9)).toEqual(buildCervRetainingList())
   })
 
+  // C4b — DUAL_DRIVER, Option 1, resistance → TMJ resistance only (bug fix: cerv retraining must NOT appear)
+  it('C4b: DUAL_DRIVER / Option 1 / resistance → TMJ resistance only, no cervical retraining', () => {
+    const phase1 = makePhase1()  // DUAL_DRIVER, both assigned
+    const progress = makeProgress({ protocol_option: 1, resistance_phase_start: '2026-04-01T00:00:00Z' })
+    const result = buildSessionExerciseList(progress, phase1)
+    // D4 + TMJ release (5) + TMJ resistance (2, no D17) = 8
+    expect(result).toHaveLength(8)
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 6)).toEqual(buildTmjReleaseList())
+    expect(result.slice(6)).toEqual(buildTmjResistanceList(phase1))
+    expect(result).not.toContain('E13_deep_cervical_flexor_training')
+    expect(result).not.toContain('E14_cervical_rotation_holds')
+    expect(result).not.toContain('E15_cervical_proprioception')
+  })
+
   // C5 — DUAL_DRIVER, Option 2, no resistance → 11 IDs (D.4 + cervical release + TMJ release)
   it('C5: DUAL_DRIVER / Option 2 / no resistance → 11 IDs', () => {
     const phase1 = makePhase1()  // default DUAL_DRIVER, both assigned

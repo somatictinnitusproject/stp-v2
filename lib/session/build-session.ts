@@ -195,10 +195,12 @@ export function isLowConfidence(phase1: Phase1AssessmentRow): boolean {
  * phase4_first_accessed as Doc 13 §5.4 instructs).
  *
  * Resistance phase appends both drivers' lists uniformly across protocol
- * options 1, 2, 3 per errata P3-16 — except that Option 3 _WITH_SECONDARY
+ * options 2 and 3 per errata P3-16 — except that Option 3 _WITH_SECONDARY
  * profiles receive a reduced secondary resistance list per P3-21.
- * Sequential (Option 1) single-driver members do NOT pick up the other
- * driver's release work at resistance.
+ * Option 1 (Sequential) dual-driver exception: resistance_phase_start marks
+ * the start of jaw resistance only. Cervical retraining (E13/E14/E15) must
+ * not enter the session at that point — there is no cerv sequential phase
+ * flag yet, so the gate is protocolOption !== 1.
  */
 export function buildSessionExerciseList(
   progress: FrameworkProgressRow,
@@ -274,13 +276,20 @@ export function buildSessionExerciseList(
         ]
       } else {
         if (cervAssigned && tmjAssigned) {
-          exercises = [
-            ...exercises,
-            ...sortResistanceBlock([
-              ...buildCervRetainingList(),
-              ...buildTmjResistanceList(phase1),
-            ]),
-          ]
+          if (protocolOption === 1) {
+            // Sequential: resistance_phase_start marks jaw resistance start only.
+            // Cervical retraining does not enter the session here — no cerv
+            // sequential phase column exists yet to gate a later unlock.
+            exercises = [...exercises, ...buildTmjResistanceList(phase1)]
+          } else {
+            exercises = [
+              ...exercises,
+              ...sortResistanceBlock([
+                ...buildCervRetainingList(),
+                ...buildTmjResistanceList(phase1),
+              ]),
+            ]
+          }
         } else {
           if (cervAssigned) exercises = [...exercises, ...buildCervRetainingList()]
           if (tmjAssigned) exercises = [...exercises, ...buildTmjResistanceList(phase1)]
