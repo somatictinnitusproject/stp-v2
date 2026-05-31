@@ -122,6 +122,8 @@ function makeProgress(overrides: Partial<FrameworkProgressRow> = {}): FrameworkP
     session_in_progress: null,
     nudges_dismissed: {},
     phase4_exercises_added: [],
+    cerv_sequential_phase_start: null,
+    cerv_sequential_resistance_start: null,
     ...overrides,
   } as FrameworkProgressRow
 }
@@ -372,6 +374,47 @@ describe('buildSessionExerciseList', () => {
     expect(result).not.toContain('E13_deep_cervical_flexor_training')
     expect(result).not.toContain('E14_cervical_rotation_holds')
     expect(result).not.toContain('E15_cervical_proprioception')
+  })
+
+  // C4c — DUAL_DRIVER, Option 1, resistance + cerv_sequential_phase_start set
+  //        → jaw release + jaw resistance + cervical release (no cerv retraining yet)
+  it('C4c: DUAL_DRIVER / Option 1 / resistance + cerv sequential started → adds cerv release, no cerv retraining', () => {
+    const phase1 = makePhase1()  // DUAL_DRIVER, both assigned
+    const progress = makeProgress({
+      protocol_option: 1,
+      resistance_phase_start: '2026-04-01T00:00:00Z',
+      cerv_sequential_phase_start: '2026-04-15T00:00:00Z',
+    })
+    const result = buildSessionExerciseList(progress, phase1)
+    // D4 + jaw release (5) + cerv release (5) + jaw resistance (2) = 13
+    expect(result).toHaveLength(13)
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 6)).toEqual(buildTmjReleaseList())
+    expect(result.slice(6, 11)).toEqual(buildCervReleaseList())
+    expect(result.slice(11)).toEqual(buildTmjResistanceList(phase1))
+    expect(result).not.toContain('E13_deep_cervical_flexor_training')
+    expect(result).not.toContain('E14_cervical_rotation_holds')
+    expect(result).not.toContain('E15_cervical_proprioception')
+  })
+
+  // C4d — DUAL_DRIVER, Option 1, all sequential phases active
+  //        → jaw release + jaw resistance + cervical release + cervical retraining
+  it('C4d: DUAL_DRIVER / Option 1 / all sequential phases active → full four-block session', () => {
+    const phase1 = makePhase1()  // DUAL_DRIVER, both assigned
+    const progress = makeProgress({
+      protocol_option: 1,
+      resistance_phase_start: '2026-04-01T00:00:00Z',
+      cerv_sequential_phase_start: '2026-04-15T00:00:00Z',
+      cerv_sequential_resistance_start: '2026-04-29T00:00:00Z',
+    })
+    const result = buildSessionExerciseList(progress, phase1)
+    // D4 + jaw release (5) + cerv release (5) + jaw resistance (2) + cerv retraining (3) = 16
+    expect(result).toHaveLength(16)
+    expect(result[0]).toBe('D4_heat_application')
+    expect(result.slice(1, 6)).toEqual(buildTmjReleaseList())
+    expect(result.slice(6, 11)).toEqual(buildCervReleaseList())
+    expect(result.slice(11, 13)).toEqual(buildTmjResistanceList(phase1))
+    expect(result.slice(13)).toEqual(buildCervRetainingList())
   })
 
   // C5 — DUAL_DRIVER, Option 2, no resistance → 11 IDs (D.4 + cervical release + TMJ release)

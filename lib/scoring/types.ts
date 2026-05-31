@@ -125,6 +125,11 @@ export interface FrameworkProgressRow {
   // Default [] — no Phase 4 exercises appear in /session unless explicitly added.
   phase4_exercises_added: string[]
 
+  // Option 1 (Sequential) dual-driver cervical phase tracking.
+  // NULL for all other protocol options and single-driver members.
+  cerv_sequential_phase_start: string | null       // TIMESTAMPTZ — cervical release begins
+  cerv_sequential_resistance_start: string | null  // TIMESTAMPTZ — cervical retraining begins
+
   // TFI dismissal timestamps — keyed by capture_point.
   // Empty object {} means nothing dismissed. When a capture point is dismissed,
   // its key is set to an ISO timestamp string.

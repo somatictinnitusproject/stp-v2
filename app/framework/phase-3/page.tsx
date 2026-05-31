@@ -28,6 +28,8 @@ import StateSummary from './components/StateSummary'
 import Phase3CompletionBlock from './components/Phase3CompletionBlock'
 import Phase3ReadingList from './components/Phase3ReadingList'
 import ResistancePhaseCard from './components/ResistancePhaseCard'
+import CervSequentialStartCard from './components/CervSequentialStartCard'
+import CervSequentialResistanceCard from './components/CervSequentialResistanceCard'
 import { advancePhase3ToPhase5 } from './actions'
 
 function formatDate(date: Date): string {
@@ -41,7 +43,7 @@ export default async function Phase3OverviewPage() {
 
   const { data: progress, error } = await supabase
     .from('framework_progress')
-    .select('current_phase, phase2_completed_at, phase3_completed_at, resistance_phase_start, exercises_viewed, protocol_option')
+    .select('current_phase, phase2_completed_at, phase3_completed_at, resistance_phase_start, exercises_viewed, protocol_option, cerv_sequential_phase_start, cerv_sequential_resistance_start')
     .eq('user_id', user.id)
     .maybeSingle()
 
@@ -63,6 +65,9 @@ export default async function Phase3OverviewPage() {
 
   const assessment = assessmentRaw as Phase1AssessmentRow | null
   const tmjAssigned = assessment?.tmj_protocol_assigned === true
+  const cervAssigned = assessment?.cerv_protocol_assigned === true
+  // Sequential dual-driver: both protocols assigned, Option 1 chosen
+  const isSequentialDual = progress.protocol_option === 1 && tmjAssigned && cervAssigned
   const exercisesViewed = (progress.exercises_viewed ?? {}) as Record<string, boolean>
 
   const phase2CompletedAt = new Date(progress.phase2_completed_at)
@@ -139,6 +144,22 @@ export default async function Phase3OverviewPage() {
             phase2CompletedAt={progress.phase2_completed_at}
             phase1={assessment}
             protocolOption={progress.protocol_option ?? null}
+          />
+        )}
+
+        {/* Sequential dual-driver cervical cards — Option 1, both protocols assigned.
+            Each card manages its own started/not-started state, same as ResistancePhaseCard.
+            CervSequentialStartCard: visible once jaw resistance is active.
+            CervSequentialResistanceCard: visible once cervical release is active. */}
+        {isSequentialDual && progress.resistance_phase_start && (
+          <CervSequentialStartCard
+            cervSequentialPhaseStart={progress.cerv_sequential_phase_start ?? null}
+          />
+        )}
+        {isSequentialDual && progress.cerv_sequential_phase_start && (
+          <CervSequentialResistanceCard
+            cervSequentialPhaseStart={progress.cerv_sequential_phase_start}
+            cervSequentialResistanceStart={progress.cerv_sequential_resistance_start ?? null}
           />
         )}
 

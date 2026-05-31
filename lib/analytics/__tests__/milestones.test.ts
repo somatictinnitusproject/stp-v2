@@ -25,6 +25,8 @@ function makeProgress(overrides: Partial<FrameworkProgressRow> = {}): FrameworkP
     nudges_dismissed: {},
     phase4_exercises_added: [],
     tfi_dismissals: {},
+    cerv_sequential_phase_start: null,
+    cerv_sequential_resistance_start: null,
     ...overrides,
   }
 }

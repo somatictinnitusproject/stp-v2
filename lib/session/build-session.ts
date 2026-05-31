@@ -233,9 +233,13 @@ export function buildSessionExerciseList(
   } else {
     // ── Release-phase branching — varies by protocol_option ──────────────────
     if (protocolOption === 1) {
-      // Sequential — only the assigned driver's release list runs
+      // Sequential — jaw runs first. Cervical release enters only once
+      // cerv_sequential_phase_start is set (dual-driver members only).
       if (tmjAssigned) {
         exercises = buildTmjReleaseList()
+        if (cervAssigned && progress.cerv_sequential_phase_start !== null) {
+          exercises = [...exercises, ...buildCervReleaseList()]
+        }
       } else if (cervAssigned) {
         exercises = buildCervReleaseList()
       }
@@ -278,9 +282,11 @@ export function buildSessionExerciseList(
         if (cervAssigned && tmjAssigned) {
           if (protocolOption === 1) {
             // Sequential: resistance_phase_start marks jaw resistance start only.
-            // Cervical retraining does not enter the session here — no cerv
-            // sequential phase column exists yet to gate a later unlock.
+            // Cervical retraining enters when cerv_sequential_resistance_start is set.
             exercises = [...exercises, ...buildTmjResistanceList(phase1)]
+            if (progress.cerv_sequential_resistance_start !== null) {
+              exercises = [...exercises, ...buildCervRetainingList()]
+            }
           } else {
             exercises = [
               ...exercises,
