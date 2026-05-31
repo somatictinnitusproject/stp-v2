@@ -9,9 +9,10 @@
 // No profile modifiers — resistance work is bilateral and uniform
 // across all profiles per Doc 8.
 //
-// Midline tracking prerequisite rendered as emphasis block —
-// informational guidance, not a gated barrier. Members are trusted
-// to self-assess readiness based on Doc 8 framing.
+// Start-light guidance replaces the original Doc 8 emphasis block —
+// members work through D14 and D15 in sequence from resistance phase
+// day one; load is self-regulated by midline tracking, not by a
+// readiness gate.
 
 import type { Exercise } from './_types'
 
@@ -36,8 +37,8 @@ const d15ProgressiveResistance: Exercise = {
       text: 'The jaw responds to progressive loading; appropriate resistance stimulates the masticatory muscles to develop the strength and endurance needed to maintain correct mechanics during eating, speaking, and sustained jaw use. Without this stage the retraining gains from symmetry work are real but fragile; the pattern holds under controlled low-load conditions and degrades under the loading of normal daily function.',
     },
     {
-      type: 'emphasis',
-      text: 'Do not begin this section until midline tracking in symmetry retraining is reliably established. Loading a movement pattern before it is neurologically consolidated reinforces the compensatory pattern rather than the corrected one.',
+      type: 'p',
+      text: 'Start at light resistance. The midline tracking from symmetry retraining is your guide — if the jaw drifts under load, the resistance is too high. Reduce it and rebuild at a lower level before progressing.',
     },
     {
       type: 'subhead',

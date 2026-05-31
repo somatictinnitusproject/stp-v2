@@ -45,7 +45,7 @@ const d17CondylarRepositioning: Exercise = {
     },
     {
       type: 'p',
-      text: 'This is the most advanced exercise in the protocol. It is introduced here, later in the resistance phase, deliberately; the joint needs the foundation of the earlier work before repositioning movements are productive.',
+      text: 'This is the most advanced exercise in the protocol. Start at light effort — gentle forward and downward pressure only. Build gradually as the movement pattern becomes more controlled and familiar.',
     },
     {
       type: 'callout',
